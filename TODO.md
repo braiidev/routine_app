@@ -2,22 +2,19 @@
 
 ## Descripcion
 
-GymRutina es una app web móvil en HTML/JS/CSS para registrar y seguir rutinas de gimnasio con modos completo/mínimo, historial de finalizaciones y temporizador de descanso. Se construye sobre un único archivo index.html con localStorage. Consta de tabs por día, grupos de ejercicios, progreso por series, historial diario y cronómetro. Está terminado cuando la app funciona modularizada en archivos separados (html, css, js), mantiene compatibilidad con los datos existentes en localStorage, se puede servir con HTTP.serve y resulta más mantenible para añadir features y depurar errores.
+GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con modos completo/mínimo, historial de finalizaciones y temporizador de descanso. Se construye sobre HTML, CSS y módulos ES nativos, sin build, con los datos en localStorage y respaldo JSON. Consta de tabs por día, grupos de ejercicios, progreso por series, historial diario, cronómetro y editor de rutina. Está terminada cuando se puede usar sin conexión, respaldar y restaurar la rutina, editar los ejercicios sin ambigüedad y consultar el historial completo desde el teléfono.
 
 ## Estado
 
-- Version actual: `v0.4.2`
-- Fase en curso: Fase 5 - Respaldo de datos
-- Siguiente version reservada: `v0.5.0`
+- Version actual: `v0.5.0`
+- Fase en curso: -
+- Siguiente version reservada: `v0.6.0`
 
 ## Tablero
 
 ### En curso
 
-- [ ] **v0.5.0** - Fase 5 - Respaldo de datos
-  - Exportar e importar la rutina en JSON para sobrevivir a un borrado del navegador o a un cambio de teléfono. Criterio de aceptación: exportar descarga un archivo válido, importar valida y pide confirmación, guarda una copia previa y las pruebas cubren los casos rotos.
-  - [x] v0.4.1 - Exportar e importar JSON con validación y copia previa
-  - [x] v0.4.2 - Documentación del respaldo
+_Nada en curso: el respaldo quedó cerrado._
 
 ### Siguiente
 
@@ -53,6 +50,9 @@ GymRutina es una app web móvil en HTML/JS/CSS para registrar y seguir rutinas d
 - [x] **v0.4.0** - Fase 4 - Documentar y validar
   - README.md con estructura, uso con HTTP.serve, datos, convenciones y cómo agregar features; favicon y metadatos para evitar ruido en consola. Criterio de aceptación: proyecto documentado, 21 pruebas pasan, check.mjs limpio y todos los recursos responden 200 por HTTP.
 
+- [x] **v0.5.0** - Fase 5 - Respaldo de datos
+  - Exportar e importar la rutina en JSON para sobrevivir a un borrado del navegador o a un cambio de teléfono. Criterio de aceptación: exportar descarga un archivo válido, importar valida y pide confirmación, guarda una copia previa y las pruebas cubren los casos rotos.
+
 ### Descartado
 
 _Nada descartado._
@@ -63,7 +63,9 @@ _Nada descartado._
 - El proyecto usa módulos ES nativos: requiere servirse por HTTP (no `file://`).
 - Los datos se guardan en `gymrutina_state_v1` con `{ schemaVersion, days }`. El formato viejo (`rutina_builder_v2`) se migra al cargar y se conserva como respaldo.
 - La mudanza está cerrada; las features nuevas se planifican desde `### Siguiente`.
-- Candidatas para próximas fases: export/import JSON, estadísticas semanales, reinicio automático por fecha y PWA/offline.
+- El respaldo JSON está cerrado; antes de importar se guarda `gymrutina_state_v1_backup_pre_import_<timestamp>`.
+- Pendiente para v0.8.0: decidir si el reinicio diario ocurre a medianoche, al abrir la app o en la primera interacción.
+- Candidatas para próximas fases: estadísticas semanales, reinicio automático por fecha y PWA/offline.
 
 ## Seguimiento
 
