@@ -74,6 +74,27 @@ export function save(){
   persist();
 }
 
+export function getPayload(){
+  return { schemaVersion, days: getState() };
+}
+
+export function replaceState(days){
+  state = normalizeDays(days);
+  schemaVersion = SCHEMA_VERSION;
+  persist();
+}
+
+export function backupCurrentState(reason = 'manual'){
+  const key = `${STORAGE_KEY}_backup_${reason}_${Date.now()}`;
+  try {
+    localStorage.setItem(key, JSON.stringify(getPayload()));
+    return key;
+  } catch(e){
+    warnStorageError(e);
+    return null;
+  }
+}
+
 export function onChange(fn){
   listener = fn;
 }

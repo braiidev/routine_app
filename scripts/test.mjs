@@ -18,10 +18,12 @@ globalThis.document = {
 };
 
 const { LEGACY_STORAGE_KEY, STORAGE_KEY, DAYS } = await import('../js/config.js');
-const { load, getState, save } = await import('../js/state/store.js');
+const { load, getState, save, backupCurrentState, replaceState, getPayload } = await import('../js/state/store.js');
+const { SCHEMA_VERSION } = await import('../js/state/schema.js');
 const { isFinished } = await import('../js/state/selectors.js');
 const { getLocalISODate } = await import('../js/utils/date.js');
 const { formatDuration, remainingFromDeadline } = await import('../js/utils/time.js');
+const { buildExportPayload, parseImport, suggestExportFilename, summarizeDays } = await import('../js/features/backup.js');
 const actions = await import('../js/features/actions.js');
 
 let passed = 0;
@@ -217,7 +219,67 @@ test('save conserva el esquema versionado', () => {
   assert.equal(JSON.parse(memory[STORAGE_KEY]).schemaVersion, 1);
 });
 
-/* 3. Utilidades del temporizador */
+/* 3. Respaldo */
+
+const exportDate = new Date(2026, 0, 5, 15, 30);
+const exportedText = JSON.stringify(buildExportPayload(getState(), exportDate));
+
+test('exporta con app, version, fecha y nombre de archivo', () => {
+  const payload = buildExportPayload(getState(), exportDate);
+  assert.equal(payload.app, 'gymrutina');
+  assert.equal(payload.schemaVersion, SCHEMA_VERSION);
+  assert.equal(Object.keys(payload.days).length, 7);
+  assert.equal(payload.exportedAt, exportDate.toISOString());
+  assert.equal(suggestExportFilename(exportDate), 'gymrutina-2026-01-05.json');
+});
+
+test('resume dias con datos, grupos, items e historial', () => {
+  const summary = summarizeDays(getState());
+  const expectedGroups = Object.values(getState()).reduce((total, day) => total + day.groups.length, 0);
+  const expectedItems = Object.values(getState()).reduce(
+    (total, day) => total + day.groups.reduce((n, g) => n + g.items.length, 0), 0
+  );
+  assert.equal(summary.days, 7);
+  assert.equal(summary.groups, expectedGroups);
+  assert.equal(summary.items, expectedItems);
+  assert.ok(summary.daysWithData >= 1);
+});
+
+test('reimporta un archivo exportado sin perder datos', () => {
+  const parsed = parseImport(exportedText);
+  assert.equal(parsed.version, SCHEMA_VERSION);
+  assert.equal(parsed.summary.days, 7);
+  assert.equal(parsed.days.Lun.groups.length, getState().Lun.groups.length);
+});
+
+test('acepta el formato legacy sin schemaVersion', () => {
+  const parsed = parseImport(JSON.stringify(getState()));
+  assert.equal(parsed.version, 1);
+  assert.equal(parsed.summary.days, 7);
+});
+
+test('rechaza JSON roto, dias faltantes, basura y esquema futuro', () => {
+  assert.throws(() => parseImport('{ roto'), /JSON/);
+  assert.throws(() => parseImport(JSON.stringify({ Lun: {} })), /faltan/);
+  assert.throws(() => parseImport(JSON.stringify({ hola: 1 })), /días/);
+  assert.throws(
+    () => parseImport(JSON.stringify({ schemaVersion: 99, days: getState() })),
+    /esquema/
+  );
+});
+
+test('reemplaza el estado y guarda una copia previa', () => {
+  const before = getState().Lun.groups.length;
+  const backupKey = backupCurrentState('test');
+  assert.ok(backupKey);
+  assert.ok(Object.prototype.hasOwnProperty.call(memory, backupKey));
+  const { days } = parseImport(exportedText);
+  replaceState(days);
+  assert.equal(getState().Lun.groups.length, before);
+  assert.equal(getPayload().schemaVersion, SCHEMA_VERSION);
+});
+
+/* 4. Utilidades del temporizador */
 
 test('formatea segundos como MM:SS', () => {
   assert.equal(formatDuration(0), '00:00');

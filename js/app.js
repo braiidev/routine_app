@@ -1,8 +1,9 @@
 import { load, onChange } from './state/store.js';
 import { icon } from './icons.js';
 import { render } from './ui/render.js';
-import { initMenu } from './ui/menu.js';
+import { initMenu, closeMenu } from './ui/menu.js';
 import { showHistDetail } from './ui/history.js';
+import { exportRoutine, importRoutineFile } from './ui/backup.js';
 import { initTimer } from './features/timer.js';
 import * as actions from './features/actions.js';
 
@@ -31,6 +32,8 @@ function injectIcons(){
   document.getElementById('fabBtn').innerHTML = icon('menu', 22);
   document.getElementById('editMenuBtn').innerHTML = icon('edit', 18) + ' <span id="editLabel">Editar día</span>';
   document.getElementById('histMenuBtn').innerHTML = icon('chart', 18) + ' <span id="histLabel">Ver historial</span>';
+  document.getElementById('exportMenuBtn').innerHTML = icon('download', 18) + ' Exportar rutina';
+  document.getElementById('importMenuBtn').innerHTML = icon('upload', 18) + ' Importar rutina';
   document.getElementById('resetMenuBtn').innerHTML = icon('refresh', 18) + ' Reiniciar checks del día';
 }
 
@@ -38,6 +41,22 @@ function bindMenuActions(){
   document.getElementById('editMenuBtn').onclick = actions.toggleEditMode;
   document.getElementById('histMenuBtn').onclick = actions.toggleHistView;
   document.getElementById('resetMenuBtn').onclick = actions.resetDay;
+
+  document.getElementById('exportMenuBtn').onclick = () => {
+    closeMenu();
+    exportRoutine();
+  };
+
+  const importInput = document.getElementById('importFile');
+  document.getElementById('importMenuBtn').onclick = () => {
+    closeMenu();
+    importInput.click();
+  };
+  importInput.onchange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    await importRoutineFile(file);
+  };
 }
 
 function bindDelegation(){

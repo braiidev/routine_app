@@ -6,19 +6,35 @@ GymRutina es una app web móvil en HTML/JS/CSS para registrar y seguir rutinas d
 
 ## Estado
 
-- Version actual: `v0.4.0`
-- Fase en curso: -
+- Version actual: `v0.4.1`
+- Fase en curso: Fase 5 - Respaldo de datos
 - Siguiente version reservada: `v0.5.0`
 
 ## Tablero
 
 ### En curso
 
-_Nada en curso: la mudanza está terminada._
+- [ ] **v0.5.0** - Fase 5 - Respaldo de datos
+  - Exportar e importar la rutina en JSON para sobrevivir a un borrado del navegador o a un cambio de teléfono. Criterio de aceptación: exportar descarga un archivo válido, importar valida y pide confirmación, guarda una copia previa y las pruebas cubren los casos rotos.
+  - [x] v0.4.1 - Exportar e importar JSON con validación y copia previa
+  - [ ] v0.4.2 - Documentación del respaldo
 
 ### Siguiente
 
-_Nada definido todavía. Las features nuevas se planifican acá con su versión reservada._
+- [ ] **v0.6.0** - Fase 6 - Schema v2 y editor simple
+  - Un solo nombre y una sola cantidad de series por ejercicio, con override opcional para modo mínimo; editor de dos campos visibles, alta rápida, "Opcional" con texto y controles táctiles de 44 px.
+
+- [ ] **v0.7.0** - Fase 7 - Interacción y pulido
+  - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad.
+
+- [ ] **v0.8.0** - Fase 8 - Historial y reinicio diario
+  - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo.
+
+- [ ] **v0.9.0** - Fase 9 - PWA/offline
+  - Manifest, service worker e instalación en pantalla de inicio.
+
+- [ ] **v0.10.0** - Fase 10 - Estadísticas
+  - Racha, cumplimiento semanal y por grupo.
 
 ### Terminado
 

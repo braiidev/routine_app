@@ -66,3 +66,11 @@
 .hdetail{margin-top:10px; background:var(--card); border:1px solid var(--border); border-radius:11px; padding:10px 12px; font-size:0.85rem;}
 .hdetail .hitem{display:flex; align-items:center; gap:6px; padding:3px 0;}
 .hdetail .hitem i{font-size:16px;}
+.toast{position:fixed; left:50%; bottom:calc(84px + env(safe-area-inset-bottom,0px)); transform:translate(-50%, 16px); max-width:calc(100% - 32px); background:#161618; color:#fff; border-radius:12px; padding:11px 14px; font-size:0.82rem; display:flex; align-items:center; gap:12px; box-shadow:0 6px 24px rgba(0,0,0,.28); opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; z-index:60;}
+.toast.show{opacity:1; transform:translate(-50%, 0); pointer-events:auto;}
+.toast.error{background:var(--danger);}
+.toast button{background:transparent; border:none; color:inherit; font-weight:700; font-size:0.82rem; cursor:pointer; text-decoration:underline; padding:4px 2px; flex-shrink:0;}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .toast{background:#f2f2f3; color:#161618;}
+}
+:root[data-theme="dark"] .toast{background:#f2f2f3; color:#161618;}
