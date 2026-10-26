@@ -34,6 +34,9 @@ estático, como HTTP.serve, a esta carpeta.
     guardan al salir del campo; *Terminar edición* cierra la edición.
   - *Ver historial*: línea de tiempo de días completados; tocá un punto para ver el
     detalle.
+  - *Exportar rutina*: descarga un JSON con toda la rutina.
+  - *Importar rutina*: reemplaza la rutina actual desde un JSON exportado, con
+    confirmación y copia de seguridad previa.
   - *Reiniciar checks del día*: pide confirmación y limpia el progreso del día en el
     modo actual.
 - **Temporizador**: presets de 30/40/60/90 s, tiempo personalizado (hasta 3600 s),
@@ -54,6 +57,23 @@ estático, como HTTP.serve, a esta carpeta.
 - Si la clave nueva tiene JSON ilegible, se guarda una copia en
   `gymrutina_state_v1_corrupt_<timestamp>` antes de continuar.
 - Para borrar todo: DevTools → Application → Local Storage → eliminar las claves.
+
+## Respaldo y restauración
+
+- **Exportar rutina** (menú FAB) genera `gymrutina-YYYY-MM-DD.json` con:
+
+  ```json
+  { "app": "gymrutina", "schemaVersion": 1, "exportedAt": "...", "days": { "Lun": {} } }
+  ```
+
+- **Importar rutina** acepta ese archivo o el formato viejo (mapa de días sin
+  `schemaVersion`). Valida que estén los siete días, normaliza los datos y muestra un
+  resumen antes de reemplazar.
+- Antes de importar guarda el estado actual en
+  `gymrutina_state_v1_backup_pre_import_<timestamp>`. El nombre exacto queda en la
+  consola; se puede restaurar copiando ese valor a `gymrutina_state_v1`.
+- Rechaza JSON roto, archivos incompletos y exportaciones de un esquema más nuevo.
+- Importar reemplaza toda la rutina: no fusiona días ni grupos.
 
 ## Estructura
 
@@ -78,11 +98,14 @@ estático, como HTTP.serve, a esta carpeta.
 │   │   └── view.js       # Estado de UI (día activo, modo edición, pendientes)
 │   ├── features/
 │   │   ├── actions.js    # Mutaciones del estado
+│   │   ├── backup.js     # Export/import JSON: validación y resumen
 │   │   └── timer.js      # Cronómetro, audio, vibración, visibilidad
 │   ├── ui/
 │   │   ├── render.js     # Render de tabs y del día
 │   │   ├── groups.js     # Grupos, ítems y notas
 │   │   ├── history.js    # Historial y detalle
+│   │   ├── backup.js     # Descarga e importación desde el menú
+│   │   ├── toast.js      # Avisos flotantes con acción opcional
 │   │   └── menu.js       # FAB y cierre del menú
 │   └── utils/
 │       ├── dom.js        # esc, escAttr, uid
@@ -112,9 +135,9 @@ No hay frameworks ni reactividad: el estado se guarda y se re-renderiza a mano.
 ## Desarrollo
 
 ```bash
-npm test        # 21 pruebas de estado, migración y tiempo
+npm test        # 27 pruebas de estado, migración, respaldo y tiempo
 npm run check   # VERSION ↔ package.json ↔ TODO.md ↔ último commit
-npm run bump -- patch   # v0.3.1 -> v0.3.2 (también minor / major)
+npm run bump -- patch   # v0.4.1 -> v0.4.2 (también minor / major)
 npm run serve   # servidor estático en :8000
 ```
 
