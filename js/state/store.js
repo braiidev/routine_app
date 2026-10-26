@@ -5,6 +5,13 @@ import { normalizeDays } from './normalize.js';
 export let state = null;
 let listener = null;
 let schemaVersion = SCHEMA_VERSION;
+let storageWarned = false;
+
+function warnStorageError(e){
+  if(storageWarned) return;
+  storageWarned = true;
+  console.warn('[GymRutina] No se pudo guardar en localStorage; los cambios quedan solo en memoria.', e);
+}
 
 function readRaw(key){
   try {
@@ -59,7 +66,7 @@ function persist(){
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion, days: getState() }));
   } catch(e){
-    /* almacenamiento lleno o bloqueado: la app sigue funcionando en memoria */
+    warnStorageError(e);
   }
 }
 

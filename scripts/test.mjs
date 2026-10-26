@@ -146,6 +146,15 @@ test('ignora campos no editables', () => {
   assert.equal(JSON.stringify(getState().Lun), before);
 });
 
+test('limita la cantidad de series a un maximo razonable', () => {
+  const before = getState().Lun.groups[0].items[0].stepsCompleto;
+  actions.updateItemField(gid, iid, 'stepsCompleto', '500');
+  assert.equal(getState().Lun.groups[0].items[0].stepsCompleto, 100);
+  actions.updateItemField(gid, iid, 'stepsCompleto', '0');
+  assert.equal(getState().Lun.groups[0].items[0].stepsCompleto, 1);
+  actions.updateItemField(gid, iid, 'stepsCompleto', String(before));
+});
+
 test('marca el dia como completado y registra historial', () => {
   actions.updateItemField(gid, iid, 'stepsCompleto', '2');
   actions.setStep(gid, iid, 2);

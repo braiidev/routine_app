@@ -4,7 +4,7 @@ import { commit, getState } from '../state/store.js';
 import { view } from '../state/view.js';
 import { consideredGroups, getItemText, getProgress, getSteps, isFinished } from '../state/selectors.js';
 import { closeMenu } from '../ui/menu.js';
-import { DAYS } from '../config.js';
+import { DAYS, MAX_STEPS } from '../config.js';
 
 const EDITABLE_FIELDS = ['textCompleto', 'textMinimo', 'stepsCompleto', 'stepsMinimo'];
 
@@ -122,7 +122,8 @@ export function updateItemField(gid, iid, field, val){
 
   const progress = ensureProgress(item);
   if(field === 'stepsCompleto' || field === 'stepsMinimo'){
-    item[field] = Math.max(1, parseInt(val, 10) || 1);
+    const parsed = Math.max(1, parseInt(val, 10) || 1);
+    item[field] = Math.min(parsed, MAX_STEPS);
     const modeKey = field === 'stepsCompleto' ? 'completo' : 'minimo';
     if(getProgress(item, modeKey) > item[field]) progress[modeKey] = item[field];
   } else {

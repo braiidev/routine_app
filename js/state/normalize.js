@@ -1,4 +1,4 @@
-import { DAYS } from '../config.js';
+import { DAYS, MAX_STEPS } from '../config.js';
 import { SCHEMA_VERSION } from './schema.js';
 import { uid } from '../utils/dom.js';
 
@@ -28,8 +28,8 @@ function uniqueId(rawId, used){
 
 export function normalizeItem(raw, usedIds){
   const item = raw && typeof raw === 'object' ? raw : {};
-  const stepsCompleto = Math.max(1, int(item.stepsCompleto, 1));
-  const stepsMinimo = Math.max(1, int(item.stepsMinimo, 1));
+  const stepsCompleto = clamp(int(item.stepsCompleto, 1), 1, MAX_STEPS);
+  const stepsMinimo = clamp(int(item.stepsMinimo, 1), 1, MAX_STEPS);
   const p = item.progress && typeof item.progress === 'object' ? item.progress : {};
 
   return {

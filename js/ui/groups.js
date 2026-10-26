@@ -1,3 +1,4 @@
+import { MAX_STEPS } from '../config.js';
 import { icon } from '../icons.js';
 import { getState } from '../state/store.js';
 import { view } from '../state/view.js';
@@ -69,9 +70,9 @@ function renderItem(s, g, item){
     return `<div class="item">
       <div class="edit-fields">
         <div class="edit-row"><label>Completo</label><input type="text" value="${escAttr(item.textCompleto)}" data-edit="item-field" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-field="textCompleto"></div>
-        <div class="edit-row"><label>Series C</label><input type="number" min="1" value="${escAttr(item.stepsCompleto)}" data-edit="item-field" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-field="stepsCompleto"></div>
+        <div class="edit-row"><label>Series C</label><input type="number" min="1" max="${MAX_STEPS}" value="${escAttr(item.stepsCompleto)}" data-edit="item-field" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-field="stepsCompleto"></div>
         <div class="edit-row"><label>Mínimo</label><input type="text" value="${escAttr(item.textMinimo)}" data-edit="item-field" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-field="textMinimo"></div>
-        <div class="edit-row"><label>Series M</label><input type="number" min="1" value="${escAttr(item.stepsMinimo)}" data-edit="item-field" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-field="stepsMinimo"></div>
+        <div class="edit-row"><label>Series M</label><input type="number" min="1" max="${MAX_STEPS}" value="${escAttr(item.stepsMinimo)}" data-edit="item-field" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-field="stepsMinimo"></div>
       </div>
       <div class="item-del-row"><button class="icon-btn danger" data-action="delete-item" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" style="${view.pendingDeleteItem === item.id ? 'background:var(--danger); color:#fff; width:auto; padding:0 8px; font-size:0.72rem;' : ''}">${view.pendingDeleteItem === item.id ? 'confirmar' : icon('trash', 15)}</button></div>
     </div>`;
