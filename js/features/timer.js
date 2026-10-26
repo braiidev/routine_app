@@ -162,8 +162,3 @@ export function initTimer(){
 
   updateDisplay();
 }
-
-export function disposeTimer(){
-  stopTicker();
-  running = false;
-}

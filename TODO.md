@@ -6,20 +6,19 @@ GymRutina es una app web móvil en HTML/JS/CSS para registrar y seguir rutinas d
 
 ## Estado
 
-- Version actual: `v0.3.1`
-- Fase en curso: Fase 4 - Documentar y validar
-- Siguiente version reservada: `v0.4.0`
+- Version actual: `v0.4.0`
+- Fase en curso: -
+- Siguiente version reservada: `v0.5.0`
 
 ## Tablero
 
 ### En curso
 
-- [ ] **v0.4.0** - Fase 4 - Documentar y validar
-  - Añadir README.md con estructura, uso con HTTP.serve, desarrollo y mantenimiento. Verificar coherencia con check.mjs. Criterio de aceptación: proyecto documentado, funcional completo, listo para añadir features.
+_Nada en curso: la mudanza está terminada._
 
 ### Siguiente
 
-_Nada pendiente: la próxima fase se define al cerrar la actual._
+_Nada definido todavía. Las features nuevas se planifican acá con su versión reservada._
 
 ### Terminado
 
@@ -27,10 +26,16 @@ _Nada pendiente: la próxima fase se define al cerrar la actual._
   - Extraer los estilos a css/ (tokens, base, components, main) y la lógica a módulos ES en js/ (config, icons, state, features, ui, utils). Mantener el mismo comportamiento y los mismos datos en localStorage. Criterio de aceptación: la app se sirve con HTTP.serve, se ve y funciona igual que el monolito, sin errores en consola.
 
 - [x] **v0.2.0** - Fase 2 - Migración de esquema y robustecer
-  - Añadir versionado al state con migración desde el formato antiguo de rutina_builder_v2, normalización de datos, fecha local, validación de campos y limpieza del temporizador al salir. Criterio de aceptación: los datos existentes se migran sin pérdida, las fechas son locales y las 18 pruebas de estado pasan.
+  - Añadir versionado al state con migración desde el formato antiguo de rutina_builder_v2, normalización de datos, fecha local, validación de campos y limpieza del temporizador al salir. Criterio de aceptación: los datos existentes se migran sin pérdida, las fechas son locales y las pruebas de estado pasan.
 
 - [x] **v0.3.0** - Fase 3 - Optimizar y probar
-  - Cronómetro basado en hora de fin para no derivar en segundo plano, tabs cacheadas para no reconstruir el DOM, límite de tiempo personalizado, borrados pendientes limpios al cambiar de vista y utilidades de tiempo con pruebas. Criterio de aceptación: el temporizador mantiene la hora correcta al volver a la pestaña, cambiar de día no reconstruye las tabs y las 20 pruebas pasan.
+  - Cronómetro basado en hora de fin para no derivar en segundo plano, tabs cacheadas para no reconstruir el DOM, límite de tiempo personalizado, borrados pendientes limpios al cambiar de vista y utilidades de tiempo con pruebas. Criterio de aceptación: el temporizador mantiene la hora correcta al volver a la pestaña, cambiar de día no reconstruye las tabs y las pruebas pasan.
+
+- [x] **v0.3.1** - Parche - Acotar series y avisar del fallo de guardado
+  - Limitar las series a 100 en migración, edición e input; avisar por consola si localStorage rechaza el guardado. Criterio de aceptación: no se generan miles de puntos y el fallo de persistencia deja de ser silencioso.
+
+- [x] **v0.4.0** - Fase 4 - Documentar y validar
+  - README.md con estructura, uso con HTTP.serve, datos, convenciones y cómo agregar features; favicon y metadatos para evitar ruido en consola. Criterio de aceptación: proyecto documentado, 21 pruebas pasan, check.mjs limpio y todos los recursos responden 200 por HTTP.
 
 ### Descartado
 
@@ -41,7 +46,8 @@ _Nada descartado._
 - El monolito original queda versionado en el primer commit de Git; no hace falta copia `.bak`.
 - El proyecto usa módulos ES nativos: requiere servirse por HTTP (no `file://`).
 - Los datos se guardan en `gymrutina_state_v1` con `{ schemaVersion, days }`. El formato viejo (`rutina_builder_v2`) se migra al cargar y se conserva como respaldo.
-- Las features nuevas se añaden al cerrar la mudanza, no antes.
+- La mudanza está cerrada; las features nuevas se planifican desde `### Siguiente`.
+- Candidatas para próximas fases: export/import JSON, estadísticas semanales, reinicio automático por fecha y PWA/offline.
 
 ## Seguimiento
 
