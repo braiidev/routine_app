@@ -6,19 +6,15 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.6.3`
-- Fase en curso: Fase 7 - Interacción y pulido
-- Siguiente version reservada: `v0.7.0`
+- Version actual: `v0.7.0`
+- Fase en curso: -
+- Siguiente version reservada: `v0.8.0`
 
 ## Tablero
 
 ### En curso
 
-- [ ] **v0.7.0** - Fase 7 - Interacción y pulido
-  - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad. Criterio de aceptación: se puede ordenar y duplicar sin perder datos, un borrado se revierte desde el toast, el reinicio distingue modo actual de ambos, el timer se entiende y los controles esenciales tienen nombre accesible.
-  - [x] v0.6.1 - Reordenar, duplicar, deshacer borrados y toasts
-  - [x] v0.6.2 - Reinicio por modo, timer y accesibilidad
-  - [x] v0.6.3 - Checklist manual y documentación
+_Nada en curso: la fase de interacción y pulido quedó cerrada._
 
 ### Siguiente
 
@@ -54,6 +50,12 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 - [x] **v0.6.0** - Fase 6 - Schema v2 y editor simple
   - Un solo nombre y una sola cantidad de series por ejercicio, con override opcional para modo mínimo; editor de dos campos visibles, alta rápida, "Opcional" con texto y controles táctiles de 44 px. Criterio de aceptación: editar un ejercicio deja de pedir dos nombres y dos series, la migración conserva los datos y el progreso, el alta se descubre sin instrucciones y las pruebas pasan.
 
+- [x] **v0.7.0** - Fase 7 - Interacción y pulido
+  - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad. Criterio de aceptación: se puede ordenar y duplicar sin perder datos, un borrado se revierte desde el toast, el reinicio distingue modo actual de ambos, el timer se entiende y los controles esenciales tienen nombre accesible.
+  - [x] v0.6.1 - Reordenar, duplicar, deshacer borrados y toasts
+  - [x] v0.6.2 - Reinicio por modo, timer y accesibilidad
+  - [x] v0.6.3 - Checklist manual y documentación
+
 ### Descartado
 
 _Nada descartado._
@@ -68,7 +70,7 @@ _Nada descartado._
 - El respaldo JSON está cerrado; antes de importar se guarda `gymrutina_state_v1_backup_pre_import_<timestamp>`.
 - El borrado de grupos y ejercicios es inmediato y se deshace desde el toast; ya no hay confirmación en dos pasos. Reordenar y duplicar usan `commit()` para repintar.
 - El reinicio del día abre una hoja con dos opciones: modo actual o ambos. Solo limpia checks; el historial no se borra.
-- La fase v0.7.0 deja un checklist manual de UI en el README para validar claro/oscuro, edición, historial, timer y 320 px en el teléfono.
+- La fase v0.7.0 se cerró con 43 pruebas y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
 - Pendiente para v0.8.0: decidir si el reinicio diario ocurre a medianoche, al abrir la app o en la primera interacción.
 - Candidatas para próximas fases: estadísticas semanales, reinicio automático por fecha y PWA/offline.
 
