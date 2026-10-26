@@ -6,18 +6,15 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.7.2`
-- Fase en curso: Fase 8 - Historial y reinicio diario
-- Siguiente version reservada: `v0.8.0`
+- Version actual: `v0.8.0`
+- Fase en curso: -
+- Siguiente version reservada: `v0.9.0`
 
 ## Tablero
 
 ### En curso
 
-- [ ] **v0.8.0** - Fase 8 - Historial y reinicio diario
-  - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo. El reinicio se detecta al abrir o volver a la app. Criterio de aceptación: al cambiar la fecha se archiva una sola vez el progreso anterior, los parciales no se duplican, los checks se limpian y el historial agrupa por mes con estados completo/mínimo/parcial.
-  - [x] v0.7.1 - Reinicio diario, parciales e historial por mes
-  - [x] v0.7.2 - Documentación y checklist del reinicio
+_Nada en curso: la fase de historial y reinicio diario quedó cerrada._
 
 ### Siguiente
 
@@ -56,6 +53,11 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
   - [x] v0.6.2 - Reinicio por modo, timer y accesibilidad
   - [x] v0.6.3 - Checklist manual y documentación
 
+- [x] **v0.8.0** - Fase 8 - Historial y reinicio diario
+  - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo. El reinicio se detecta al abrir o volver a la app. Criterio de aceptación: al cambiar la fecha se archiva una sola vez el progreso anterior, los parciales no se duplican, los checks se limpian y el historial agrupa por mes con estados completo/mínimo/parcial.
+  - [x] v0.7.1 - Reinicio diario, parciales e historial por mes
+  - [x] v0.7.2 - Documentación y checklist del reinicio
+
 ### Descartado
 
 _Nada descartado._
@@ -75,7 +77,7 @@ _Nada descartado._
 - El reinicio del día abre una hoja con dos opciones: modo actual o ambos. Solo limpia checks; el historial no se borra.
 - La fase v0.7.0 se cerró con 43 pruebas y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
 - Decidido para v0.8.0: el reinicio diario ocurre al abrir la app o volver a ella, no a medianoche.
-- La fase v0.8.0 suma rollover con reloj inyectable, historial agrupado por mes y 49 pruebas; el reinicio manual no archiva.
+- La fase v0.8.0 se cerró con rollover de reloj inyectable, historial agrupado por mes, 49 pruebas, check limpio y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
 - Candidatas para próximas fases: estadísticas semanales y PWA/offline.
 
 ## Seguimiento
