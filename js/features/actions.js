@@ -162,6 +162,9 @@ export function updateItemField(gid, iid, field, val){
   if(field === 'steps' || field === 'minSteps'){
     item[field] = clampSteps(val);
     clampProgress(item);
+  } else if(field === 'minName'){
+    const text = String(val);
+    item.minName = text.trim() ? text : item.name;
   } else {
     item[field] = String(val);
   }

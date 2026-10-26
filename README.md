@@ -2,7 +2,9 @@
 
 App web móvil para registrar y seguir una rutina de gimnasio. Tiene siete días
 (Lun–Dom), dos modos de entrenamiento (completo y mínimo), progreso por series,
-historial de días completados y un temporizador de descanso.
+historial de días completados y un temporizador de descanso. El editor pide un solo
+nombre y una sola cantidad de series por ejercicio; el modo mínimo puede usar valores
+propios solo cuando hace falta.
 
 No usa build ni dependencias en tiempo de ejecución: HTML, CSS y módulos ES
 nativos. Los datos viven en `localStorage`.
@@ -25,13 +27,15 @@ estático, como HTTP.serve, a esta carpeta.
 ### Uso diario
 
 - **Tabs**: cambiá de día.
-- **Modo Completo / Mínimo**: cada ítem tiene texto y series propios por modo. En
-  modo mínimo se ocultan los grupos marcados como opcionales.
-- **Progreso**: tocá el texto del ítem para sumar una serie, o un punto para fijar
-  el progreso. Si el día queda completo se registra en el historial.
+- **Modo Completo / Mínimo**: cada ejercicio tiene un nombre y una cantidad de series
+  compartidos. Un ejercicio puede definir valores propios para el modo mínimo y los
+  grupos marcados como opcionales se ocultan en ese modo.
+- **Progreso**: usá `−` / `+` o tocá el nombre del ejercicio para sumar una serie. La
+  barra inferior muestra el avance. Si el día queda completo se registra en el
+  historial.
 - **Menú (FAB)**:
-  - *Editar día*: edición de título, instrucciones, grupos e ítems. Los cambios se
-    guardan al salir del campo; *Terminar edición* cierra la edición.
+  - *Editar día*: abre el editor. El banner **Editando** avisa que los cambios se
+    guardan solos; **Listo** cierra la edición.
   - *Ver historial*: línea de tiempo de días completados; tocá un punto para ver el
     detalle.
   - *Exportar rutina*: descarga un JSON con toda la rutina.
@@ -39,19 +43,63 @@ estático, como HTTP.serve, a esta carpeta.
     confirmación y copia de seguridad previa.
   - *Reiniciar checks del día*: pide confirmación y limpia el progreso del día en el
     modo actual.
+- **Edición**:
+  - **Ejercicio** y **Series** son los únicos campos visibles. El stepper de series
+    permite ajustar de 1 a 100.
+  - **Personalizar modo mínimo** es una sección plegable: al activar *Usar nombre y
+    series propios* aparece el override de ese ejercicio.
+  - **Opcional** se activa con un interruptor visible y una ayuda que explica que el
+    grupo se oculta en modo mínimo.
+  - La fila **Agregar ejercicio…** crea el ítem con el nombre escrito y deja el foco
+    listo para el siguiente; **Agregar grupo…** hace lo mismo con los grupos. Enter
+    confirma el alta.
 - **Temporizador**: presets de 30/40/60/90 s, tiempo personalizado (hasta 3600 s),
   pausa/reanudar y reset. Al terminar suena, vibra y parpadea.
 
 ## Datos y migración
 
-- Clave actual: `gymrutina_state_v1`, con el formato:
+- Clave actual: `gymrutina_state_v1` (el nombre se conserva por compatibilidad; la
+  versión real está dentro del archivo), con el formato:
 
   ```json
-  { "schemaVersion": 1, "days": { "Lun": { "title": "Lun", "mode": "completo", "notes": "", "groups": [], "log": [] } } }
+  {
+    "schemaVersion": 2,
+    "days": {
+      "Lun": {
+        "title": "Lun",
+        "mode": "completo",
+        "notes": "",
+        "groups": [
+          {
+            "id": "g1",
+            "name": "Pecho",
+            "optional": false,
+            "items": [
+              {
+                "id": "i1",
+                "name": "Press banca",
+                "steps": 4,
+                "minName": null,
+                "minSteps": null,
+                "progress": { "completo": 0, "minimo": 0 }
+              }
+            ]
+          }
+        ],
+        "log": []
+      }
+    }
+  }
   ```
 
+- `name` y `steps` son los valores por defecto para ambos modos. `minName` y
+  `minSteps` en `null` significan "usar el mismo valor"; si tienen un valor, el modo
+  mínimo usa ese override.
 - Clave anterior: `rutina_builder_v2`. Al cargar, si no existe la clave nueva, se
   migra automáticamente y **la clave vieja se conserva como respaldo**.
+- Migración v1 → v2: `name = textCompleto`, `steps = stepsCompleto`; el override
+  mínimo solo se completa si `textMinimo` o `stepsMinimo` difieren del completo. El
+  progreso se conserva y se recorta a los límites resultantes.
 - Los datos se normalizan al leer: días faltantes, ids duplicados, pasos inválidos,
   progreso fuera de rango y entradas de historial con fechas rotas.
 - Si la clave nueva tiene JSON ilegible, se guarda una copia en
@@ -63,12 +111,12 @@ estático, como HTTP.serve, a esta carpeta.
 - **Exportar rutina** (menú FAB) genera `gymrutina-YYYY-MM-DD.json` con:
 
   ```json
-  { "app": "gymrutina", "schemaVersion": 1, "exportedAt": "...", "days": { "Lun": {} } }
+  { "app": "gymrutina", "schemaVersion": 2, "exportedAt": "...", "days": { "Lun": {} } }
   ```
 
-- **Importar rutina** acepta ese archivo o el formato viejo (mapa de días sin
-  `schemaVersion`). Valida que estén los siete días, normaliza los datos y muestra un
-  resumen antes de reemplazar.
+- **Importar rutina** acepta ese archivo, exportaciones v1 o el formato viejo (mapa
+  de días sin `schemaVersion`). Valida que estén los siete días, normaliza los datos
+  y migra los ítems al esquema v2 antes de mostrar el resumen y reemplazar.
 - Antes de importar guarda el estado actual en
   `gymrutina_state_v1_backup_pre_import_<timestamp>`. El nombre exacto queda en la
   consola; se puede restaurar copiando ese valor a `gymrutina_state_v1`.
@@ -112,7 +160,7 @@ estático, como HTTP.serve, a esta carpeta.
 │       ├── date.js       # Fechas locales (YYYY-MM-DD)
 │       └── time.js       # Formato MM:SS y deadline del timer
 ├── scripts/
-│   ├── test.mjs          # Pruebas de estado, migración y tiempo
+│   ├── test.mjs          # Pruebas de estado, migración, respaldo, editor y tiempo
 │   ├── bump.mjs          # Sube la versión
 │   └── check.mjs         # Verifica coherencia del proyecto
 ├── TODO.md               # Descripción, estado, tablero y notas
@@ -124,20 +172,24 @@ estático, como HTTP.serve, a esta carpeta.
 
 ```text
 acción del usuario
-  → delegación en app.js (data-action / data-edit)
+  → delegación en app.js (data-action / data-edit / data-form)
   → features/actions.js muta el estado
   → store.commit() guarda en localStorage y notifica
   → ui/render.js vuelve a pintar tabs y día
 ```
+
+Los campos de texto usan `store.save()` sin notificar: el input ya muestra lo que se
+escribió y así no se pierde el foco al pasar de un campo a otro. Las acciones
+estructurales (alta, borrado, cambio de modo) usan `commit()` y vuelven a pintar.
 
 No hay frameworks ni reactividad: el estado se guarda y se re-renderiza a mano.
 
 ## Desarrollo
 
 ```bash
-npm test        # 27 pruebas de estado, migración, respaldo y tiempo
+npm test        # 36 pruebas de estado, migración, respaldo, editor y tiempo
 npm run check   # VERSION ↔ package.json ↔ TODO.md ↔ último commit
-npm run bump -- patch   # v0.4.1 -> v0.4.2 (también minor / major)
+npm run bump -- patch   # v0.5.1 -> v0.5.2 (también minor / major)
 npm run serve   # servidor estático en :8000
 ```
 
@@ -145,8 +197,9 @@ No hace falta instalar nada: los scripts usan Node puro.
 
 ### Convenciones
 
-- Toda mutación del estado pasa por `js/features/actions.js` y termina en
-  `commit()`. No modificar `localStorage` desde la UI.
+- Toda mutación del estado pasa por `js/features/actions.js`. Usá `commit()` cuando
+  la UI deba repintarse y `save()` para campos de texto que ya reflejan el valor. No
+  modificar `localStorage` desde la UI.
 - Los cálculos derivados viven en `state/selectors.js`.
 - Las acciones del DOM se declaran con `data-action` y se manejan en el mapa de
   `app.js`. Los campos editables usan `data-edit`. No agregar `onclick` inline.
@@ -178,5 +231,5 @@ vigente está en `VERSION`; `package.json` y `TODO.md` son copias derivadas que
 - El historial guarda como máximo una entrada por día y modo.
 - El audio del temporizador requiere una interacción previa (política de
   navegadores móviles); la vibración y el parpadeo funcionan igual.
-- Sin export/import JSON, sin estadísticas semanales y sin PWA/offline por ahora.
-  Son candidatas naturales para las próximas fases.
+- Sin estadísticas semanales ni PWA/offline por ahora. Son candidatas naturales para
+  las próximas fases.

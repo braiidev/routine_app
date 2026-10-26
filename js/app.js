@@ -11,7 +11,6 @@ const CLICK_ACTIONS = {
   'select-day': (ds) => actions.selectDay(ds.day),
   'set-mode': (ds) => actions.setMode(ds.mode),
   'exit-edit': () => actions.exitEditMode(),
-  'add-group': () => actions.addGroup(),
   'toggle-group-optional': (ds) => actions.toggleGroupOptional(ds.group),
   'add-item': (ds) => actions.addItem(ds.group),
   'delete-group': (ds) => actions.deleteGroup(ds.group),

@@ -224,6 +224,8 @@ test('activa el override de minimo con los valores actuales', () => {
   assert.equal(item.minName, 'Press plano');
   assert.equal(item.minSteps, 4);
 
+  actions.updateItemField(gid, iid, 'minName', '   ');
+  assert.equal(item.minName, 'Press plano');
   actions.updateItemField(gid, iid, 'minName', 'Press inclinado');
   actions.updateItemField(gid, iid, 'minSteps', '2');
   assert.equal(getItemText(item, 'minimo'), 'Press inclinado');

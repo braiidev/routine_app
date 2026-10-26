@@ -71,9 +71,6 @@ function renderDay(){
   } else {
     html += renderNotes(d);
     html += renderGroups(d);
-    if(view.editMode){
-      html += `<div class="add-group-row"><button class="add-group-btn" data-action="add-group">${icon('plus', 15)} Nuevo grupo</button></div>`;
-    }
   }
 
   pane.innerHTML = html;
