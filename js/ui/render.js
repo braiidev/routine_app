@@ -8,20 +8,33 @@ import { renderGroups, renderNotes } from './groups.js';
 import { renderHistory } from './history.js';
 
 export function render(){
+  renderTabs();
+  renderDay();
+
+  document.getElementById('editLabel').textContent = view.editMode ? 'Terminar edición' : 'Editar día';
+  document.getElementById('histLabel').textContent = view.histView ? 'Volver a rutina' : 'Ver historial';
+}
+
+function renderTabs(){
   const tabsEl = document.getElementById('tabs');
-  const daysEl = document.getElementById('days');
-  tabsEl.innerHTML = '';
-  daysEl.innerHTML = '';
-
-  DAYS.forEach(d => {
-    const tab = document.createElement('button');
-    tab.className = 'tab' + (d === view.activeDay ? ' active' : '');
-    tab.textContent = d;
-    tab.dataset.action = 'select-day';
-    tab.dataset.day = d;
-    tabsEl.appendChild(tab);
+  if(tabsEl.children.length !== DAYS.length){
+    tabsEl.innerHTML = '';
+    DAYS.forEach(d => {
+      const tab = document.createElement('button');
+      tab.className = 'tab';
+      tab.textContent = d;
+      tab.dataset.action = 'select-day';
+      tab.dataset.day = d;
+      tabsEl.appendChild(tab);
+    });
+  }
+  Array.from(tabsEl.children).forEach((tab, i) => {
+    tab.classList.toggle('active', DAYS[i] === view.activeDay);
   });
+}
 
+function renderDay(){
+  const daysEl = document.getElementById('days');
   const d = view.activeDay;
   const s = getState()[d];
   const pane = document.createElement('div');
@@ -57,8 +70,5 @@ export function render(){
   }
 
   pane.innerHTML = html;
-  daysEl.appendChild(pane);
-
-  document.getElementById('editLabel').textContent = view.editMode ? 'Guardar día' : 'Editar día';
-  document.getElementById('histLabel').textContent = view.histView ? 'Volver a rutina' : 'Ver historial';
+  daysEl.replaceChildren(pane);
 }

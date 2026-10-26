@@ -42,12 +42,14 @@ export function updateNotes(val){
 export function setMode(mode){
   if(mode !== 'completo' && mode !== 'minimo') return;
   currentDay().mode = mode;
+  clearPendingDeletes();
   commit();
 }
 
 export function toggleEditMode(){
   view.editMode = !view.editMode;
   view.histView = false;
+  clearPendingDeletes();
   commit();
   closeMenu();
 }
@@ -55,8 +57,14 @@ export function toggleEditMode(){
 export function toggleHistView(){
   view.histView = !view.histView;
   view.editMode = false;
+  clearPendingDeletes();
   commit();
   closeMenu();
+}
+
+function clearPendingDeletes(){
+  view.pendingDeleteGroup = null;
+  view.pendingDeleteItem = null;
 }
 
 /* Grupos */
@@ -144,6 +152,7 @@ function findItem(gid, iid){
 }
 
 export function setStep(gid, iid, n){
+  if(!Number.isFinite(n)) return;
   const day = currentDay();
   const item = findItem(gid, iid);
   if(!item) return;
@@ -216,7 +225,7 @@ export function resetDay(){
   const day = currentDay();
   const mode = day.mode;
   day.groups.forEach(g => g.items.forEach(it => {
-    if(it.progress) it.progress[mode] = 0;
+    ensureProgress(it)[mode] = 0;
   }));
   commit();
   closeMenu();

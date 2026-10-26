@@ -6,21 +6,20 @@ GymRutina es una app web móvil en HTML/JS/CSS para registrar y seguir rutinas d
 
 ## Estado
 
-- Version actual: `v0.2.0`
-- Fase en curso: Fase 3 - Optimizar y probar
-- Siguiente version reservada: `v0.3.0`
+- Version actual: `v0.3.0`
+- Fase en curso: Fase 4 - Documentar y validar
+- Siguiente version reservada: `v0.4.0`
 
 ## Tablero
 
 ### En curso
 
-- [ ] **v0.3.0** - Fase 3 - Optimizar y probar
-  - Mejorar el temporizador para que no derive en segundo plano, cachear las tabs para no reconstruirlas en cada click y corregir casos borde. Criterio de aceptación: el cronómetro mantiene la hora correcta al volver a la pestaña, cambiar de día no reconstruye el DOM innecesariamente y las pruebas siguen pasando.
+- [ ] **v0.4.0** - Fase 4 - Documentar y validar
+  - Añadir README.md con estructura, uso con HTTP.serve, desarrollo y mantenimiento. Verificar coherencia con check.mjs. Criterio de aceptación: proyecto documentado, funcional completo, listo para añadir features.
 
 ### Siguiente
 
-- [ ] **v0.4.0** - Fase 4 - Documentar y validar
-  - Añadir README.md con estructura, uso con HTTP.serve, desarrollo y mantenimiento. Verificar coherencia con check.mjs. Criterio de aceptación: proyecto documentado, funcional completo, listo para añadir features.
+_Nada pendiente: la próxima fase se define al cerrar la actual._
 
 ### Terminado
 
@@ -29,6 +28,9 @@ GymRutina es una app web móvil en HTML/JS/CSS para registrar y seguir rutinas d
 
 - [x] **v0.2.0** - Fase 2 - Migración de esquema y robustecer
   - Añadir versionado al state con migración desde el formato antiguo de rutina_builder_v2, normalización de datos, fecha local, validación de campos y limpieza del temporizador al salir. Criterio de aceptación: los datos existentes se migran sin pérdida, las fechas son locales y las 18 pruebas de estado pasan.
+
+- [x] **v0.3.0** - Fase 3 - Optimizar y probar
+  - Cronómetro basado en hora de fin para no derivar en segundo plano, tabs cacheadas para no reconstruir el DOM, límite de tiempo personalizado, borrados pendientes limpios al cambiar de vista y utilidades de tiempo con pruebas. Criterio de aceptación: el temporizador mantiene la hora correcta al volver a la pestaña, cambiar de día no reconstruye las tabs y las 20 pruebas pasan.
 
 ### Descartado
 
@@ -39,6 +41,7 @@ _Nada descartado._
 - El monolito original queda versionado en el primer commit de Git; no hace falta copia `.bak`.
 - El proyecto usa módulos ES nativos: requiere servirse por HTTP (no `file://`).
 - Los datos se guardan en `gymrutina_state_v1` con `{ schemaVersion, days }`. El formato viejo (`rutina_builder_v2`) se migra al cargar y se conserva como respaldo.
+- Las features nuevas se añaden al cerrar la mudanza, no antes.
 
 ## Seguimiento
 

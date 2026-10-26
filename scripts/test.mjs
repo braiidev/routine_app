@@ -21,6 +21,7 @@ const { LEGACY_STORAGE_KEY, STORAGE_KEY, DAYS } = await import('../js/config.js'
 const { load, getState, save } = await import('../js/state/store.js');
 const { isFinished } = await import('../js/state/selectors.js');
 const { getLocalISODate } = await import('../js/utils/date.js');
+const { formatDuration, remainingFromDeadline } = await import('../js/utils/time.js');
 const actions = await import('../js/features/actions.js');
 
 let passed = 0;
@@ -205,6 +206,23 @@ test('resetDay pide confirmacion y luego limpia el progreso', () => {
 test('save conserva el esquema versionado', () => {
   save();
   assert.equal(JSON.parse(memory[STORAGE_KEY]).schemaVersion, 1);
+});
+
+/* 3. Utilidades del temporizador */
+
+test('formatea segundos como MM:SS', () => {
+  assert.equal(formatDuration(0), '00:00');
+  assert.equal(formatDuration(9), '00:09');
+  assert.equal(formatDuration(60), '01:00');
+  assert.equal(formatDuration(125), '02:05');
+  assert.equal(formatDuration(-5), '00:00');
+});
+
+test('calcula el restante desde la hora de fin', () => {
+  const now = 1_000_000;
+  assert.equal(remainingFromDeadline(now + 40_000, now), 40);
+  assert.equal(remainingFromDeadline(now + 40_000, now + 1_001), 39);
+  assert.equal(remainingFromDeadline(now, now + 5_000), 0);
 });
 
 console.log(`\n  ${passed} pruebas superadas.\n`);
