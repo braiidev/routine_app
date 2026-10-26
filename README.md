@@ -2,10 +2,11 @@
 
 App web móvil para registrar y seguir una rutina de gimnasio. Tiene siete días
 (Lun–Dom), dos modos de entrenamiento (completo y mínimo), progreso por series,
-historial de días completados y un temporizador de descanso. El editor pide un solo
+historial de días completos y parciales y un temporizador de descanso. El editor pide un solo
 nombre y una sola cantidad de series por ejercicio; el modo mínimo puede usar valores
 propios solo cuando hace falta. Los grupos y ejercicios se pueden reordenar y duplicar,
-y un borrado se deshace desde el aviso flotante.
+y un borrado se deshace desde el aviso flotante. Al cambiar la fecha, el progreso
+anterior se archiva en el historial y los checks se limpian.
 
 No usa build ni dependencias en tiempo de ejecución: HTML, CSS y módulos ES
 nativos. Los datos viven en `localStorage`.
@@ -33,12 +34,15 @@ estático, como HTTP.serve, a esta carpeta.
   grupos marcados como opcionales se ocultan en ese modo.
 - **Progreso**: usá `−` / `+` o tocá el nombre del ejercicio para sumar una serie. La
   barra inferior muestra el avance. Si el día queda completo se registra en el
-  historial.
+  historial; si no, al cambiar la fecha se archiva como parcial.
+- **Reinicio diario**: al abrir la app o volver a ella, si la fecha cambió, se archiva
+  el progreso anterior una sola vez y se limpian los checks de todos los días. No hay
+  reinicio a medianoche mientras la app queda abierta y enfocada.
 - **Menú (FAB)**:
   - *Editar día*: abre el editor. El banner **Editando** avisa que los cambios se
     guardan solos; **Listo** cierra la edición.
-  - *Ver historial*: línea de tiempo de días completados; tocá un punto para ver el
-    detalle.
+  - *Ver historial*: línea de tiempo agrupada por mes, con estados completo, mínimo y
+    parcial; tocá un punto para ver el detalle.
   - *Exportar rutina*: descarga un JSON con toda la rutina.
   - *Importar rutina*: reemplaza la rutina actual desde un JSON exportado, con
     confirmación y copia de seguridad previa.
@@ -101,6 +105,13 @@ estático, como HTTP.serve, a esta carpeta.
 - `name` y `steps` son los valores por defecto para ambos modos. `minName` y
   `minSteps` en `null` significan "usar el mismo valor"; si tienen un valor, el modo
   mínimo usa ese override.
+- Clave de control diario: `gymrutina_last_active_date` guarda la última fecha local
+  `YYYY-MM-DD`. Al cargar o volver a la app, `features/rollover.js` compara esa fecha
+  con hoy, archiva el progreso anterior como completo/mínimo/parcial y limpia los
+  checks. Se guarda aparte del estado para no cambiar el esquema.
+- El historial de cada día es una lista de entradas `{ date, mode, items, status }`.
+  `status` puede ser `full`, `min` o `partial`; las entradas parciales se crean al
+  cambiar de fecha y no se duplican si ya existe una para esa fecha y modo.
 - Clave anterior: `rutina_builder_v2`. Al cargar, si no existe la clave nueva, se
   migra automáticamente y **la clave vieja se conserva como respaldo**.
 - Migración v1 → v2: `name = textCompleto`, `steps = stepsCompleto`; el override
@@ -110,7 +121,10 @@ estático, como HTTP.serve, a esta carpeta.
   progreso fuera de rango y entradas de historial con fechas rotas.
 - Si la clave nueva tiene JSON ilegible, se guarda una copia en
   `gymrutina_state_v1_corrupt_<timestamp>` antes de continuar.
-- Para borrar todo: DevTools → Application → Local Storage → eliminar las claves.
+- El respaldo JSON no incluye `gymrutina_last_active_date`: es una fecha local y se
+  inicializa al abrir en un dispositivo nuevo.
+- Para borrar todo: DevTools → Application → Local Storage → eliminar las claves
+  `gymrutina_state_v1` y `gymrutina_last_active_date`.
 
 ## Respaldo y restauración
 
@@ -153,6 +167,7 @@ estático, como HTTP.serve, a esta carpeta.
 │   ├── features/
 │   │   ├── actions.js    # Mutaciones del estado
 │   │   ├── backup.js     # Export/import JSON: validación y resumen
+│   │   ├── rollover.js   # Cambio de fecha, archivo de parciales y limpieza
 │   │   └── timer.js      # Cronómetro, audio, vibración, visibilidad
 │   ├── ui/
 │   │   ├── render.js     # Render de tabs y del día
@@ -167,7 +182,7 @@ estático, como HTTP.serve, a esta carpeta.
 │       ├── date.js       # Fechas locales (YYYY-MM-DD)
 │       └── time.js       # Formato MM:SS y deadline del timer
 ├── scripts/
-│   ├── test.mjs          # Pruebas de estado, migración, respaldo, editor y tiempo
+│   ├── test.mjs          # Pruebas de estado, rollover, migración, respaldo, editor y tiempo
 │   ├── bump.mjs          # Sube la versión
 │   └── check.mjs         # Verifica coherencia del proyecto
 ├── TODO.md               # Descripción, estado, tablero y notas
@@ -189,12 +204,22 @@ Los campos de texto usan `store.save()` sin notificar: el input ya muestra lo qu
 escribió y así no se pierde el foco al pasar de un campo a otro. Las acciones
 estructurales (alta, borrado, cambio de modo) usan `commit()` y vuelven a pintar.
 
+El cierre diario sigue este camino:
+
+```text
+arranque, visibilitychange, pageshow o focus
+  → features/rollover.js compara lastActiveDate con hoy
+  → archiva el progreso anterior por día y modo (sin duplicados)
+  → limpia los checks y setLastActiveDate(hoy)
+  → commit() si hubo cambios
+```
+
 No hay frameworks ni reactividad: el estado se guarda y se re-renderiza a mano.
 
 ## Desarrollo
 
 ```bash
-npm test        # 43 pruebas de estado, migración, respaldo, editor y tiempo
+npm test        # 49 pruebas de estado, rollover, migración, respaldo, editor y tiempo
 npm run check   # VERSION ↔ package.json ↔ TODO.md ↔ último commit
 npm run bump -- patch   # sube el patch (también minor / major)
 npm run serve   # servidor estático en :8000
@@ -204,9 +229,9 @@ No hace falta instalar nada: los scripts usan Node puro.
 
 ### Convenciones
 
-- Toda mutación del estado pasa por `js/features/actions.js`. Usá `commit()` cuando
-  la UI deba repintarse y `save()` para campos de texto que ya reflejan el valor. No
-  modificar `localStorage` desde la UI.
+- Toda mutación del estado pasa por `js/features/actions.js` o, para el cierre diario,
+  por `js/features/rollover.js`. Usá `commit()` cuando la UI deba repintarse y `save()`
+  para campos de texto que ya reflejan el valor. No modificar `localStorage` desde la UI.
 - Los cálculos derivados viven en `state/selectors.js`.
 - Las acciones del DOM se declaran con `data-action` y se manejan en el mapa de
   `app.js`. Los campos editables usan `data-edit`. No agregar `onclick` inline.
@@ -234,7 +259,10 @@ ejecuta en el teléfono o en un navegador con la app servida por HTTP.
       borrar y **Deshacer**.
 - [ ] Uso: `−` / `+` de series, toque en el nombre, cambio de modo y reinicio del modo
       actual o de ambos.
-- [ ] Historial: puntos, detalle y nombres accesibles con lector de pantalla.
+- [ ] Historial: agrupación por mes, puntos, detalle y nombres accesibles con lector de
+      pantalla.
+- [ ] Reinicio diario: cambiar la fecha del sistema, volver a la app y comprobar que se
+      archiva el día anterior una sola vez y los checks quedan en cero.
 - [ ] Timer: preset, **Segundos** / **Aplicar**, Iniciar/Pausar/Reanudar/Reset, audio y
       vibración.
 - [ ] Respaldo: exportar, importar, cancelar y error de archivo.
@@ -249,10 +277,13 @@ vigente está en `VERSION`; `package.json` y `TODO.md` son copias derivadas que
 
 ## Límites conocidos y próximos pasos
 
-- El progreso de cada día persiste hasta que se reinicia a mano; no se reinicia
-  automáticamente al cambiar de fecha. El momento del reinicio diario se definirá en
-  la fase de historial.
-- El historial guarda como máximo una entrada por día y modo.
+- El reinicio diario se evalúa al cargar, al volver a la pestaña y al recuperar foco.
+  No hay temporizador de medianoche: si la app queda abierta y enfocada, los checks se
+  reinician en la próxima vuelta.
+- Varias pestañas abiertas no están sincronizadas; cada una detecta el cambio de fecha
+  al volver a estar visible.
+- El historial guarda como máximo una entrada por día, fecha y modo. Los parciales se
+  archivan al cambiar de fecha; el reinicio manual no crea entradas.
 - El audio del temporizador se desbloquea al tocar Iniciar; si el navegador igual lo
   bloquea, la vibración y el parpadeo funcionan sin sonido.
 - Sin estadísticas semanales ni PWA/offline por ahora. Son candidatas naturales para
