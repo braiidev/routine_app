@@ -32,7 +32,7 @@ globalThis.document = {
 };
 
 const { LEGACY_STORAGE_KEY, STORAGE_KEY, DAYS, DEFAULT_STEPS } = await import('../js/config.js');
-const { load, getState, save, backupCurrentState, replaceState, getPayload, onStorageError } = await import('../js/state/store.js');
+const { load, getState, save, backupCurrentState, replaceState, getPayload, onStorageError, getLastActiveDate, setLastActiveDate } = await import('../js/state/store.js');
 const { SCHEMA_VERSION } = await import('../js/state/schema.js');
 const { getItemText, getSteps, isFinished } = await import('../js/state/selectors.js');
 const { normalizeItem } = await import('../js/state/normalize.js');
@@ -42,6 +42,7 @@ const { renderHistory } = await import('../js/ui/history.js');
 const { getLocalISODate } = await import('../js/utils/date.js');
 const { formatDuration, remainingFromDeadline } = await import('../js/utils/time.js');
 const { buildExportPayload, parseImport, suggestExportFilename, summarizeDays } = await import('../js/features/backup.js');
+const { rolloverDay } = await import('../js/features/rollover.js');
 const actions = await import('../js/features/actions.js');
 
 let passed = 0;
@@ -427,6 +428,138 @@ test('el reinicio de ambos modos conserva el historial', () => {
   assert.equal(getState().Lun.log.length, 1);
 });
 
+test('el primer dia solo inicializa la fecha sin archivar', () => {
+  resetStorage();
+  load();
+  actions.selectDay('Lun');
+  const g = actions.addGroup('Inicio');
+  actions.addItem(g, 'Press');
+  getState().Lun.groups[0].items[0].progress.completo = 1;
+
+  const result = rolloverDay(new Date(2026, 0, 6, 7));
+  assert.equal(result.reason, 'initialized');
+  assert.equal(result.archived, 0);
+  assert.equal(getLastActiveDate(), '2026-01-06');
+  assert.equal(getState().Lun.log.length, 0);
+  assert.equal(getState().Lun.groups[0].items[0].progress.completo, 1);
+});
+
+test('archiva parciales y completos de varios dias una sola vez', () => {
+  resetStorage();
+  load();
+  setLastActiveDate('2026-01-05');
+
+  actions.selectDay('Lun');
+  const lun = actions.addGroup('Pecho');
+  const lunItem = actions.addItem(lun, 'Press');
+  actions.updateItemField(lun, lunItem, 'steps', '3');
+  getState().Lun.groups[0].items[0].progress.completo = 1;
+
+  actions.selectDay('Mar');
+  actions.setMode('minimo');
+  const mar = actions.addGroup('Pierna');
+  const marItem = actions.addItem(mar, 'Sentadilla');
+  actions.updateItemField(mar, marItem, 'steps', '2');
+  getState().Mar.groups[0].items[0].progress.minimo = 2;
+
+  actions.selectDay('Mié');
+  const mie = actions.addGroup('Espalda');
+  const mieItem = actions.addItem(mie, 'Remo');
+  actions.updateItemField(mie, mieItem, 'steps', '2');
+  getState().Mié.groups[0].items[0].progress.completo = 2;
+
+  const result = rolloverDay(new Date(2026, 0, 6, 7, 30));
+  assert.equal(result.changed, true);
+  assert.equal(result.archived, 3);
+  assert.equal(result.from, '2026-01-05');
+  assert.equal(result.to, '2026-01-06');
+  assert.equal(getLastActiveDate(), '2026-01-06');
+
+  const lunLog = getState().Lun.log[0];
+  assert.equal(lunLog.date, '2026-01-05');
+  assert.equal(lunLog.mode, 'completo');
+  assert.equal(lunLog.status, 'partial');
+  assert.equal(lunLog.items[0].done, false);
+
+  const marLog = getState().Mar.log[0];
+  assert.equal(marLog.date, '2026-01-05');
+  assert.equal(marLog.mode, 'minimo');
+  assert.equal(marLog.status, 'min');
+  assert.equal(marLog.items[0].done, true);
+
+  const mieLog = getState().Mié.log[0];
+  assert.equal(mieLog.mode, 'completo');
+  assert.equal(mieLog.status, 'full');
+
+  ['Lun', 'Mar', 'Mié'].forEach(dayName => {
+    getState()[dayName].groups.forEach(g => g.items.forEach(item => {
+      assert.deepEqual(item.progress, { completo: 0, minimo: 0 });
+    }));
+  });
+
+  const again = rolloverDay(new Date(2026, 0, 6, 12));
+  assert.equal(again.changed, false);
+  assert.equal(again.archived, 0);
+  assert.equal(getState().Lun.log.length, 1);
+  assert.equal(getState().Mar.log.length, 1);
+  assert.equal(getState().Mié.log.length, 1);
+});
+
+test('no duplica una entrada que ya existe para la fecha y el modo', () => {
+  resetStorage();
+  load();
+  setLastActiveDate('2026-01-05');
+
+  actions.selectDay('Jue');
+  const g = actions.addGroup('Brazo');
+  const i = actions.addItem(g, 'Curl');
+  actions.updateItemField(g, i, 'steps', '1');
+  getState().Jue.groups[0].items[0].progress.completo = 1;
+  getState().Jue.log.push({
+    date: '2026-01-05',
+    mode: 'completo',
+    items: [{ text: 'Curl', done: true, group: 'Brazo' }],
+    status: 'full'
+  });
+
+  const result = rolloverDay(new Date(2026, 0, 6, 8));
+  assert.equal(result.changed, true);
+  assert.equal(result.archived, 0);
+  assert.equal(getState().Jue.log.length, 1);
+  assert.equal(getState().Jue.groups[0].items[0].progress.completo, 0);
+});
+
+test('un dia sin progreso no genera entradas al reiniciar', () => {
+  resetStorage();
+  load();
+  setLastActiveDate('2026-01-04');
+
+  const result = rolloverDay(new Date(2026, 0, 6, 8));
+  assert.equal(result.changed, true);
+  assert.equal(result.archived, 0);
+  assert.equal(getLastActiveDate(), '2026-01-06');
+  DAYS.forEach(d => assert.equal(getState()[d].log.length, 0));
+});
+
+test('no reinicia ni archiva si la fecha sigue siendo hoy', () => {
+  resetStorage();
+  load();
+  setLastActiveDate('2026-01-06');
+
+  actions.selectDay('Lun');
+  const g = actions.addGroup('Hoy');
+  const i = actions.addItem(g, 'Press');
+  actions.updateItemField(g, i, 'steps', '3');
+  getState().Lun.groups[0].items[0].progress.completo = 1;
+
+  const result = rolloverDay(new Date(2026, 0, 6, 23));
+  assert.equal(result.changed, false);
+  assert.equal(result.reason, 'same-day');
+  assert.equal(result.archived, 0);
+  assert.equal(getState().Lun.groups[0].items[0].progress.completo, 1);
+  assert.equal(getState().Lun.log.length, 0);
+});
+
 test('save conserva el esquema versionado', () => {
   save();
   assert.equal(JSON.parse(memory[STORAGE_KEY]).schemaVersion, SCHEMA_VERSION);
@@ -436,6 +569,7 @@ test('save conserva el esquema versionado', () => {
 
 resetStorage();
 load();
+actions.selectDay('Lun');
 const uiGroup = actions.addGroup('Pecho');
 actions.addItem(uiGroup, 'Press banca');
 view.editMode = true;
@@ -486,8 +620,24 @@ test('el historial usa botones con fecha y estado accesibles', () => {
   const html = renderHistory('Lun');
   const today = getLocalISODate();
   assert.ok(html.includes('<button type="button" class="hpoint full"'));
-  assert.ok(html.includes(`aria-label="${today} · completo"`));
+  assert.ok(html.includes(`aria-label="${today} · completo · modo completo"`));
   assert.ok(!html.includes('<div class="hpoint'));
+});
+
+test('agrupa el historial por mes y muestra los tres estados', () => {
+  getState().Lun.log = [
+    { date: '2026-02-04', mode: 'completo', items: [{ text: 'A', done: true, group: 'G' }], status: 'partial' },
+    { date: '2026-01-05', mode: 'completo', items: [{ text: 'A', done: true, group: 'G' }], status: 'full' },
+    { date: '2026-02-03', mode: 'minimo', items: [{ text: 'A', done: true, group: 'G' }], status: 'min' }
+  ];
+  const html = renderHistory('Lun');
+  assert.ok(html.includes('Enero 2026'));
+  assert.ok(html.includes('Febrero 2026'));
+  assert.ok(html.includes('hpoint full'));
+  assert.ok(html.includes('hpoint min'));
+  assert.ok(html.includes('hpoint partial'));
+  assert.ok(html.includes('aria-label="2026-02-04 · parcial · modo completo"'));
+  assert.ok(html.indexOf('Enero 2026') < html.indexOf('Febrero 2026'));
 });
 
 /* 4. Respaldo */

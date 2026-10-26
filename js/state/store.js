@@ -1,4 +1,4 @@
-import { LEGACY_STORAGE_KEY, STORAGE_KEY } from '../config.js';
+import { LEGACY_STORAGE_KEY, STORAGE_KEY, LAST_ACTIVE_KEY } from '../config.js';
 import { SCHEMA_VERSION, createDefaultState } from './schema.js';
 import { normalizeDays } from './normalize.js';
 
@@ -17,6 +17,22 @@ function warnStorageError(e){
 
 export function onStorageError(fn){
   storageErrorListener = fn;
+}
+
+export function getLastActiveDate(){
+  try {
+    return localStorage.getItem(LAST_ACTIVE_KEY) || '';
+  } catch(e){
+    return '';
+  }
+}
+
+export function setLastActiveDate(date){
+  try {
+    localStorage.setItem(LAST_ACTIVE_KEY, date);
+  } catch(e){
+    warnStorageError(e);
+  }
 }
 
 function readRaw(key){

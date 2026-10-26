@@ -8,6 +8,7 @@ import { exportRoutine, importRoutineFile } from './ui/backup.js';
 import { openResetSheet } from './ui/reset.js';
 import { showToast } from './ui/toast.js';
 import { initTimer } from './features/timer.js';
+import { rolloverDay } from './features/rollover.js';
 import * as actions from './features/actions.js';
 
 function showUndo(message, restore){
@@ -152,6 +153,22 @@ function bindDelegation(){
   });
 }
 
+function archivedNotice(result){
+  if(result.archived > 0){
+    showToast('Se archivó el progreso del día anterior en el historial', { duration: 3000 });
+  }
+  return result;
+}
+
+function bindDayChange(){
+  const check = () => archivedNotice(rolloverDay());
+  document.addEventListener('visibilitychange', () => {
+    if(!document.hidden) check();
+  });
+  window.addEventListener('pageshow', check);
+  window.addEventListener('focus', check);
+}
+
 function boot(){
   onStorageError(() => {
     showToast('No se pudo guardar en el navegador. Los cambios quedan solo en memoria.', {
@@ -160,13 +177,16 @@ function boot(){
     });
   });
   load();
+  const rollover = rolloverDay();
   onChange(render);
   injectIcons();
   initMenu();
   bindMenuActions();
   bindDelegation();
+  bindDayChange();
   initTimer();
   render();
+  archivedNotice(rollover);
 }
 
 boot();

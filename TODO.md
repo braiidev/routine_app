@@ -6,20 +6,20 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.7.0`
-- Fase en curso: -
+- Version actual: `v0.7.1`
+- Fase en curso: Fase 8 - Historial y reinicio diario
 - Siguiente version reservada: `v0.8.0`
 
 ## Tablero
 
 ### En curso
 
-_Nada en curso: la fase de interacción y pulido quedó cerrada._
+- [ ] **v0.8.0** - Fase 8 - Historial y reinicio diario
+  - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo. El reinicio se detecta al abrir o volver a la app. Criterio de aceptación: al cambiar la fecha se archiva una sola vez el progreso anterior, los parciales no se duplican, los checks se limpian y el historial agrupa por mes con estados completo/mínimo/parcial.
+  - [x] v0.7.1 - Reinicio diario, parciales e historial por mes
+  - [ ] v0.7.2 - Documentación y checklist del reinicio
 
 ### Siguiente
-
-- [ ] **v0.8.0** - Fase 8 - Historial y reinicio diario
-  - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo.
 
 - [ ] **v0.9.0** - Fase 9 - PWA/offline
   - Manifest, service worker e instalación en pantalla de inicio.
@@ -65,14 +65,18 @@ _Nada descartado._
 - El monolito original queda versionado en el primer commit de Git; no hace falta copia `.bak`.
 - El proyecto usa módulos ES nativos: requiere servirse por HTTP (no `file://`).
 - Los datos se guardan en `gymrutina_state_v1` con `{ schemaVersion, days }`. El formato viejo (`rutina_builder_v2`) se migra al cargar y se conserva como respaldo.
+- La clave `gymrutina_last_active_date` guarda la última fecha local para detectar el cambio de día. Se mantiene fuera del esquema y del respaldo JSON.
+- El reinicio diario se evalúa al abrir o recuperar foco; archiva el progreso anterior por día y modo, sin duplicar entradas, y limpia todos los checks una sola vez.
+- Los parciales se archivan con el estado `partial`; un día completo sin entrada previa se archiva como `full` (completo) o `min` (mínimo).
 - El esquema vigente es v2: `name` y `steps` compartidos, con `minName`/`minSteps` opcionales para el modo mínimo. El editor muestra solo ejercicio y series; el mínimo queda en una sección plegable.
 - La mudanza está cerrada; las features nuevas se planifican desde `### Siguiente`.
 - El respaldo JSON está cerrado; antes de importar se guarda `gymrutina_state_v1_backup_pre_import_<timestamp>`.
 - El borrado de grupos y ejercicios es inmediato y se deshace desde el toast; ya no hay confirmación en dos pasos. Reordenar y duplicar usan `commit()` para repintar.
 - El reinicio del día abre una hoja con dos opciones: modo actual o ambos. Solo limpia checks; el historial no se borra.
 - La fase v0.7.0 se cerró con 43 pruebas y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
-- Pendiente para v0.8.0: decidir si el reinicio diario ocurre a medianoche, al abrir la app o en la primera interacción.
-- Candidatas para próximas fases: estadísticas semanales, reinicio automático por fecha y PWA/offline.
+- Decidido para v0.8.0: el reinicio diario ocurre al abrir la app o volver a ella, no a medianoche.
+- La fase v0.8.0 suma rollover con reloj inyectable, historial agrupado por mes y 49 pruebas; el reinicio manual no archiva.
+- Candidatas para próximas fases: estadísticas semanales y PWA/offline.
 
 ## Seguimiento
 
