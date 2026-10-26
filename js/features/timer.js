@@ -38,6 +38,11 @@ function toggleTimer(){
     return;
   }
 
+  if(remaining <= 0){
+    remaining = totalSeconds;
+    updateDisplay();
+  }
+
   running = true;
   $('startBtn').textContent = 'Pausar';
   timerInterval = setInterval(() => {
@@ -113,5 +118,12 @@ export function initTimer(){
   $('customBtn').onclick = setCustom;
   $('startBtn').onclick = toggleTimer;
   $('resetTimerBtn').onclick = resetTimer;
+  window.addEventListener('pagehide', disposeTimer);
   updateDisplay();
+}
+
+export function disposeTimer(){
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  running = false;
 }

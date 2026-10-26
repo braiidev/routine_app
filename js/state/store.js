@@ -1,25 +1,52 @@
-import { DAYS, STORAGE_KEY } from '../config.js';
-import { createDefaultDay, createDefaultState } from './schema.js';
+import { LEGACY_STORAGE_KEY, STORAGE_KEY } from '../config.js';
+import { SCHEMA_VERSION, createDefaultState } from './schema.js';
+import { normalizeDays } from './normalize.js';
 
 export let state = null;
 let listener = null;
+let schemaVersion = SCHEMA_VERSION;
+
+function readRaw(key){
+  try {
+    return localStorage.getItem(key);
+  } catch(e){
+    return null;
+  }
+}
+
+function readJSON(key){
+  const raw = readRaw(key);
+  if(!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch(e){
+    // Conserva el contenido ilegible antes de que un guardado lo pise.
+    try { localStorage.setItem(`${key}_corrupt_${Date.now()}`, raw); } catch(_){}
+    return null;
+  }
+}
+
+function readPayload(){
+  const current = readJSON(STORAGE_KEY);
+  if(current && typeof current === 'object'){
+    const days = current.days ? normalizeDays(current.days) : normalizeDays(current);
+    schemaVersion = Number.isFinite(current.schemaVersion) ? current.schemaVersion : SCHEMA_VERSION;
+    return days;
+  }
+
+  const legacy = readJSON(LEGACY_STORAGE_KEY);
+  if(legacy && typeof legacy === 'object'){
+    schemaVersion = SCHEMA_VERSION;
+    return normalizeDays(legacy);
+  }
+
+  schemaVersion = SCHEMA_VERSION;
+  return createDefaultState();
+}
 
 export function load(){
-  let raw = {};
-  try {
-    raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {};
-  } catch(e){
-    raw = {};
-  }
-  const base = createDefaultState();
-  DAYS.forEach(d => {
-    if(raw[d] && typeof raw[d] === 'object'){
-      base[d] = { ...createDefaultDay(d), ...raw[d] };
-      if(!Array.isArray(base[d].groups)) base[d].groups = [];
-      if(!Array.isArray(base[d].log)) base[d].log = [];
-    }
-  });
-  state = base;
+  state = readPayload();
+  persist();
   return state;
 }
 
@@ -28,12 +55,16 @@ export function getState(){
   return state;
 }
 
-export function save(){
+function persist(){
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(getState()));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion, days: getState() }));
   } catch(e){
     /* almacenamiento lleno o bloqueado: la app sigue funcionando en memoria */
   }
+}
+
+export function save(){
+  persist();
 }
 
 export function onChange(fn){

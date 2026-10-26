@@ -4,14 +4,25 @@ import { commit, getState } from '../state/store.js';
 import { view } from '../state/view.js';
 import { consideredGroups, getItemText, getProgress, getSteps, isFinished } from '../state/selectors.js';
 import { closeMenu } from '../ui/menu.js';
+import { DAYS } from '../config.js';
+
+const EDITABLE_FIELDS = ['textCompleto', 'textMinimo', 'stepsCompleto', 'stepsMinimo'];
 
 function currentDay(){
   return getState()[view.activeDay];
 }
 
+function ensureProgress(item){
+  if(!item.progress || typeof item.progress !== 'object'){
+    item.progress = { completo: 0, minimo: 0 };
+  }
+  return item.progress;
+}
+
 /* Día */
 
 export function selectDay(d){
+  if(!DAYS.includes(d)) return;
   view.activeDay = d;
   view.pendingDeleteGroup = null;
   view.pendingDeleteItem = null;
@@ -29,6 +40,7 @@ export function updateNotes(val){
 }
 
 export function setMode(mode){
+  if(mode !== 'completo' && mode !== 'minimo') return;
   currentDay().mode = mode;
   commit();
 }
@@ -95,16 +107,18 @@ export function addItem(gid){
 }
 
 export function updateItemField(gid, iid, field, val){
+  if(!EDITABLE_FIELDS.includes(field)) return;
   const g = currentDay().groups.find(x => x.id === gid);
   const item = g && g.items.find(x => x.id === iid);
   if(!item) return;
 
+  const progress = ensureProgress(item);
   if(field === 'stepsCompleto' || field === 'stepsMinimo'){
     item[field] = Math.max(1, parseInt(val, 10) || 1);
     const modeKey = field === 'stepsCompleto' ? 'completo' : 'minimo';
-    if(getProgress(item, modeKey) > item[field]) item.progress[modeKey] = item[field];
+    if(getProgress(item, modeKey) > item[field]) progress[modeKey] = item[field];
   } else {
-    item[field] = val;
+    item[field] = String(val);
   }
   commit();
 }
@@ -140,7 +154,7 @@ export function setStep(gid, iid, n){
   let next = current === n ? n - 1 : n;
   if(next > steps) next = steps;
   if(next < 0) next = 0;
-  item.progress[mode] = next;
+  ensureProgress(item)[mode] = next;
 
   checkFinished(day, mode);
   commit();
@@ -154,7 +168,7 @@ export function bumpStep(gid, iid){
   const mode = day.mode;
   const steps = getSteps(item, mode);
   const current = getProgress(item, mode);
-  item.progress[mode] = current >= steps ? 0 : current + 1;
+  ensureProgress(item)[mode] = current >= steps ? 0 : current + 1;
 
   checkFinished(day, mode);
   commit();
