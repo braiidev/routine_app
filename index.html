@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rutina</title>
+
+<style>
+:root{
+  --bg:#f4f4f6; --card:#ffffff; --card-2:#fafafb; --text:#161618; --sub:#6b6b70; --sub2:#9a9aa0;
+  --accent:#4f46e5; --accent-soft:#eceafd; --success:#059669; --success-soft:#e7f7f1;
+  --warn:#b45309; --warn-soft:#fdf2e3; --danger:#dc2626; --danger-soft:#fdeaea;
+  --border:#e6e6ea; --border-strong:#d4d4da;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d0d0f; --card:#1a1a1d; --card-2:#202023; --text:#f2f2f3; --sub:#a3a3aa; --sub2:#77777e;
+    --accent:#818cf8; --accent-soft:#272450; --success:#34d399; --success-soft:#0f2a22;
+    --warn:#fbbf24; --warn-soft:#2e2308; --danger:#f87171; --danger-soft:#2e1414;
+    --border:#2a2a2e; --border-strong:#3a3a40;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d0d0f; --card:#1a1a1d; --card-2:#202023; --text:#f2f2f3; --sub:#a3a3aa; --sub2:#77777e;
+  --accent:#818cf8; --accent-soft:#272450; --success:#34d399; --success-soft:#0f2a22;
+  --warn:#fbbf24; --warn-soft:#2e2308; --danger:#f87171; --danger-soft:#2e1414;
+  --border:#2a2a2e; --border-strong:#3a3a40;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding-top:env(safe-area-inset-top,0px);
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:480px; margin:0 auto; padding:18px 16px 110px;}
+h1{font-size:1.15rem; margin:4px 0 2px; font-weight:600; letter-spacing:-0.01em; display:flex; align-items:center; gap:8px;}
+.meta{font-size:0.78rem; color:var(--sub); margin-bottom:16px;}
+.tabs{display:flex; overflow-x:auto; gap:6px; margin-bottom:16px; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
+.tab{flex:0 0 auto; padding:7px 14px; border-radius:18px; border:1px solid var(--border); background:var(--card); color:var(--sub); font-size:0.82rem; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .12s;}
+.tab.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+.day-pane{display:none;}
+.day-pane.active{display:block;}
+.day-title{font-size:1.05rem; font-weight:600; margin-bottom:4px; letter-spacing:-0.01em;}
+.day-title input{width:100%; font-size:1.05rem; font-weight:600; border:1px solid var(--border); border-radius:8px; padding:7px 9px; background:var(--card); color:var(--text);}
+.modebar{display:flex; align-items:center; justify-content:space-between; margin:12px 0 16px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:9px 11px;}
+.modebar .label{font-size:0.78rem; color:var(--sub); font-weight:500;}
+.switch{display:flex; gap:3px; background:var(--bg); border-radius:9px; padding:3px;}
+.switch button{border:none; background:transparent; color:var(--sub); padding:6px 12px; border-radius:7px; font-size:0.78rem; font-weight:500; cursor:pointer;}
+.switch button.active{background:var(--accent); color:#fff;}
+.group{margin-bottom:16px;}
+.group-head{display:flex; align-items:center; justify-content:space-between; margin:0 0 8px;}
+.group-name{font-size:0.78rem; text-transform:uppercase; letter-spacing:.06em; color:var(--sub); font-weight:600; display:flex; align-items:center; gap:6px;}
+.opt-pill{font-size:0.65rem; background:var(--warn-soft); color:var(--warn); padding:2px 7px; border-radius:8px; font-weight:600; text-transform:none; letter-spacing:0;}
+.group-actions{display:flex; gap:6px;}
+.icon-btn{border:1px solid var(--border); background:var(--card); color:var(--accent); border-radius:8px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.9rem; flex-shrink:0;}
+.icon-btn.sub{color:var(--sub); font-size:0.85rem;}
+.icon-btn.danger{color:var(--danger);}
+.add-group-row{display:flex; justify-content:center; margin-top:4px;}
+.add-group-btn{border:1px dashed var(--border-strong); background:transparent; color:var(--sub); border-radius:10px; padding:9px; width:100%; font-size:0.82rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;}
+.notes textarea{width:100%; min-height:48px; border:1px solid var(--border); border-radius:9px; padding:8px 9px; background:var(--card); color:var(--text); font-size:0.84rem; font-family:inherit; resize:vertical;}
+.item{background:var(--card); border:1px solid var(--border); border-radius:11px; padding:10px 11px; margin-bottom:7px;}
+.item.done{background:var(--success-soft); border-color:var(--success);}
+.item-row{display:flex; align-items:center; gap:10px;}
+.item-txt{flex:1; font-size:0.87rem; line-height:1.35; cursor:pointer;}
+.item.done .item-txt{color:var(--success);}
+.steps{display:flex; align-items:center; gap:4px; flex-shrink:0;}
+.step-dot{width:16px; height:16px; border-radius:50%; border:2px solid var(--border-strong); cursor:pointer; flex-shrink:0;}
+.step-dot.on{background:var(--success); border-color:var(--success);}
+.step-count{font-size:0.72rem; color:var(--sub); min-width:26px; text-align:right;}
+.edit-fields{display:flex; flex-direction:column; gap:6px; margin-top:4px;}
+.edit-fields input{width:100%; border:1px solid var(--border); border-radius:7px; padding:6px 8px; background:var(--bg); color:var(--text); font-size:0.82rem;}
+.edit-row{display:flex; gap:6px; align-items:center;}
+.edit-row label{font-size:0.7rem; color:var(--sub); width:56px; flex-shrink:0;}
+.edit-row input[type=number]{width:52px; text-align:center;}
+.item-del-row{display:flex; justify-content:flex-end; margin-top:6px;}
+.finished-banner{background:var(--success-soft); border:1px solid var(--success); color:var(--success); border-radius:11px; padding:9px 12px; font-size:0.82rem; margin-bottom:12px; display:flex; align-items:center; gap:7px; font-weight:500;}
+.empty{color:var(--sub2); font-size:0.82rem; text-align:center; padding:12px; border:1px dashed var(--border); border-radius:10px;}
+/* timer */
+.timer-box{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-top:20px; text-align:center; transition:background .15s;}
+.timer-box.flash{background:var(--success);}
+.timer-display{font-size:2.3rem; font-weight:700; font-variant-numeric:tabular-nums; margin-bottom:12px; letter-spacing:-0.02em;}
+.presets{display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;}
+.preset-btn{padding:6px 13px; border-radius:16px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:0.8rem; cursor:pointer; font-weight:500;}
+.preset-btn.selected{background:var(--accent); color:#fff; border-color:var(--accent);}
+.custom-row{display:flex; gap:6px; justify-content:center; margin-bottom:12px; align-items:center;}
+.custom-row input{width:60px; padding:6px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text); text-align:center; font-size:0.9rem;}
+.controls{display:flex; gap:8px; justify-content:center;}
+.btn{padding:10px 20px; border-radius:11px; border:none; font-size:0.88rem; cursor:pointer; font-weight:600;}
+.btn-start{background:var(--success); color:#fff;}
+.btn-reset{background:var(--border); color:var(--text);}
+/* FAB fixed */
+.fab{position:fixed; right:18px; bottom:calc(18px + env(safe-area-inset-bottom,0px)); width:54px; height:54px; border-radius:50%; background:var(--accent); color:#fff; border:none; font-size:1.3rem; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 12px rgba(0,0,0,.28); z-index:50;}
+.fab-menu{position:fixed; right:18px; bottom:calc(80px + env(safe-area-inset-bottom,0px)); background:var(--card); border:1px solid var(--border); border-radius:13px; padding:6px; display:none; flex-direction:column; min-width:200px; box-shadow:0 4px 16px rgba(0,0,0,.22); z-index:50;}
+.fab-menu.open{display:flex;}
+.fab-menu button{display:flex; align-items:center; gap:10px; background:transparent; border:none; text-align:left; padding:10px 12px; font-size:0.87rem; color:var(--text); cursor:pointer; border-radius:9px; font-weight:500;}
+.fab-menu button:hover{background:var(--bg);}
+.fab-menu button i{font-size:18px; color:var(--sub); width:20px;}
+.fab-menu button.danger-opt{color:var(--danger);}
+.fab-menu button.danger-opt i{color:var(--danger);}
+/* history */
+.timeline{display:flex; gap:8px; overflow-x:auto; padding:6px 2px; -webkit-overflow-scrolling:touch;}
+.hpoint{flex:0 0 auto; width:44px; height:44px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.72rem; cursor:pointer; background:var(--card); font-weight:600;}
+.hpoint.full{border-color:var(--success); color:var(--success);}
+.hpoint.min{border-color:var(--warn); color:var(--warn);}
+.hpoint.partial{border-color:var(--danger); color:var(--danger);}
+.hdetail{margin-top:10px; background:var(--card); border:1px solid var(--border); border-radius:11px; padding:10px 12px; font-size:0.85rem;}
+.hdetail .hitem{display:flex; align-items:center; gap:6px; padding:3px 0;}
+.hdetail .hitem i{font-size:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="headerIcon"> Rutina</h1>
+  <div class="meta">Agregá, modificá y seguí tu progresión día a día</div>
+  <div class="tabs" id="tabs"></div>
+  <div id="days"></div>
+  <div class="timer-box">
+    <div class="timer-display" id="timerDisplay">00:40</div>
+    <div class="presets" id="presets"></div>
+    <div class="custom-row">
+      <input type="number" id="customSec" placeholder="seg" min="1">
+      <button class="preset-btn" onclick="setCustom()">Usar</button>
+    </div>
+    <div class="controls">
+      <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">Iniciar</button>
+      <button class="btn btn-reset" onclick="resetTimer()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<button class="fab" id="fabBtn" aria-label="Menú de acciones"></button>
+<div class="fab-menu" id="fabMenu">
+  <button onclick="toggleEditMode()" id="editMenuBtn"><span id="editLabel">Editar día</span></button>
+  <button onclick="toggleHistView()" id="histMenuBtn"><span id="histLabel">Ver historial</span></button>
+  <button class="danger-opt" onclick="resetDay()" id="resetMenuBtn">Reiniciar checks del día</button>
+</div>
+
+<script>
+const STORAGE_KEY = 'rutina_builder_v2';
+const days = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+let state = loadState();
+let activeDay = days[0];
+let editMode = false;
+let histView = false;
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+const ICON_PATHS = {
+  menu: '<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  chart: '<line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="12" width="3" height="8"/><rect x="11" y="8" width="3" height="12"/><rect x="16" y="4" width="3" height="16"/>',
+  refresh: '<path d="M4 4v5h5"/><path d="M20 20v-5h-5"/><path d="M5 9a7 7 0 0 1 12-4l3 3"/><path d="M19 15a7 7 0 0 1-12 4l-3-3"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>',
+  star: '<polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>',
+  check: '<circle cx="12" cy="12" r="9"/><polyline points="9 12 11 14 15 10"/>',
+  circle: '<circle cx="12" cy="12" r="9"/>',
+  barbell: '<circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="3" y1="10" x2="3" y2="14"/><line x1="21" y1="10" x2="21" y2="14"/>'
+};
+function icon(name, size, filled){
+  size = size || 18;
+  const fill = filled ? 'currentColor' : 'none';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px">${ICON_PATHS[name] || ''}</svg>`;
+}
+
+document.getElementById('headerIcon').innerHTML = icon('barbell', 20) + ' Rutina';
+document.getElementById('fabBtn').innerHTML = icon('menu', 22);
+document.getElementById('editMenuBtn').innerHTML = icon('edit', 18) + ' <span id="editLabel">Editar día</span>';
+document.getElementById('histMenuBtn').innerHTML = icon('chart', 18) + ' <span id="histLabel">Ver historial</span>';
+document.getElementById('resetMenuBtn').innerHTML = icon('refresh', 18) + ' Reiniciar checks del día';
+
+function loadState(){
+  let s = {};
+  try { s = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e){ s = {}; }
+  days.forEach(d => {
+    if(!s[d]) s[d] = { title: d, mode: 'completo', notes: '', groups: [], log: [] };
+  });
+  return s;
+}
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
+function esc(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+function render(){
+  const tabsEl = document.getElementById('tabs');
+  const daysEl = document.getElementById('days');
+  tabsEl.innerHTML = '';
+  daysEl.innerHTML = '';
+  days.forEach(d => {
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (d===activeDay ? ' active' : '');
+    tab.textContent = d;
+    tab.onclick = () => { activeDay = d; pendingDeleteGroup = null; pendingDeleteItem = null; render(); };
+    tabsEl.appendChild(tab);
+  });
+
+  const d = activeDay;
+  const s = state[d];
+  const pane = document.createElement('div');
+  pane.className = 'day-pane active';
+
+  let finished = isFinished(d, s.mode);
+  let html = '';
+  if(finished){
+    html += `<div class="finished-banner">${icon('check', 16)} Día completado (${s.mode})</div>`;
+  }
+
+  html += `<div class="day-title">`;
+  html += editMode
+    ? `<input type="text" value="${esc(s.title)}" onchange="updateTitle('${d}', this.value)">`
+    : `${esc(s.title)}`;
+  html += `</div>`;
+
+  html += `<div class="modebar">
+    <span class="label">Modo</span>
+    <div class="switch">
+      <button class="${s.mode==='completo'?'active':''}" onclick="setMode('${d}','completo')">Completo</button>
+      <button class="${s.mode==='minimo'?'active':''}" onclick="setMode('${d}','minimo')">Mínimo</button>
+    </div>
+  </div>`;
+
+  if(histView){
+    html += renderHistory(d);
+  } else {
+    html += renderNotes(d);
+    html += renderGroups(d);
+    if(editMode){
+      html += `<div class="add-group-row"><button class="add-group-btn" onclick="addGroup('${d}')">${icon('plus', 15)} Nuevo grupo</button></div>`;
+    }
+  }
+
+  pane.innerHTML = html;
+  daysEl.appendChild(pane);
+
+  document.getElementById('editLabel').textContent = editMode ? 'Guardar día' : 'Editar día';
+  document.getElementById('histLabel').textContent = histView ? 'Volver a rutina' : 'Ver historial';
+}
+
+function renderNotes(d){
+  const s = state[d];
+  if(editMode){
+    return `<div class="group-name" style="margin:14px 0 6px;">Instrucciones</div>
+      <div class="notes"><textarea onchange="updateNotes('${d}', this.value)">${esc(s.notes)}</textarea></div>`;
+  }
+  if(s.notes && s.notes.trim()){
+    return `<div class="group-name" style="margin:14px 0 6px;">Instrucciones</div><div style="color:var(--sub); font-size:0.85rem; margin-bottom:10px;">${esc(s.notes)}</div>`;
+  }
+  return '';
+}
+
+function renderGroups(d){
+  const s = state[d];
+  if(s.groups.length === 0){
+    return `<div class="empty">${editMode ? 'Sin grupos. Tocá "Nuevo grupo" para empezar.' : 'Este día todavía no tiene grupos cargados.'}</div>`;
+  }
+  let html = '';
+  s.groups.forEach(g => {
+    if(!editMode && s.mode === 'minimo' && g.optional) return;
+    html += `<div class="group">`;
+    html += `<div class="group-head">`;
+    html += `<div class="group-name">`;
+    if(editMode){
+      html += `<input type="text" value="${esc(g.name)}" onchange="updateGroupName('${d}','${g.id}', this.value)" style="font-size:0.8rem; font-weight:600; border:1px solid var(--border); border-radius:6px; padding:3px 6px; background:var(--card); color:var(--text); text-transform:none; letter-spacing:0;">`;
+    } else {
+      html += esc(g.name);
+      if(g.optional) html += `<span class="opt-pill">opcional</span>`;
+    }
+    html += `</div>`;
+    if(editMode){
+      const gPending = pendingDeleteGroup === g.id;
+      html += `<div class="group-actions">
+        <button class="icon-btn sub" title="Opcional" onclick="toggleGroupOptional('${d}','${g.id}')">${icon('star', 15, g.optional)}</button>
+        <button class="icon-btn" onclick="addItem('${d}','${g.id}')">${icon('plus', 15)}</button>
+        <button class="icon-btn danger" style="${gPending ? 'background:var(--danger); color:#fff; width:auto; padding:0 8px; font-size:0.72rem;' : ''}" onclick="deleteGroup('${d}','${g.id}')">${gPending ? 'confirmar' : icon('trash', 15)}</button>
+      </div>`;
+    }
+    html += `</div>`;
+
+    if(g.items.length === 0){
+      html += `<div class="empty">${editMode ? 'Agregá un ítem con +' : 'Sin ítems'}</div>`;
+    }
+    g.items.forEach(item => {
+      html += renderItem(d, g, item);
+    });
+    html += `</div>`;
+  });
+  return html;
+}
+
+function renderItem(d, g, item){
+  const s = state[d];
+  const mode = s.mode;
+  const text = mode === 'completo' ? item.textCompleto : item.textMinimo;
+  const steps = mode === 'completo' ? item.stepsCompleto : item.stepsMinimo;
+  const progress = item.progress[mode] || 0;
+  const isDone = progress >= steps && steps > 0;
+
+  if(editMode){
+    return `<div class="item">
+      <div class="edit-fields">
+        <div class="edit-row"><label>Completo</label><input type="text" value="${esc(item.textCompleto)}" onchange="updateItemField('${d}','${g.id}','${item.id}','textCompleto', this.value)"></div>
+        <div class="edit-row"><label>Series C</label><input type="number" min="1" value="${item.stepsCompleto}" onchange="updateItemField('${d}','${g.id}','${item.id}','stepsCompleto', this.value)"></div>
+        <div class="edit-row"><label>Mínimo</label><input type="text" value="${esc(item.textMinimo)}" onchange="updateItemField('${d}','${g.id}','${item.id}','textMinimo', this.value)"></div>
+        <div class="edit-row"><label>Series M</label><input type="number" min="1" value="${item.stepsMinimo}" onchange="updateItemField('${d}','${g.id}','${item.id}','stepsMinimo', this.value)"></div>
+      </div>
+      <div class="item-del-row"><button class="icon-btn danger" style="${pendingDeleteItem===item.id ? 'background:var(--danger); color:#fff; width:auto; padding:0 8px; font-size:0.72rem;' : ''}" onclick="deleteItem('${d}','${g.id}','${item.id}')">${pendingDeleteItem===item.id ? 'confirmar' : icon('trash', 15)}</button></div>
+    </div>`;
+  }
+
+  let dots = '';
+  for(let i=0;i<steps;i++){
+    dots += `<div class="step-dot ${i<progress ? 'on' : ''}" onclick="setStep('${d}','${g.id}','${item.id}', ${i+1})"></div>`;
+  }
+
+  return `<div class="item ${isDone ? 'done' : ''}">
+    <div class="item-row">
+      <div class="item-txt" onclick="bumpStep('${d}','${g.id}','${item.id}')">${esc(text)}</div>
+      <div class="steps">${dots}<span class="step-count">${progress}/${steps}</span></div>
+    </div>
+  </div>`;
+}
+
+function renderHistory(d){
+  const s = state[d];
+  let html = `<div class="group-name" style="margin:14px 0 8px;">Historial — ${d}</div>`;
+  if(s.log.length === 0){
+    return html + `<div class="empty">Todavía no completaste este día</div>`;
+  }
+  html += `<div class="timeline">`;
+  s.log.forEach((entry, idx) => {
+    const dt = new Date(entry.date);
+    html += `<div class="hpoint ${entry.status}" onclick="showHistDetail('${d}', ${idx})">${dt.getDate()}</div>`;
+  });
+  html += `</div><div id="histDetail"></div>`;
+  return html;
+}
+function showHistDetail(d, idx){
+  const entry = state[d].log[idx];
+  const box = document.getElementById('histDetail');
+  if(!box) return;
+  let html = `<div class="hdetail"><div style="margin-bottom:6px; color:var(--sub); font-size:0.78rem;">${entry.date} · modo ${entry.mode}</div>`;
+  entry.items.forEach(it => {
+    html += `<div class="hitem"><span style="color:${it.done ? 'var(--success)' : 'var(--sub)'}">${icon(it.done ? 'check' : 'circle', 15)}</span> ${esc(it.text)} <span style="color:var(--sub); font-size:0.75rem;">(${it.group})</span></div>`;
+  });
+  html += `</div>`;
+  box.innerHTML = html;
+}
+
+function consideredGroups(d, mode){
+  const s = state[d];
+  return mode === 'minimo' ? s.groups.filter(g => !g.optional) : s.groups;
+}
+function isFinished(d, mode){
+  const groups = consideredGroups(d, mode);
+  const allItems = groups.flatMap(g => g.items);
+  if(allItems.length === 0) return false;
+  return allItems.every(it => {
+    const steps = mode === 'completo' ? it.stepsCompleto : it.stepsMinimo;
+    const progress = it.progress[mode] || 0;
+    return steps > 0 && progress >= steps;
+  });
+}
+
+function updateTitle(d, val){ state[d].title = val; save(); }
+function updateNotes(d, val){ state[d].notes = val; save(); }
+function setMode(d, mode){ state[d].mode = mode; save(); render(); }
+
+function addGroup(d){
+  state[d].groups.push({ id: uid(), name: 'Nuevo grupo', optional: false, items: [] });
+  save(); render();
+}
+function updateGroupName(d, gid, val){
+  const g = state[d].groups.find(x => x.id === gid);
+  if(g) g.name = val;
+  save();
+}
+function toggleGroupOptional(d, gid){
+  const g = state[d].groups.find(x => x.id === gid);
+  if(g) g.optional = !g.optional;
+  save(); render();
+}
+let pendingDeleteGroup = null;
+function deleteGroup(d, gid){
+  if(pendingDeleteGroup !== gid){ pendingDeleteGroup = gid; render(); return; }
+  pendingDeleteGroup = null;
+  state[d].groups = state[d].groups.filter(x => x.id !== gid);
+  save(); render();
+}
+
+function addItem(d, gid){
+  const g = state[d].groups.find(x => x.id === gid);
+  g.items.push({
+    id: uid(),
+    textCompleto: 'Nuevo ítem',
+    textMinimo: 'Nuevo ítem',
+    stepsCompleto: 1,
+    stepsMinimo: 1,
+    progress: { completo: 0, minimo: 0 }
+  });
+  save(); render();
+}
+function updateItemField(d, gid, iid, field, val){
+  const g = state[d].groups.find(x => x.id === gid);
+  const item = g.items.find(x => x.id === iid);
+  if(!item) return;
+  if(field === 'stepsCompleto' || field === 'stepsMinimo'){
+    item[field] = Math.max(1, parseInt(val) || 1);
+    const modeKey = field === 'stepsCompleto' ? 'completo' : 'minimo';
+    if(item.progress[modeKey] > item[field]) item.progress[modeKey] = item[field];
+  } else {
+    item[field] = val;
+  }
+  save();
+  render();
+}
+let pendingDeleteItem = null;
+function deleteItem(d, gid, iid){
+  if(pendingDeleteItem !== iid){ pendingDeleteItem = iid; render(); return; }
+  pendingDeleteItem = null;
+  const g = state[d].groups.find(x => x.id === gid);
+  g.items = g.items.filter(x => x.id !== iid);
+  save(); render();
+}
+
+function setStep(d, gid, iid, n){
+  const s = state[d];
+  const mode = s.mode;
+  const g = s.groups.find(x => x.id === gid);
+  const item = g.items.find(x => x.id === iid);
+  const steps = mode === 'completo' ? item.stepsCompleto : item.stepsMinimo;
+  const current = item.progress[mode] || 0;
+  item.progress[mode] = (current === n) ? n - 1 : n;
+  if(item.progress[mode] > steps) item.progress[mode] = steps;
+  if(item.progress[mode] < 0) item.progress[mode] = 0;
+  save();
+  checkFinished(d, mode);
+  render();
+}
+function bumpStep(d, gid, iid){
+  const s = state[d];
+  const mode = s.mode;
+  const g = s.groups.find(x => x.id === gid);
+  const item = g.items.find(x => x.id === iid);
+  const steps = mode === 'completo' ? item.stepsCompleto : item.stepsMinimo;
+  const current = item.progress[mode] || 0;
+  item.progress[mode] = current >= steps ? 0 : current + 1;
+  save();
+  checkFinished(d, mode);
+  render();
+}
+function checkFinished(d, mode){
+  if(isFinished(d, mode)) logCompletion(d, mode);
+}
+function logCompletion(d, mode){
+  const s = state[d];
+  const today = new Date().toISOString().slice(0,10);
+  if(s.log.find(l => l.date === today && l.mode === mode)) return;
+  const groups = consideredGroups(d, mode);
+  const items = [];
+  groups.forEach(g => g.items.forEach(it => {
+    const steps = mode === 'completo' ? it.stepsCompleto : it.stepsMinimo;
+    const progress = it.progress[mode] || 0;
+    items.push({ text: mode === 'completo' ? it.textCompleto : it.textMinimo, done: progress >= steps, group: g.name });
+  }));
+  const allDone = items.every(i => i.done);
+  const status = allDone ? (mode === 'completo' ? 'full' : 'min') : 'partial';
+  s.log.push({ date: today, mode, items, status });
+  save();
+}
+
+let pendingResetDay = false;
+function resetDay(){
+  if(!pendingResetDay){
+    pendingResetDay = true;
+    document.getElementById('resetMenuBtn').innerHTML = '¿Confirmar reinicio?';
+    return;
+  }
+  pendingResetDay = false;
+  const d = activeDay;
+  const mode = state[d].mode;
+  state[d].groups.forEach(g => g.items.forEach(it => { it.progress[mode] = 0; }));
+  save(); render(); closeMenu();
+}
+function toggleEditMode(){ editMode = !editMode; histView = false; render(); closeMenu(); }
+function toggleHistView(){ histView = !histView; editMode = false; render(); closeMenu(); }
+
+const fabBtn = document.getElementById('fabBtn');
+const fabMenu = document.getElementById('fabMenu');
+fabBtn.onclick = (e) => { e.stopPropagation(); fabMenu.classList.toggle('open'); };
+document.addEventListener('click', (e) => { if(!fabMenu.contains(e.target) && e.target !== fabBtn){ fabMenu.classList.remove('open'); } });
+function closeMenu(){
+  fabMenu.classList.remove('open');
+  pendingResetDay = false;
+  const btn = document.getElementById('resetMenuBtn');
+  if(btn) btn.innerHTML = icon('refresh', 18) + ' Reiniciar checks del día';
+}
+
+render();
+
+// Timer
+const presetsEl = document.getElementById('presets');
+[30,40,60,90].forEach(v => {
+  const b = document.createElement('button');
+  b.className = 'preset-btn' + (v===40 ? ' selected' : '');
+  b.textContent = v + 's';
+  b.onclick = () => selectPreset(v, b);
+  presetsEl.appendChild(b);
+});
+let totalSeconds = 40, remaining = 40, timerInterval = null, running = false, audioCtx = null;
+function selectPreset(v, btn){ document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); totalSeconds = v; resetTimer(); }
+function setCustom(){ const val = parseInt(document.getElementById('customSec').value); if(val && val > 0){ document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected')); totalSeconds = val; resetTimer(); } }
+function updateDisplay(){ const m = Math.floor(remaining/60).toString().padStart(2,'0'); const s = (remaining%60).toString().padStart(2,'0'); document.getElementById('timerDisplay').textContent = m+':'+s; }
+function toggleTimer(){
+  if(running){ clearInterval(timerInterval); running = false; document.getElementById('startBtn').textContent = 'Reanudar'; }
+  else { running = true; document.getElementById('startBtn').textContent = 'Pausar';
+    timerInterval = setInterval(() => { remaining--; updateDisplay(); if(remaining <= 0){ clearInterval(timerInterval); running = false; document.getElementById('startBtn').textContent = 'Iniciar'; playBeep(); } }, 1000); }
+}
+function resetTimer(){ clearInterval(timerInterval); running = false; remaining = totalSeconds; document.getElementById('startBtn').textContent = 'Iniciar'; updateDisplay(); }
+function playBeep(){
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    for(let i=0;i<3;i++){
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.frequency.value = 880; osc.type = 'sine';
+      const start = audioCtx.currentTime + i*0.35;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.4, start+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start+0.28);
+      osc.start(start); osc.stop(start+0.3);
+    }
+  } catch(e){}
+  if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+  flashTimerBox();
+}
+function flashTimerBox(){
+  const box = document.querySelector('.timer-box'); let count = 0;
+  const fi = setInterval(() => { box.classList.toggle('flash'); count++; if(count >= 6){ clearInterval(fi); box.classList.remove('flash'); } }, 250);
+}
+updateDisplay();
+</script>
+</body>
+</html>
