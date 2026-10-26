@@ -143,6 +143,18 @@ estático, como HTTP.serve, a esta carpeta.
 - Rechaza JSON roto, archivos incompletos y exportaciones de un esquema más nuevo.
 - Importar reemplaza toda la rutina: no fusiona días ni grupos.
 
+### Datos de ejemplo
+
+`seeds/gymrutina-demo.json` es una exportación lista para importar: rutina de 7
+días, 16 grupos, 36 ejercicios y 37 registros de historial entre agosto y octubre
+de 2026, con los estados `full`, `min` y `partial`. Incluye progreso parcial en
+algunos días y no registra el día de hoy, para poder probar el historial y el
+cierre diario al usarla.
+
+Importala desde **Importar rutina**; el proceso reemplaza la rutina actual y
+guarda la copia previa de siempre. `npm run seed` regenera el archivo con
+`scripts/build-demo-seed.mjs`.
+
 ## Estructura
 
 ```text
@@ -183,8 +195,12 @@ estático, como HTTP.serve, a esta carpeta.
 │       └── time.js       # Formato MM:SS y deadline del timer
 ├── scripts/
 │   ├── test.mjs          # Pruebas de estado, rollover, migración, respaldo, editor y tiempo
+│   ├── build-demo-seed.mjs # Genera la exportación de ejemplo
 │   ├── bump.mjs          # Sube la versión
 │   └── check.mjs         # Verifica coherencia del proyecto
+├── seeds/
+│   ├── gymrutina-demo.json # Exportación con tres meses de historial
+│   └── README.md         # Cómo importar y regenerar los datos de ejemplo
 ├── TODO.md               # Descripción, estado, tablero y notas
 ├── VERSION               # Fuente de verdad de la versión
 └── package.json          # Versión espejo, scripts y metadatos
@@ -219,9 +235,10 @@ No hay frameworks ni reactividad: el estado se guarda y se re-renderiza a mano.
 ## Desarrollo
 
 ```bash
-npm test        # 49 pruebas de estado, rollover, migración, respaldo, editor y tiempo
+npm test        # 50 pruebas de estado, rollover, migración, respaldo, editor y tiempo
 npm run check   # VERSION ↔ package.json ↔ TODO.md ↔ último commit
 npm run bump -- patch   # sube el patch (también minor / major)
+npm run seed    # regenera seeds/gymrutina-demo.json
 npm run serve   # servidor estático en :8000
 ```
 

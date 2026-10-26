@@ -5,6 +5,7 @@
  * Uso: node scripts/test.mjs
  */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 const memory = {};
 globalThis.localStorage = {
@@ -672,6 +673,36 @@ test('reimporta un archivo exportado sin perder datos', () => {
   assert.equal(parsed.summary.days, 7);
   assert.equal(parsed.days.Lun.groups.length, getState().Lun.groups.length);
   assert.equal(parsed.days.Lun.groups[0].items[0].name, getState().Lun.groups[0].items[0].name);
+});
+
+test('el seed de demo importa y cubre los tres estados', () => {
+  const text = readFileSync(new URL('../seeds/gymrutina-demo.json', import.meta.url), 'utf8');
+  const parsed = parseImport(text);
+
+  assert.equal(parsed.version, 2);
+  assert.equal(parsed.summary.days, 7);
+  assert.ok(parsed.summary.groups >= 15);
+  assert.ok(parsed.summary.items >= 35);
+  assert.ok(parsed.summary.log >= 30);
+
+  const statuses = new Set();
+  for(const day of Object.values(parsed.days)){
+    assert.ok(day.log.length >= 5, `${day.title} no tiene suficiente historial`);
+    assert.equal(new Set(day.log.map(entry => entry.date.slice(0, 7))).size, 3, `${day.title} no cubre tres meses`);
+
+    for(const entry of day.log){
+      statuses.add(entry.status);
+      const done = entry.items.filter(item => item.done).length;
+      if(entry.status === 'partial'){
+        assert.ok(done > 0, `${entry.date} no tiene progreso`);
+        assert.ok(done < entry.items.length, `${entry.date} quedó completo`);
+      } else {
+        assert.equal(done, entry.items.length, `${entry.date} quedó incompleto`);
+      }
+    }
+  }
+
+  assert.deepEqual([...statuses].sort(), ['full', 'min', 'partial']);
 });
 
 test('importa un archivo v1 y lo migra en memoria', () => {

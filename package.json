@@ -1,6 +1,6 @@
 {
   "name": "gymrutina",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
   "type": "module",
   "description": "Rutina de gimnasio: seguimiento diario con modos completo/minimo, historial y temporizador",
@@ -8,6 +8,7 @@
     "serve": "python -m http.server 8000",
     "test": "node scripts/test.mjs",
     "check": "node scripts/check.mjs",
-    "bump": "node scripts/bump.mjs"
+    "bump": "node scripts/bump.mjs",
+    "seed": "node scripts/build-demo-seed.mjs"
   }
 }

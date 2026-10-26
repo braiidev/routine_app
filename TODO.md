@@ -6,7 +6,7 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.8.0`
+- Version actual: `v0.8.1`
 - Fase en curso: -
 - Siguiente version reservada: `v0.9.0`
 
@@ -57,6 +57,7 @@ _Nada en curso: la fase de historial y reinicio diario quedó cerrada._
   - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo. El reinicio se detecta al abrir o volver a la app. Criterio de aceptación: al cambiar la fecha se archiva una sola vez el progreso anterior, los parciales no se duplican, los checks se limpian y el historial agrupa por mes con estados completo/mínimo/parcial.
   - [x] v0.7.1 - Reinicio diario, parciales e historial por mes
   - [x] v0.7.2 - Documentación y checklist del reinicio
+  - [x] v0.8.1 - Exportación de ejemplo con tres meses de historial
 
 ### Descartado
 
@@ -78,6 +79,7 @@ _Nada descartado._
 - La fase v0.7.0 se cerró con 43 pruebas y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
 - Decidido para v0.8.0: el reinicio diario ocurre al abrir la app o volver a ella, no a medianoche.
 - La fase v0.8.0 se cerró con rollover de reloj inyectable, historial agrupado por mes, 49 pruebas, check limpio y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
+- v0.8.1 agrega `seeds/gymrutina-demo.json`, una exportación válida con 7 días, 16 grupos, 36 ejercicios y 37 registros entre agosto y octubre de 2026; se regenera con `npm run seed` y las pruebas suben a 50.
 - Candidatas para próximas fases: estadísticas semanales y PWA/offline.
 
 ## Seguimiento
