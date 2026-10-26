@@ -1,5 +1,6 @@
 import { TIMER_PRESETS, DEFAULT_TIMER, MAX_TIMER_SECONDS } from '../config.js';
 import { formatDuration, remainingFromDeadline } from '../utils/time.js';
+import { showToast } from '../ui/toast.js';
 
 const TICK_MS = 250;
 
@@ -9,6 +10,7 @@ let endAt = 0;
 let ticker = null;
 let running = false;
 let audioCtx = null;
+let audioUnlocked = false;
 
 const $ = (id) => document.getElementById(id);
 
@@ -53,12 +55,39 @@ function selectPreset(value, btn){
 }
 
 function setCustom(){
-  const parsed = parseInt($('customSec').value, 10);
-  if(!Number.isFinite(parsed) || parsed <= 0) return;
+  const input = $('customSec');
+  const parsed = parseInt(input.value, 10);
+  if(!Number.isFinite(parsed) || parsed <= 0){
+    input.setAttribute('aria-invalid', 'true');
+    showToast('Ingresá un tiempo mayor a cero', { error: true });
+    input.focus();
+    return;
+  }
+  input.removeAttribute('aria-invalid');
   const value = Math.min(parsed, MAX_TIMER_SECONDS);
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
   totalSeconds = value;
   resetTimer();
+  showToast(`Timer en ${formatDuration(value)}`, { duration: 1800 });
+}
+
+function unlockAudio(){
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtx) return;
+    if(!audioCtx) audioCtx = new AudioCtx();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    if(!audioUnlocked){
+      const buffer = audioCtx.createBuffer(1, 1, 22050);
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioCtx.destination);
+      source.start(0);
+      audioUnlocked = true;
+    }
+  } catch(e){
+    /* sin audio disponible: el aviso visual y la vibración siguen funcionando */
+  }
 }
 
 function toggleTimer(){
@@ -71,6 +100,7 @@ function toggleTimer(){
     return;
   }
 
+  unlockAudio();
   if(remaining <= 0) remaining = totalSeconds;
   endAt = Date.now() + remaining * 1000;
   running = true;
@@ -148,6 +178,13 @@ export function initTimer(){
   });
 
   $('customBtn').onclick = setCustom;
+  $('customSec').addEventListener('input', () => $('customSec').removeAttribute('aria-invalid'));
+  $('customSec').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      setCustom();
+    }
+  });
   $('startBtn').onclick = toggleTimer;
   $('resetTimerBtn').onclick = resetTimer;
 

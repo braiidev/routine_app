@@ -15,5 +15,5 @@ export const ICON_PATHS = {
 
 export function icon(name, size=18, filled=false){
   const fill = filled ? 'currentColor' : 'none';
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px">${ICON_PATHS[name]||''}</svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px" aria-hidden="true" focusable="false">${ICON_PATHS[name]||''}</svg>`;
 }

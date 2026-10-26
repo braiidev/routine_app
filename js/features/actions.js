@@ -384,19 +384,13 @@ function logCompletion(mode){
 
 /* Reinicio del día */
 
-export function resetDay(){
-  if(!view.pendingResetDay){
-    view.pendingResetDay = true;
-    const btn = document.getElementById('resetMenuBtn');
-    if(btn) btn.textContent = '¿Confirmar reinicio?';
-    return;
-  }
-  view.pendingResetDay = false;
+export function resetProgress(scope = 'current'){
   const day = currentDay();
-  const mode = day.mode;
+  const modes = scope === 'both' ? ['completo', 'minimo'] : [day.mode];
   day.groups.forEach(g => g.items.forEach(it => {
-    ensureProgress(it)[mode] = 0;
+    const progress = ensureProgress(it);
+    modes.forEach(mode => { progress[mode] = 0; });
   }));
   commit();
-  closeMenu();
+  return { scope, mode: day.mode, day: view.activeDay };
 }

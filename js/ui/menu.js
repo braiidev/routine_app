@@ -1,32 +1,44 @@
-import { icon } from '../icons.js';
-import { view } from '../state/view.js';
+export const RESET_LABEL = 'Reiniciar día…';
 
-export const RESET_LABEL = 'Reiniciar checks del día';
+function menuElements(){
+  return {
+    fabBtn: document.getElementById('fabBtn'),
+    fabMenu: document.getElementById('fabMenu')
+  };
+}
 
-export function resetMenuButton(){
-  const btn = document.getElementById('resetMenuBtn');
-  if(btn) btn.innerHTML = icon('refresh', 18) + ' ' + RESET_LABEL;
+function setMenuOpen(open){
+  const { fabBtn, fabMenu } = menuElements();
+  if(fabMenu) fabMenu.classList.toggle('open', open);
+  if(fabBtn) fabBtn.setAttribute('aria-expanded', String(open));
 }
 
 export function closeMenu(){
-  const menu = document.getElementById('fabMenu');
-  if(menu) menu.classList.remove('open');
-  view.pendingResetDay = false;
-  resetMenuButton();
+  setMenuOpen(false);
 }
 
 export function initMenu(){
-  const fabBtn = document.getElementById('fabBtn');
-  const fabMenu = document.getElementById('fabMenu');
+  const { fabBtn, fabMenu } = menuElements();
+  if(!fabBtn || !fabMenu) return;
+
+  setMenuOpen(false);
 
   fabBtn.onclick = (e) => {
     e.stopPropagation();
-    fabMenu.classList.toggle('open');
+    setMenuOpen(!fabMenu.classList.contains('open'));
   };
 
   document.addEventListener('click', (e) => {
     if(!fabMenu.contains(e.target) && !fabBtn.contains(e.target)){
-      fabMenu.classList.remove('open');
+      closeMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && fabMenu.classList.contains('open')){
+      e.preventDefault();
+      closeMenu();
+      fabBtn.focus();
     }
   });
 }

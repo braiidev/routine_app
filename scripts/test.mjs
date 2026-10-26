@@ -38,6 +38,7 @@ const { getItemText, getSteps, isFinished } = await import('../js/state/selector
 const { normalizeItem } = await import('../js/state/normalize.js');
 const { view } = await import('../js/state/view.js');
 const { renderGroups, renderNotes } = await import('../js/ui/groups.js');
+const { renderHistory } = await import('../js/ui/history.js');
 const { getLocalISODate } = await import('../js/utils/date.js');
 const { formatDuration, remainingFromDeadline } = await import('../js/utils/time.js');
 const { buildExportPayload, parseImport, suggestExportFilename, summarizeDays } = await import('../js/features/backup.js');
@@ -397,7 +398,7 @@ test('borra y restaura un item en su posicion', () => {
   assert.equal(actions.restoreItem(snapshot), false);
 });
 
-test('resetDay pide confirmacion y limpia solo el modo actual', () => {
+test('el reinicio actual limpia solo el modo en uso', () => {
   resetStorage();
   load();
   const g = actions.addGroup('Reset');
@@ -406,14 +407,24 @@ test('resetDay pide confirmacion y limpia solo el modo actual', () => {
   actions.setStep(g, i, 1);
   actions.setMode('minimo');
   actions.setStep(g, i, 1);
-  assert.equal(getState().Lun.groups[0].items[0].progress.completo, 1);
-  assert.equal(getState().Lun.groups[0].items[0].progress.minimo, 1);
 
-  actions.resetDay();
-  assert.equal(getState().Lun.groups[0].items[0].progress.minimo, 1);
-  actions.resetDay();
+  const result = actions.resetProgress();
+  assert.equal(result.mode, 'minimo');
   assert.equal(getState().Lun.groups[0].items[0].progress.minimo, 0);
   assert.equal(getState().Lun.groups[0].items[0].progress.completo, 1);
+});
+
+test('el reinicio de ambos modos conserva el historial', () => {
+  const g = getState().Lun.groups[0];
+  const i = g.items[0];
+  actions.setMode('completo');
+  actions.setStep(g.id, i.id, 2);
+  assert.equal(getState().Lun.log.length, 1);
+
+  actions.resetProgress('both');
+  assert.equal(getState().Lun.groups[0].items[0].progress.completo, 0);
+  assert.equal(getState().Lun.groups[0].items[0].progress.minimo, 0);
+  assert.equal(getState().Lun.log.length, 1);
 });
 
 test('save conserva el esquema versionado', () => {
@@ -467,6 +478,16 @@ test('la vista de uso muestra stepper y barra de progreso', () => {
   assert.ok(html.includes('data-action="dec-step"'));
   assert.ok(html.includes('progress-track'));
   assert.ok(html.includes('0/3'));
+});
+
+test('el historial usa botones con fecha y estado accesibles', () => {
+  const itemId = getState().Lun.groups[0].items[0].id;
+  actions.setStep(uiGroup, itemId, 3);
+  const html = renderHistory('Lun');
+  const today = getLocalISODate();
+  assert.ok(html.includes('<button type="button" class="hpoint full"'));
+  assert.ok(html.includes(`aria-label="${today} · completo"`));
+  assert.ok(!html.includes('<div class="hpoint'));
 });
 
 /* 4. Respaldo */

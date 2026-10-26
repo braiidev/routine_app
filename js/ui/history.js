@@ -1,7 +1,7 @@
 import { icon } from '../icons.js';
 import { getState } from '../state/store.js';
 import { view } from '../state/view.js';
-import { esc } from '../utils/dom.js';
+import { esc, escAttr } from '../utils/dom.js';
 import { parseLocalISODate } from '../utils/date.js';
 
 export function renderHistory(d){
@@ -14,7 +14,8 @@ export function renderHistory(d){
   s.log.forEach((entry, idx) => {
     const dt = parseLocalISODate(entry.date);
     const dayNumber = dt ? dt.getDate() : '?';
-    html += `<div class="hpoint ${esc(entry.status)}" data-action="hist-point" data-idx="${idx}">${dayNumber}</div>`;
+    const statusLabel = entry.status === 'full' ? 'completo' : entry.status === 'min' ? 'mínimo' : 'parcial';
+    html += `<button type="button" class="hpoint ${esc(entry.status)}" data-action="hist-point" data-idx="${idx}" aria-label="${escAttr(`${entry.date} · ${statusLabel}`)}">${dayNumber}</button>`;
   });
   html += `</div><div id="histDetail"></div>`;
   return html;

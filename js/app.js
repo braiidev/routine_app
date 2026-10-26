@@ -2,9 +2,10 @@ import { load, onChange, onStorageError } from './state/store.js';
 import { view } from './state/view.js';
 import { icon } from './icons.js';
 import { render } from './ui/render.js';
-import { initMenu, closeMenu } from './ui/menu.js';
+import { initMenu, closeMenu, RESET_LABEL } from './ui/menu.js';
 import { showHistDetail } from './ui/history.js';
 import { exportRoutine, importRoutineFile } from './ui/backup.js';
+import { openResetSheet } from './ui/reset.js';
 import { showToast } from './ui/toast.js';
 import { initTimer } from './features/timer.js';
 import * as actions from './features/actions.js';
@@ -67,7 +68,7 @@ function injectIcons(){
   document.getElementById('histMenuBtn').innerHTML = icon('chart', 18) + ' <span id="histLabel">Ver historial</span>';
   document.getElementById('exportMenuBtn').innerHTML = icon('download', 18) + ' Exportar rutina';
   document.getElementById('importMenuBtn').innerHTML = icon('upload', 18) + ' Importar rutina';
-  document.getElementById('resetMenuBtn').innerHTML = icon('refresh', 18) + ' Reiniciar checks del día';
+  document.getElementById('resetMenuBtn').innerHTML = icon('refresh', 18) + ' ' + RESET_LABEL;
 }
 
 function bindMenuActions(){
@@ -77,7 +78,10 @@ function bindMenuActions(){
     if(wasEditing) showToast('Cambios guardados', { duration: 1600 });
   };
   document.getElementById('histMenuBtn').onclick = actions.toggleHistView;
-  document.getElementById('resetMenuBtn').onclick = actions.resetDay;
+  document.getElementById('resetMenuBtn').onclick = () => {
+    closeMenu();
+    openResetSheet();
+  };
 
   document.getElementById('exportMenuBtn').onclick = () => {
     closeMenu();
