@@ -4,7 +4,8 @@ App web móvil para registrar y seguir una rutina de gimnasio. Tiene siete días
 (Lun–Dom), dos modos de entrenamiento (completo y mínimo), progreso por series,
 historial de días completados y un temporizador de descanso. El editor pide un solo
 nombre y una sola cantidad de series por ejercicio; el modo mínimo puede usar valores
-propios solo cuando hace falta.
+propios solo cuando hace falta. Los grupos y ejercicios se pueden reordenar y duplicar,
+y un borrado se deshace desde el aviso flotante.
 
 No usa build ni dependencias en tiempo de ejecución: HTML, CSS y módulos ES
 nativos. Los datos viven en `localStorage`.
@@ -41,11 +42,15 @@ estático, como HTTP.serve, a esta carpeta.
   - *Exportar rutina*: descarga un JSON con toda la rutina.
   - *Importar rutina*: reemplaza la rutina actual desde un JSON exportado, con
     confirmación y copia de seguridad previa.
-  - *Reiniciar checks del día*: pide confirmación y limpia el progreso del día en el
-    modo actual.
+  - *Reiniciar día…*: abre una hoja para limpiar solo el modo actual o ambos; el
+    historial no se borra.
 - **Edición**:
   - **Ejercicio** y **Series** son los únicos campos visibles. El stepper de series
     permite ajustar de 1 a 100.
+  - Las flechas ↑/↓ reordenan grupos y ejercicios; **Duplicar** crea una copia con
+    ids nuevos y el progreso en cero.
+  - **Eliminar** actúa al instante. El aviso **Deshacer** restaura el grupo o
+    ejercicio en su posición original durante unos segundos.
   - **Personalizar modo mínimo** es una sección plegable: al activar *Usar nombre y
     series propios* aparece el override de ese ejercicio.
   - **Opcional** se activa con un interruptor visible y una ayuda que explica que el
@@ -53,8 +58,9 @@ estático, como HTTP.serve, a esta carpeta.
   - La fila **Agregar ejercicio…** crea el ítem con el nombre escrito y deja el foco
     listo para el siguiente; **Agregar grupo…** hace lo mismo con los grupos. Enter
     confirma el alta.
-- **Temporizador**: presets de 30/40/60/90 s, tiempo personalizado (hasta 3600 s),
-  pausa/reanudar y reset. Al terminar suena, vibra y parpadea.
+- **Temporizador**: presets de 30/40/60/90 s, campo **Segundos** con **Aplicar** (hasta
+  3600 s), pausa/reanudar y reset. Al terminar suena, vibra y parpadea; el audio se
+  prepara al tocar Iniciar.
 
 ## Datos y migración
 
@@ -141,9 +147,9 @@ estático, como HTTP.serve, a esta carpeta.
 │   ├── state/
 │   │   ├── schema.js     # Versión de esquema y estado por defecto
 │   │   ├── normalize.js  # Validación y migración de datos
-│   │   ├── store.js      # Carga, guardado, commit y notificación
+│   │   ├── store.js      # Carga, guardado, commit y aviso de errores
 │   │   ├── selectors.js  # Cálculos derivados (progreso, fin de día)
-│   │   └── view.js       # Estado de UI (día activo, modo edición, pendientes)
+│   │   └── view.js       # Estado de UI (día activo, edición, historial)
 │   ├── features/
 │   │   ├── actions.js    # Mutaciones del estado
 │   │   ├── backup.js     # Export/import JSON: validación y resumen
@@ -153,8 +159,9 @@ estático, como HTTP.serve, a esta carpeta.
 │   │   ├── groups.js     # Grupos, ítems y notas
 │   │   ├── history.js    # Historial y detalle
 │   │   ├── backup.js     # Descarga e importación desde el menú
+│   │   ├── reset.js      # Hoja de reinicio por modo
 │   │   ├── toast.js      # Avisos flotantes con acción opcional
-│   │   └── menu.js       # FAB y cierre del menú
+│   │   └── menu.js       # FAB, aria-expanded y cierre del menú
 │   └── utils/
 │       ├── dom.js        # esc, escAttr, uid
 │       ├── date.js       # Fechas locales (YYYY-MM-DD)
@@ -187,9 +194,9 @@ No hay frameworks ni reactividad: el estado se guarda y se re-renderiza a mano.
 ## Desarrollo
 
 ```bash
-npm test        # 36 pruebas de estado, migración, respaldo, editor y tiempo
+npm test        # 43 pruebas de estado, migración, respaldo, editor y tiempo
 npm run check   # VERSION ↔ package.json ↔ TODO.md ↔ último commit
-npm run bump -- patch   # v0.5.1 -> v0.5.2 (también minor / major)
+npm run bump -- patch   # sube el patch (también minor / major)
 npm run serve   # servidor estático en :8000
 ```
 
@@ -217,6 +224,22 @@ No hace falta instalar nada: los scripts usan Node puro.
 5. Agregar pruebas en `scripts/test.mjs`.
 6. `npm test`, `npm run check`, commit `vX.Y.Z` y tag al cerrar la fase.
 
+### Checklist manual de UI
+
+La suite automática cubre la lógica; esta lista cubre lo que necesita ojos y oído. Se
+ejecuta en el teléfono o en un navegador con la app servida por HTTP.
+
+- [ ] Claro/oscuro: tabs, tarjetas, banner de edición, toast y hoja de reinicio.
+- [ ] Edición: alta de grupo/ejercicio, override mínimo, opcional, flechas, duplicar,
+      borrar y **Deshacer**.
+- [ ] Uso: `−` / `+` de series, toque en el nombre, cambio de modo y reinicio del modo
+      actual o de ambos.
+- [ ] Historial: puntos, detalle y nombres accesibles con lector de pantalla.
+- [ ] Timer: preset, **Segundos** / **Aplicar**, Iniciar/Pausar/Reanudar/Reset, audio y
+      vibración.
+- [ ] Respaldo: exportar, importar, cancelar y error de archivo.
+- [ ] Móvil: ancho de 320 px, objetivos táctiles de 44 px, teclado y foco visible.
+
 ## Versionado
 
 El proyecto sigue Project Flow: cada commit lleva `vX.Y.Z` y lista los archivos
@@ -227,9 +250,10 @@ vigente está en `VERSION`; `package.json` y `TODO.md` son copias derivadas que
 ## Límites conocidos y próximos pasos
 
 - El progreso de cada día persiste hasta que se reinicia a mano; no se reinicia
-  automáticamente al cambiar de fecha. Es intencional: el reinicio es explícito.
+  automáticamente al cambiar de fecha. El momento del reinicio diario se definirá en
+  la fase de historial.
 - El historial guarda como máximo una entrada por día y modo.
-- El audio del temporizador requiere una interacción previa (política de
-  navegadores móviles); la vibración y el parpadeo funcionan igual.
+- El audio del temporizador se desbloquea al tocar Iniciar; si el navegador igual lo
+  bloquea, la vibración y el parpadeo funcionan sin sonido.
 - Sin estadísticas semanales ni PWA/offline por ahora. Son candidatas naturales para
   las próximas fases.

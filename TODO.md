@@ -6,7 +6,7 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.6.2`
+- Version actual: `v0.6.3`
 - Fase en curso: Fase 7 - Interacción y pulido
 - Siguiente version reservada: `v0.7.0`
 
@@ -18,7 +18,7 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
   - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad. Criterio de aceptación: se puede ordenar y duplicar sin perder datos, un borrado se revierte desde el toast, el reinicio distingue modo actual de ambos, el timer se entiende y los controles esenciales tienen nombre accesible.
   - [x] v0.6.1 - Reordenar, duplicar, deshacer borrados y toasts
   - [x] v0.6.2 - Reinicio por modo, timer y accesibilidad
-  - [ ] v0.6.3 - Checklist manual y documentación
+  - [x] v0.6.3 - Checklist manual y documentación
 
 ### Siguiente
 
@@ -66,6 +66,9 @@ _Nada descartado._
 - El esquema vigente es v2: `name` y `steps` compartidos, con `minName`/`minSteps` opcionales para el modo mínimo. El editor muestra solo ejercicio y series; el mínimo queda en una sección plegable.
 - La mudanza está cerrada; las features nuevas se planifican desde `### Siguiente`.
 - El respaldo JSON está cerrado; antes de importar se guarda `gymrutina_state_v1_backup_pre_import_<timestamp>`.
+- El borrado de grupos y ejercicios es inmediato y se deshace desde el toast; ya no hay confirmación en dos pasos. Reordenar y duplicar usan `commit()` para repintar.
+- El reinicio del día abre una hoja con dos opciones: modo actual o ambos. Solo limpia checks; el historial no se borra.
+- La fase v0.7.0 deja un checklist manual de UI en el README para validar claro/oscuro, edición, historial, timer y 320 px en el teléfono.
 - Pendiente para v0.8.0: decidir si el reinicio diario ocurre a medianoche, al abrir la app o en la primera interacción.
 - Candidatas para próximas fases: estadísticas semanales, reinicio automático por fecha y PWA/offline.
 
