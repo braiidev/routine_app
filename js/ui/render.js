@@ -45,9 +45,16 @@ function renderDay(){
     html += `<div class="finished-banner">${icon('check', 16)} Día completado (${esc(s.mode)})</div>`;
   }
 
+  if(view.editMode){
+    html += `<div class="edit-banner">
+      <div class="edit-banner-text">${icon('edit', 16)}<div><strong>Editando</strong><span>Los cambios se guardan solos</span></div></div>
+      <button type="button" class="done-btn" data-action="exit-edit">Listo</button>
+    </div>`;
+  }
+
   html += `<div class="day-title">`;
   html += view.editMode
-    ? `<input type="text" value="${escAttr(s.title)}" data-edit="title">`
+    ? `<input type="text" value="${escAttr(s.title)}" data-edit="title" aria-label="Nombre del día" placeholder="Nombre del día">`
     : `${esc(s.title)}`;
   html += `</div>`;
 

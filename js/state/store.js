@@ -37,7 +37,7 @@ function readPayload(){
   const current = readJSON(STORAGE_KEY);
   if(current && typeof current === 'object'){
     const days = current.days ? normalizeDays(current.days) : normalizeDays(current);
-    schemaVersion = Number.isFinite(current.schemaVersion) ? current.schemaVersion : SCHEMA_VERSION;
+    schemaVersion = SCHEMA_VERSION;
     return days;
   }
 

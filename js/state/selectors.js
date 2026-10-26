@@ -1,5 +1,10 @@
+export function hasMinOverride(item){
+  return item.minName != null || item.minSteps != null;
+}
+
 export function getSteps(item, mode){
-  return mode === 'completo' ? item.stepsCompleto : item.stepsMinimo;
+  if(mode === 'minimo' && item.minSteps != null) return item.minSteps;
+  return item.steps;
 }
 
 export function getProgress(item, mode){
@@ -8,7 +13,8 @@ export function getProgress(item, mode){
 }
 
 export function getItemText(item, mode){
-  return mode === 'completo' ? item.textCompleto : item.textMinimo;
+  if(mode === 'minimo' && item.minName != null && item.minName !== '') return item.minName;
+  return item.name;
 }
 
 export function consideredGroups(state, d, mode){

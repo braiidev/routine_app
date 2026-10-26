@@ -6,20 +6,21 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.5.0`
-- Fase en curso: -
+- Version actual: `v0.5.1`
+- Fase en curso: Fase 6 - Schema v2 y editor simple
 - Siguiente version reservada: `v0.6.0`
 
 ## Tablero
 
 ### En curso
 
-_Nada en curso: el respaldo quedó cerrado._
+- [ ] **v0.6.0** - Fase 6 - Schema v2 y editor simple
+  - Un solo nombre y una sola cantidad de series por ejercicio, con override opcional para modo mínimo; editor de dos campos visibles, alta rápida, "Opcional" con texto y controles táctiles de 44 px. Criterio de aceptación: editar un ejercicio deja de pedir dos nombres y dos series, la migración conserva los datos y el progreso, el alta se descubre sin instrucciones y las pruebas pasan.
+  - [x] v0.5.1 - Schema v2, migración, editor simple y progreso táctil
+  - [ ] v0.5.2 - Editor simple, alta rápida y progreso táctil
+  - [ ] v0.5.3 - Documentación y revisión de la fase
 
 ### Siguiente
-
-- [ ] **v0.6.0** - Fase 6 - Schema v2 y editor simple
-  - Un solo nombre y una sola cantidad de series por ejercicio, con override opcional para modo mínimo; editor de dos campos visibles, alta rápida, "Opcional" con texto y controles táctiles de 44 px.
 
 - [ ] **v0.7.0** - Fase 7 - Interacción y pulido
   - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad.

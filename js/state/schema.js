@@ -1,6 +1,6 @@
-import { DAYS } from '../config.js';
+import { DAYS, DEFAULT_STEPS } from '../config.js';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export function createDefaultDay(name){
   return {
@@ -23,10 +23,10 @@ export function createDefaultState(){
 export function createDefaultItem(){
   return {
     id: '',
-    textCompleto: 'Nuevo ítem',
-    textMinimo: 'Nuevo ítem',
-    stepsCompleto: 1,
-    stepsMinimo: 1,
+    name: 'Nuevo ejercicio',
+    steps: DEFAULT_STEPS,
+    minName: null,
+    minSteps: null,
     progress: { completo: 0, minimo: 0 }
   };
 }

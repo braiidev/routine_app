@@ -4,4 +4,5 @@ export const DAYS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 export const TIMER_PRESETS = [30,40,60,90];
 export const DEFAULT_TIMER = 40;
 export const MAX_TIMER_SECONDS = 3600;
+export const DEFAULT_STEPS = 3;
 export const MAX_STEPS = 100;

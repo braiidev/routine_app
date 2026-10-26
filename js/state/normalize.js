@@ -26,21 +26,56 @@ function uniqueId(rawId, used){
   return id;
 }
 
+function normalizeMinName(value, sharedName){
+  if(value == null) return null;
+  const text = str(value);
+  return text && text !== sharedName ? text : null;
+}
+
+function normalizeMinSteps(value, sharedSteps){
+  if(value == null) return null;
+  const steps = clamp(int(value, sharedSteps), 1, MAX_STEPS);
+  return steps !== sharedSteps ? steps : null;
+}
+
 export function normalizeItem(raw, usedIds){
   const item = raw && typeof raw === 'object' ? raw : {};
-  const stepsCompleto = clamp(int(item.stepsCompleto, 1), 1, MAX_STEPS);
-  const stepsMinimo = clamp(int(item.stepsMinimo, 1), 1, MAX_STEPS);
+  // El formato v2 tiene name/steps/min*; el v1 duplicaba textCompleto/textMinimo.
+  const isV2 = 'name' in item || 'steps' in item || 'minName' in item || 'minSteps' in item;
+
+  const name = isV2
+    ? str(item.name, 'Nuevo ejercicio')
+    : str(item.textCompleto, 'Nuevo ejercicio');
+  const steps = clamp(
+    int(isV2 ? item.steps : item.stepsCompleto, 1),
+    1,
+    MAX_STEPS
+  );
+
+  let minName = null;
+  let minSteps = null;
+  if(isV2){
+    // En v2 un valor propio se conserva aunque coincida con el compartido:
+    // así el interruptor "valores propios" no se apaga al recargar.
+    minName = item.minName == null || item.minName === '' ? null : str(item.minName);
+    minSteps = item.minSteps == null ? null : clamp(int(item.minSteps, steps), 1, MAX_STEPS);
+  } else {
+    minName = normalizeMinName(item.textMinimo, name);
+    minSteps = normalizeMinSteps(item.stepsMinimo, steps);
+  }
+
+  const effectiveMinSteps = minSteps == null ? steps : minSteps;
   const p = item.progress && typeof item.progress === 'object' ? item.progress : {};
 
   return {
     id: uniqueId(item.id, usedIds),
-    textCompleto: str(item.textCompleto, 'Nuevo ítem'),
-    textMinimo: str(item.textMinimo, 'Nuevo ítem'),
-    stepsCompleto,
-    stepsMinimo,
+    name,
+    steps,
+    minName,
+    minSteps,
     progress: {
-      completo: clamp(int(p.completo, 0), 0, stepsCompleto),
-      minimo: clamp(int(p.minimo, 0), 0, stepsMinimo)
+      completo: clamp(int(p.completo, 0), 0, steps),
+      minimo: clamp(int(p.minimo, 0), 0, effectiveMinSteps)
     }
   };
 }
