@@ -6,18 +6,15 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.5.2`
-- Fase en curso: Fase 6 - Schema v2 y editor simple
-- Siguiente version reservada: `v0.6.0`
+- Version actual: `v0.6.0`
+- Fase en curso: -
+- Siguiente version reservada: `v0.7.0`
 
 ## Tablero
 
 ### En curso
 
-- [ ] **v0.6.0** - Fase 6 - Schema v2 y editor simple
-  - Un solo nombre y una sola cantidad de series por ejercicio, con override opcional para modo mínimo; editor de dos campos visibles, alta rápida, "Opcional" con texto y controles táctiles de 44 px. Criterio de aceptación: editar un ejercicio deja de pedir dos nombres y dos series, la migración conserva los datos y el progreso, el alta se descubre sin instrucciones y las pruebas pasan.
-  - [x] v0.5.1 - Schema v2, migración, editor simple y progreso táctil
-  - [x] v0.5.2 - Documentación del esquema v2, revisión y pulido del editor
+_Nada en curso: el editor simple quedó cerrado._
 
 ### Siguiente
 
@@ -53,6 +50,9 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 - [x] **v0.5.0** - Fase 5 - Respaldo de datos
   - Exportar e importar la rutina en JSON para sobrevivir a un borrado del navegador o a un cambio de teléfono. Criterio de aceptación: exportar descarga un archivo válido, importar valida y pide confirmación, guarda una copia previa y las pruebas cubren los casos rotos.
 
+- [x] **v0.6.0** - Fase 6 - Schema v2 y editor simple
+  - Un solo nombre y una sola cantidad de series por ejercicio, con override opcional para modo mínimo; editor de dos campos visibles, alta rápida, "Opcional" con texto y controles táctiles de 44 px. Criterio de aceptación: editar un ejercicio deja de pedir dos nombres y dos series, la migración conserva los datos y el progreso, el alta se descubre sin instrucciones y las pruebas pasan.
+
 ### Descartado
 
 _Nada descartado._
@@ -62,6 +62,7 @@ _Nada descartado._
 - El monolito original queda versionado en el primer commit de Git; no hace falta copia `.bak`.
 - El proyecto usa módulos ES nativos: requiere servirse por HTTP (no `file://`).
 - Los datos se guardan en `gymrutina_state_v1` con `{ schemaVersion, days }`. El formato viejo (`rutina_builder_v2`) se migra al cargar y se conserva como respaldo.
+- El esquema vigente es v2: `name` y `steps` compartidos, con `minName`/`minSteps` opcionales para el modo mínimo. El editor muestra solo ejercicio y series; el mínimo queda en una sección plegable.
 - La mudanza está cerrada; las features nuevas se planifican desde `### Siguiente`.
 - El respaldo JSON está cerrado; antes de importar se guarda `gymrutina_state_v1_backup_pre_import_<timestamp>`.
 - Pendiente para v0.8.0: decidir si el reinicio diario ocurre a medianoche, al abrir la app o en la primera interacción.

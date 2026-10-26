@@ -30,7 +30,7 @@ const CHANGE_ACTIONS = {
   'group-optional': (el, ds) => actions.setGroupOptional(ds.group, el.checked),
   'item-field': (el, ds) => {
     const value = actions.updateItemField(ds.group, ds.item, ds.field, el.value);
-    if(ds.field === 'steps' || ds.field === 'minSteps') el.value = value;
+    if(ds.field === 'steps' || ds.field === 'minSteps' || ds.field === 'minName') el.value = value;
   },
   'item-min-override': (el, ds) => actions.setMinOverride(ds.group, ds.item, el.checked)
 };

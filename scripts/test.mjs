@@ -211,9 +211,9 @@ test('ignora campos no editables', () => {
 });
 
 test('limita la cantidad de series a un maximo razonable', () => {
-  actions.updateItemField(gid, iid, 'steps', '500');
+  assert.equal(actions.updateItemField(gid, iid, 'steps', '500'), 100);
   assert.equal(getState().Lun.groups[0].items[0].steps, 100);
-  actions.updateItemField(gid, iid, 'steps', '0');
+  assert.equal(actions.updateItemField(gid, iid, 'steps', '0'), 1);
   assert.equal(getState().Lun.groups[0].items[0].steps, 1);
 });
 
@@ -224,7 +224,7 @@ test('activa el override de minimo con los valores actuales', () => {
   assert.equal(item.minName, 'Press plano');
   assert.equal(item.minSteps, 4);
 
-  actions.updateItemField(gid, iid, 'minName', '   ');
+  assert.equal(actions.updateItemField(gid, iid, 'minName', '   '), 'Press plano');
   assert.equal(item.minName, 'Press plano');
   actions.updateItemField(gid, iid, 'minName', 'Press inclinado');
   actions.updateItemField(gid, iid, 'minSteps', '2');
