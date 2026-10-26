@@ -6,20 +6,21 @@ GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con 
 
 ## Estado
 
-- Version actual: `v0.6.0`
-- Fase en curso: -
+- Version actual: `v0.6.1`
+- Fase en curso: Fase 7 - Interacción y pulido
 - Siguiente version reservada: `v0.7.0`
 
 ## Tablero
 
 ### En curso
 
-_Nada en curso: el editor simple quedó cerrado._
+- [ ] **v0.7.0** - Fase 7 - Interacción y pulido
+  - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad. Criterio de aceptación: se puede ordenar y duplicar sin perder datos, un borrado se revierte desde el toast, el reinicio distingue modo actual de ambos, el timer se entiende y los controles esenciales tienen nombre accesible.
+  - [x] v0.6.1 - Reordenar, duplicar, deshacer borrados y toasts
+  - [ ] v0.6.2 - Reinicio por modo, timer y accesibilidad
+  - [ ] v0.6.3 - Checklist manual y documentación
 
 ### Siguiente
-
-- [ ] **v0.7.0** - Fase 7 - Interacción y pulido
-  - Reordenar con flechas, duplicar, deshacer borrados con toast, reset del día con opciones, labels del timer y accesibilidad.
 
 - [ ] **v0.8.0** - Fase 8 - Historial y reinicio diario
   - Archivar el día anterior, registrar parciales y mostrar el historial completo por fecha y modo.

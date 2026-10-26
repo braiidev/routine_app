@@ -4,6 +4,7 @@ import { normalizeDays } from './normalize.js';
 
 export let state = null;
 let listener = null;
+let storageErrorListener = null;
 let schemaVersion = SCHEMA_VERSION;
 let storageWarned = false;
 
@@ -11,6 +12,11 @@ function warnStorageError(e){
   if(storageWarned) return;
   storageWarned = true;
   console.warn('[GymRutina] No se pudo guardar en localStorage; los cambios quedan solo en memoria.', e);
+  if(storageErrorListener) storageErrorListener(e);
+}
+
+export function onStorageError(fn){
+  storageErrorListener = fn;
 }
 
 function readRaw(key){

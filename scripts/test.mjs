@@ -32,7 +32,7 @@ globalThis.document = {
 };
 
 const { LEGACY_STORAGE_KEY, STORAGE_KEY, DAYS, DEFAULT_STEPS } = await import('../js/config.js');
-const { load, getState, save, backupCurrentState, replaceState, getPayload } = await import('../js/state/store.js');
+const { load, getState, save, backupCurrentState, replaceState, getPayload, onStorageError } = await import('../js/state/store.js');
 const { SCHEMA_VERSION } = await import('../js/state/schema.js');
 const { getItemText, getSteps, isFinished } = await import('../js/state/selectors.js');
 const { normalizeItem } = await import('../js/state/normalize.js');
@@ -297,27 +297,104 @@ test('el modo minimo ignora los grupos opcionales', () => {
   assert.equal(isFinished(getState(), 'Lun', 'completo'), false);
 });
 
-test('el borrado de grupo requiere confirmacion', () => {
+test('reordena grupos e items con limites', () => {
   resetStorage();
   load();
-  const g = actions.addGroup('Borrar');
-  actions.deleteGroup(g);
-  assert.equal(getState().Lun.groups.length, 1);
-  actions.deleteGroup(g);
-  assert.equal(getState().Lun.groups.length, 0);
+  const g1 = actions.addGroup('Uno');
+  const g2 = actions.addGroup('Dos');
+  const i1 = actions.addItem(g1, 'A');
+  const i2 = actions.addItem(g1, 'B');
+
+  assert.equal(actions.moveItem(g1, i1, 1), true);
+  assert.deepEqual(getState().Lun.groups[0].items.map(it => it.name), ['B', 'A']);
+  assert.equal(actions.moveItem(g1, i1, -1), true);
+  assert.deepEqual(getState().Lun.groups[0].items.map(it => it.name), ['A', 'B']);
+  assert.equal(actions.moveItem(g1, i2, 1), false);
+
+  assert.equal(actions.moveGroup(g1, 1), true);
+  assert.deepEqual(getState().Lun.groups.map(g => g.name), ['Dos', 'Uno']);
+  assert.equal(actions.moveGroup(g2, -1), false);
+  assert.equal(actions.moveGroup(g1, -1), true);
+  assert.deepEqual(getState().Lun.groups.map(g => g.name), ['Uno', 'Dos']);
 });
 
-test('el borrado de item requiere confirmacion', () => {
+test('duplica un item sin arrastrar el progreso', () => {
+  resetStorage();
+  load();
+  const g = actions.addGroup('Pecho');
+  const i = actions.addItem(g, 'Press');
+  actions.updateItemField(g, i, 'steps', '4');
+  actions.setMinOverride(g, i, true);
+  actions.updateItemField(g, i, 'minName', 'Press inclinado');
+  actions.updateItemField(g, i, 'minSteps', '2');
+  actions.setStep(g, i, 1);
+
+  const copyId = actions.duplicateItem(g, i);
+  const items = getState().Lun.groups[0].items;
+  assert.equal(items.length, 2);
+  assert.equal(items[1].id, copyId);
+  assert.notEqual(copyId, i);
+  assert.equal(items[1].name, 'Press (copia)');
+  assert.equal(items[1].steps, 4);
+  assert.equal(items[1].minName, 'Press inclinado (copia)');
+  assert.equal(items[1].minSteps, 2);
+  assert.deepEqual(items[1].progress, { completo: 0, minimo: 0 });
+  assert.equal(items[0].progress.completo, 1);
+});
+
+test('duplica un grupo con ids nuevos y checks limpios', () => {
+  resetStorage();
+  load();
+  const g = actions.addGroup('Pecho');
+  const i = actions.addItem(g, 'Press');
+  actions.updateItemField(g, i, 'steps', '5');
+  actions.setStep(g, i, 2);
+  actions.setGroupOptional(g, true);
+
+  const copyId = actions.duplicateGroup(g);
+  const groups = getState().Lun.groups;
+  const copy = groups[1];
+  assert.equal(groups.length, 2);
+  assert.equal(copy.id, copyId);
+  assert.equal(copy.name, 'Pecho (copia)');
+  assert.equal(copy.optional, true);
+  assert.equal(copy.items.length, 1);
+  assert.equal(copy.items[0].name, 'Press');
+  assert.notEqual(copy.items[0].id, i);
+  assert.equal(copy.items[0].steps, 5);
+  assert.deepEqual(copy.items[0].progress, { completo: 0, minimo: 0 });
+  assert.equal(groups[0].items[0].progress.completo, 2);
+});
+
+test('borra y restaura un grupo en su posicion', () => {
+  resetStorage();
+  load();
+  const a = actions.addGroup('A');
+  actions.addGroup('B');
+
+  const snapshot = actions.deleteGroup(a);
+  assert.ok(snapshot);
+  assert.equal(snapshot.index, 0);
+  assert.deepEqual(getState().Lun.groups.map(g => g.name), ['B']);
+  assert.equal(actions.restoreGroup(snapshot), true);
+  assert.deepEqual(getState().Lun.groups.map(g => g.name), ['A', 'B']);
+  assert.equal(actions.restoreGroup(snapshot), false);
+});
+
+test('borra y restaura un item en su posicion', () => {
   resetStorage();
   load();
   const g = actions.addGroup('Grupo');
-  const i1 = actions.addItem(g, 'Uno');
-  actions.addItem(g, 'Dos');
-  actions.deleteItem(g, i1);
-  assert.equal(getState().Lun.groups[0].items.length, 2);
-  actions.deleteItem(g, i1);
-  assert.equal(getState().Lun.groups[0].items.length, 1);
-  assert.notEqual(getState().Lun.groups[0].items[0].id, i1);
+  const a = actions.addItem(g, 'A');
+  const b = actions.addItem(g, 'B');
+
+  const snapshot = actions.deleteItem(g, a);
+  assert.ok(snapshot);
+  assert.equal(snapshot.index, 0);
+  assert.deepEqual(getState().Lun.groups[0].items.map(it => it.id), [b]);
+  assert.equal(actions.restoreItem(snapshot), true);
+  assert.deepEqual(getState().Lun.groups[0].items.map(it => it.id), [a, b]);
+  assert.equal(actions.restoreItem(snapshot), false);
 });
 
 test('resetDay pide confirmacion y limpia solo el modo actual', () => {
@@ -369,6 +446,18 @@ test('el editor explica el modo minimo y el alta de grupo', () => {
   assert.ok(html.toLowerCase().includes('se oculta en modo mínimo'));
   assert.ok(html.includes('Agregar grupo'));
   assert.ok(html.includes('calentar 10 minutos'));
+});
+
+test('el editor ofrece reordenar, duplicar y borrar directo', () => {
+  view.editMode = true;
+  const html = renderGroups('Lun');
+  assert.ok(html.includes('data-action="move-group"'));
+  assert.ok(html.includes('data-action="duplicate-group"'));
+  assert.ok(html.includes('data-action="move-item"'));
+  assert.ok(html.includes('data-action="duplicate-item"'));
+  assert.ok(html.includes('aria-label="Mover Pecho arriba"'));
+  assert.ok(html.includes('aria-label="Duplicar Press banca"'));
+  assert.ok(!html.includes('Confirmar'));
 });
 
 test('la vista de uso muestra stepper y barra de progreso', () => {
@@ -460,6 +549,23 @@ test('reemplaza el estado y guarda una copia previa', () => {
   replaceState(days);
   assert.equal(getState().Lun.groups.length, before);
   assert.equal(getPayload().schemaVersion, SCHEMA_VERSION);
+});
+
+test('avisa una vez si el navegador rechaza guardar', () => {
+  let called = 0;
+  onStorageError(() => { called++; });
+  const originalSetItem = globalThis.localStorage.setItem;
+  const originalWarn = console.warn;
+  globalThis.localStorage.setItem = () => { throw new Error('cuota llena'); };
+  console.warn = () => {};
+  try {
+    save();
+    save();
+  } finally {
+    globalThis.localStorage.setItem = originalSetItem;
+    console.warn = originalWarn;
+  }
+  assert.equal(called, 1);
 });
 
 /* 5. Utilidades del temporizador */

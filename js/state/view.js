@@ -4,7 +4,5 @@ export const view = {
   activeDay: DAYS[0],
   editMode: false,
   histView: false,
-  pendingDeleteGroup: null,
-  pendingDeleteItem: null,
   pendingResetDay: false
 };

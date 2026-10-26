@@ -30,14 +30,17 @@ export function renderGroups(d){
 
   let html = '';
   visibleGroups.forEach(g => {
+    const groupIndex = s.groups.indexOf(g);
     html += `<section class="group">`;
-    html += renderGroupHead(g);
+    html += renderGroupHead(g, groupIndex, s.groups.length);
 
     if(g.items.length === 0 && !view.editMode){
       html += `<div class="empty">Sin ejercicios.</div>`;
     }
-    g.items.forEach(item => {
-      html += view.editMode ? renderItemEditor(g, item) : renderItemView(s, g, item);
+    g.items.forEach((item, itemIndex) => {
+      html += view.editMode
+        ? renderItemEditor(g, item, itemIndex, g.items.length)
+        : renderItemView(s, g, item);
     });
 
     if(view.editMode){
@@ -58,16 +61,22 @@ export function renderGroups(d){
   return html;
 }
 
-function renderGroupHead(g){
+function renderGroupHead(g, index, total){
   if(view.editMode){
+    const label = g.name || 'Grupo';
     return `<div class="group-head">
       <input class="group-title-input" type="text" value="${escAttr(g.name)}" data-edit="group-name" data-group="${escAttr(g.id)}" placeholder="Nombre del grupo" aria-label="Nombre del grupo">
-      <div class="group-actions">
-        <label class="optional-check" title="Se oculta en modo mínimo">
-          <input type="checkbox" data-edit="group-optional" data-group="${escAttr(g.id)}" aria-label="Grupo opcional, se oculta en modo mínimo" ${g.optional ? 'checked' : ''}>
-          <span>Opcional</span>
-        </label>
-        <button type="button" class="icon-btn danger ${view.pendingDeleteGroup === g.id ? 'confirming' : ''}" data-action="delete-group" data-group="${escAttr(g.id)}" aria-label="${view.pendingDeleteGroup === g.id ? 'Confirmar eliminación del grupo' : 'Eliminar grupo'}" title="${view.pendingDeleteGroup === g.id ? 'Confirmar eliminación' : 'Eliminar grupo'}">${view.pendingDeleteGroup === g.id ? 'Confirmar' : icon('trash', 16)}</button>
+    </div>
+    <div class="group-tools">
+      <label class="optional-check" title="Se oculta en modo mínimo">
+        <input type="checkbox" data-edit="group-optional" data-group="${escAttr(g.id)}" aria-label="Grupo opcional, se oculta en modo mínimo" ${g.optional ? 'checked' : ''}>
+        <span>Opcional</span>
+      </label>
+      <div class="tool-group">
+        <button type="button" class="tool-btn" data-action="move-group" data-group="${escAttr(g.id)}" data-delta="-1" aria-label="Mover ${escAttr(label)} arriba" ${index <= 0 ? 'disabled' : ''}>↑</button>
+        <button type="button" class="tool-btn" data-action="move-group" data-group="${escAttr(g.id)}" data-delta="1" aria-label="Mover ${escAttr(label)} abajo" ${index >= total - 1 ? 'disabled' : ''}>↓</button>
+        <button type="button" class="tool-btn tool-btn-text" data-action="duplicate-group" data-group="${escAttr(g.id)}" aria-label="Duplicar ${escAttr(label)}">Duplicar</button>
+        <button type="button" class="tool-btn danger" data-action="delete-group" data-group="${escAttr(g.id)}" aria-label="Eliminar ${escAttr(label)}" title="Eliminar grupo">${icon('trash', 16)}</button>
       </div>
     </div>
     ${g.optional ? `<p class="group-help">Opcional: se oculta en modo mínimo.</p>` : ''}`;
@@ -78,11 +87,11 @@ function renderGroupHead(g){
   </div>`;
 }
 
-function renderItemEditor(g, item){
+function renderItemEditor(g, item, index, total){
   const hasMin = hasMinOverride(item);
   const minSteps = item.minSteps == null ? item.steps : item.minSteps;
   const minName = item.minName == null ? item.name : item.minName;
-  const pendingDelete = view.pendingDeleteItem === item.id;
+  const label = item.name || 'Ejercicio';
 
   return `<div class="item item-edit">
     <div class="item-edit-grid">
@@ -123,7 +132,12 @@ function renderItemEditor(g, item){
     </details>
 
     <div class="item-edit-foot">
-      <button type="button" class="delete-link ${pendingDelete ? 'confirming' : ''}" data-action="delete-item" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" aria-label="${pendingDelete ? 'Confirmar eliminación del ejercicio' : 'Eliminar ejercicio'}">${pendingDelete ? 'Confirmar eliminación' : 'Eliminar ejercicio'}</button>
+      <div class="tool-group">
+        <button type="button" class="tool-btn" data-action="move-item" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-delta="-1" aria-label="Mover ${escAttr(label)} arriba" ${index <= 0 ? 'disabled' : ''}>↑</button>
+        <button type="button" class="tool-btn" data-action="move-item" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" data-delta="1" aria-label="Mover ${escAttr(label)} abajo" ${index >= total - 1 ? 'disabled' : ''}>↓</button>
+        <button type="button" class="tool-btn tool-btn-text" data-action="duplicate-item" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" aria-label="Duplicar ${escAttr(label)}">Duplicar</button>
+      </div>
+      <button type="button" class="delete-link" data-action="delete-item" data-group="${escAttr(g.id)}" data-item="${escAttr(item.id)}" aria-label="Eliminar ${escAttr(label)}">Eliminar</button>
     </div>
   </div>`;
 }

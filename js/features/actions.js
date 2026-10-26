@@ -38,13 +38,34 @@ function clampProgress(item){
   progress.minimo = Math.min(getProgress(item, 'minimo'), getSteps(item, 'minimo'));
 }
 
+function copyName(value, fallback){
+  const text = String(value == null ? '' : value).trim();
+  return text ? `${text} (copia)` : `${fallback} (copia)`;
+}
+
+function cloneItemData(item, suffix){
+  const name = suffix ? copyName(item.name, 'Ejercicio') : item.name;
+  let minName = item.minName;
+  if(minName == null || minName === ''){
+    minName = null;
+  } else if(suffix){
+    minName = minName === item.name ? name : copyName(minName, 'Ejercicio');
+  }
+  return {
+    id: uid(),
+    name,
+    steps: item.steps,
+    minName,
+    minSteps: item.minSteps,
+    progress: { completo: 0, minimo: 0 }
+  };
+}
+
 /* Día */
 
 export function selectDay(d){
   if(!DAYS.includes(d)) return;
   view.activeDay = d;
-  view.pendingDeleteGroup = null;
-  view.pendingDeleteItem = null;
   commit();
 }
 
@@ -61,36 +82,29 @@ export function updateNotes(val){
 export function setMode(mode){
   if(mode !== 'completo' && mode !== 'minimo') return;
   currentDay().mode = mode;
-  clearPendingDeletes();
   commit();
 }
 
 export function toggleEditMode(){
   view.editMode = !view.editMode;
   view.histView = false;
-  clearPendingDeletes();
   commit();
   closeMenu();
+  return view.editMode;
 }
 
 export function exitEditMode(){
-  if(!view.editMode) return;
+  if(!view.editMode) return false;
   view.editMode = false;
-  clearPendingDeletes();
   commit();
+  return true;
 }
 
 export function toggleHistView(){
   view.histView = !view.histView;
   view.editMode = false;
-  clearPendingDeletes();
   commit();
   closeMenu();
-}
-
-function clearPendingDeletes(){
-  view.pendingDeleteGroup = null;
-  view.pendingDeleteItem = null;
 }
 
 /* Grupos */
@@ -121,17 +135,54 @@ export function toggleGroupOptional(gid){
   commit();
 }
 
-export function deleteGroup(gid){
-  if(view.pendingDeleteGroup !== gid){
-    view.pendingDeleteGroup = gid;
-    view.pendingDeleteItem = null;
-    commit();
-    return;
-  }
-  view.pendingDeleteGroup = null;
-  const day = currentDay();
-  day.groups = day.groups.filter(x => x.id !== gid);
+export function moveGroup(gid, delta){
+  if(!Number.isFinite(delta) || delta === 0) return false;
+  const groups = currentDay().groups;
+  const index = groups.findIndex(g => g.id === gid);
+  const target = index + delta;
+  if(index < 0 || target < 0 || target >= groups.length) return false;
+  const [group] = groups.splice(index, 1);
+  groups.splice(target, 0, group);
   commit();
+  return true;
+}
+
+export function duplicateGroup(gid){
+  const groups = currentDay().groups;
+  const index = groups.findIndex(g => g.id === gid);
+  if(index < 0) return null;
+
+  const source = groups[index];
+  const group = {
+    id: uid(),
+    name: copyName(source.name, 'Grupo'),
+    optional: source.optional,
+    items: source.items.map(it => cloneItemData(it, false))
+  };
+  groups.splice(index + 1, 0, group);
+  commit();
+  return group.id;
+}
+
+export function deleteGroup(gid){
+  const day = currentDay();
+  const index = day.groups.findIndex(g => g.id === gid);
+  if(index < 0) return null;
+
+  const [group] = day.groups.splice(index, 1);
+  commit();
+  return { day: view.activeDay, index, group };
+}
+
+export function restoreGroup(snapshot){
+  if(!snapshot || !snapshot.group) return false;
+  const day = getState()[snapshot.day];
+  if(!day || day.groups.some(g => g.id === snapshot.group.id)) return false;
+
+  const index = Math.max(0, Math.min(snapshot.index, day.groups.length));
+  day.groups.splice(index, 0, snapshot.group);
+  commit();
+  return true;
 }
 
 /* Ítems */
@@ -204,18 +255,57 @@ export function adjustItemSteps(gid, iid, field, delta){
   commit();
 }
 
-export function deleteItem(gid, iid){
-  if(view.pendingDeleteItem !== iid){
-    view.pendingDeleteItem = iid;
-    view.pendingDeleteGroup = null;
-    commit();
-    return;
-  }
-  view.pendingDeleteItem = null;
+export function moveItem(gid, iid, delta){
+  if(!Number.isFinite(delta) || delta === 0) return false;
   const g = findGroup(gid);
-  if(!g) return;
-  g.items = g.items.filter(x => x.id !== iid);
+  if(!g) return false;
+
+  const index = g.items.findIndex(it => it.id === iid);
+  const target = index + delta;
+  if(index < 0 || target < 0 || target >= g.items.length) return false;
+
+  const [item] = g.items.splice(index, 1);
+  g.items.splice(target, 0, item);
   commit();
+  return true;
+}
+
+export function duplicateItem(gid, iid){
+  const g = findGroup(gid);
+  if(!g) return null;
+
+  const index = g.items.findIndex(it => it.id === iid);
+  if(index < 0) return null;
+
+  const copy = cloneItemData(g.items[index], true);
+  g.items.splice(index + 1, 0, copy);
+  commit();
+  return copy.id;
+}
+
+export function deleteItem(gid, iid){
+  const day = currentDay();
+  const g = findGroup(gid);
+  if(!g) return null;
+
+  const index = g.items.findIndex(it => it.id === iid);
+  if(index < 0) return null;
+
+  const [item] = g.items.splice(index, 1);
+  commit();
+  return { day: view.activeDay, groupId: gid, index, item };
+}
+
+export function restoreItem(snapshot){
+  if(!snapshot || !snapshot.item) return false;
+  const day = getState()[snapshot.day];
+  const g = day && day.groups.find(x => x.id === snapshot.groupId);
+  if(!g || g.items.some(it => it.id === snapshot.item.id)) return false;
+
+  const index = Math.max(0, Math.min(snapshot.index, g.items.length));
+  g.items.splice(index, 0, snapshot.item);
+  commit();
+  return true;
 }
 
 /* Progreso */

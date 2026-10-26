@@ -1,20 +1,45 @@
-import { load, onChange } from './state/store.js';
+import { load, onChange, onStorageError } from './state/store.js';
+import { view } from './state/view.js';
 import { icon } from './icons.js';
 import { render } from './ui/render.js';
 import { initMenu, closeMenu } from './ui/menu.js';
 import { showHistDetail } from './ui/history.js';
 import { exportRoutine, importRoutineFile } from './ui/backup.js';
+import { showToast } from './ui/toast.js';
 import { initTimer } from './features/timer.js';
 import * as actions from './features/actions.js';
+
+function showUndo(message, restore){
+  showToast(message, {
+    actionLabel: 'Deshacer',
+    duration: 5000,
+    onAction: () => {
+      if(restore()) showToast('Restaurado', { duration: 1600 });
+      else showToast('No se pudo restaurar', { error: true });
+    }
+  });
+}
 
 const CLICK_ACTIONS = {
   'select-day': (ds) => actions.selectDay(ds.day),
   'set-mode': (ds) => actions.setMode(ds.mode),
-  'exit-edit': () => actions.exitEditMode(),
+  'exit-edit': () => {
+    if(actions.exitEditMode()) showToast('Cambios guardados', { duration: 1600 });
+  },
   'toggle-group-optional': (ds) => actions.toggleGroupOptional(ds.group),
   'add-item': (ds) => actions.addItem(ds.group),
-  'delete-group': (ds) => actions.deleteGroup(ds.group),
-  'delete-item': (ds) => actions.deleteItem(ds.group, ds.item),
+  'move-group': (ds) => actions.moveGroup(ds.group, Number(ds.delta)),
+  'move-item': (ds) => actions.moveItem(ds.group, ds.item, Number(ds.delta)),
+  'duplicate-group': (ds) => actions.duplicateGroup(ds.group),
+  'duplicate-item': (ds) => actions.duplicateItem(ds.group, ds.item),
+  'delete-group': (ds) => {
+    const snapshot = actions.deleteGroup(ds.group);
+    if(snapshot) showUndo('Grupo eliminado', () => actions.restoreGroup(snapshot));
+  },
+  'delete-item': (ds) => {
+    const snapshot = actions.deleteItem(ds.group, ds.item);
+    if(snapshot) showUndo('Ejercicio eliminado', () => actions.restoreItem(snapshot));
+  },
   'adjust-item-steps': (ds) => actions.adjustItemSteps(ds.group, ds.item, ds.field, Number(ds.delta)),
   'set-step': (ds) => actions.setStep(ds.group, ds.item, Number(ds.step)),
   'bump-step': (ds) => actions.bumpStep(ds.group, ds.item),
@@ -46,7 +71,11 @@ function injectIcons(){
 }
 
 function bindMenuActions(){
-  document.getElementById('editMenuBtn').onclick = actions.toggleEditMode;
+  document.getElementById('editMenuBtn').onclick = () => {
+    const wasEditing = view.editMode;
+    actions.toggleEditMode();
+    if(wasEditing) showToast('Cambios guardados', { duration: 1600 });
+  };
   document.getElementById('histMenuBtn').onclick = actions.toggleHistView;
   document.getElementById('resetMenuBtn').onclick = actions.resetDay;
 
@@ -120,6 +149,12 @@ function bindDelegation(){
 }
 
 function boot(){
+  onStorageError(() => {
+    showToast('No se pudo guardar en el navegador. Los cambios quedan solo en memoria.', {
+      error: true,
+      duration: 6000
+    });
+  });
   load();
   onChange(render);
   injectIcons();
