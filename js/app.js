@@ -197,7 +197,19 @@ function bindDayChange(){
 }
 
 function boot(){
-  onStorageError(() => {
+  onStorageError((info) => {
+    if(info && info.quota){
+      showToast('No se puede guardar. El almacenamiento está lleno.', {
+        error: true,
+        duration: 8000,
+        actionLabel: 'Exportar datos',
+        onAction: () => {
+          closeMenu();
+          exportRoutine();
+        }
+      });
+      return;
+    }
     showToast('No se pudo guardar en el navegador. Los cambios quedan solo en memoria.', {
       error: true,
       duration: 6000

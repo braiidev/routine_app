@@ -7,6 +7,7 @@ export let state = null;
 let listener = null;
 let storageErrorListener = null;
 let storageWarned = false;
+let quotaNotified = false;
 
 function warnStorageError(e){
   if(storageWarned) return;
@@ -17,6 +18,51 @@ function warnStorageError(e){
 
 export function onStorageError(fn){
   storageErrorListener = fn;
+}
+
+function isQuotaError(e){
+  if(!e) return false;
+  if(e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') return true;
+  if(e.code === 22 || e.code === 1014) return true;
+  return false;
+}
+
+function listGymrutinaKeys(){
+  const keys = [];
+  try {
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(key && key.indexOf('gymrutina_') === 0) keys.push(key);
+    }
+  } catch(e){
+    return [];
+  }
+  return keys;
+}
+
+export function cleanupOldBackups({ keep = 2 } = {}){
+  const keys = listGymrutinaKeys();
+  const current = STORAGE_KEY;
+  const currentDate = LAST_ACTIVE_KEY;
+
+  const candidates = [];
+  keys.forEach(key => {
+    if(key === current) return;
+    if(key === currentDate) return;
+    if(key.indexOf(`${current}_backup_pre_v3_`) === 0) return;
+    if(key.indexOf(`${current}_backup_pre_import_`) === 0) return;
+
+    if(key.indexOf(`${current}_backup_`) === 0) candidates.push(key);
+    else if(key.indexOf(`${current}_corrupt_`) === 0) candidates.push(key);
+    else if(key.indexOf(`${current}_backup_future_`) === 0) candidates.push(key);
+  });
+
+  if(candidates.length <= keep) return;
+  candidates.sort((a, b) => b.localeCompare(a));
+  const toRemove = candidates.slice(keep);
+  toRemove.forEach(key => {
+    try { localStorage.removeItem(key); } catch(e){}
+  });
 }
 
 export function getLastActiveDate(){
@@ -101,6 +147,7 @@ function readPayload(){
 
 export function load(){
   state = readPayload();
+  try { cleanupOldBackups({ keep: 2 }); } catch(_){}
   persist();
   return state;
 }
@@ -123,12 +170,28 @@ export function getPayload(){
 }
 
 function persist(){
+  const data = JSON.stringify({
+    ...getState(),
+    schemaVersion: SCHEMA_VERSION
+  });
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      ...getState(),
-      schemaVersion: SCHEMA_VERSION
-    }));
+    localStorage.setItem(STORAGE_KEY, data);
+    return;
   } catch(e){
+    if(isQuotaError(e)){
+      try { cleanupOldBackups({ keep: 2 }); } catch(_){}
+      try {
+        localStorage.setItem(STORAGE_KEY, data);
+        return;
+      } catch(e2){
+        if(!quotaNotified){
+          quotaNotified = true;
+          if(storageErrorListener) storageErrorListener({ quota: true, original: e2 });
+        }
+        warnStorageError(e2);
+        return;
+      }
+    }
     warnStorageError(e);
   }
 }
@@ -141,6 +204,7 @@ export function replaceState(payload){
   state = normalizePayload(payload, {
     lastActiveDate: getLastActiveDate() || getLocalISODate()
   });
+  try { cleanupOldBackups({ keep: 2 }); } catch(_){}
   persist();
 }
 
