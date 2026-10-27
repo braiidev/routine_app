@@ -1,0 +1,18 @@
+{
+  "name": "GymRutina",
+  "short_name": "GymRutina",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1026",
+  "theme_color": "#4f46e5",
+  "description": "Rutina de gimnasio: sesiones por fecha, historial semanal, racha y temporizador.",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

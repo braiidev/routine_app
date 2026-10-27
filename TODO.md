@@ -6,9 +6,9 @@ GymRutina es una app web móvil para registrar entrenamientos por fecha a partir
 
 ## Estado
 
-- Version actual: `v0.9.3`
+- Version actual: `v0.10.0`
 - Fase en curso: -
-- Siguiente version reservada: `v0.10.0`
+- Siguiente version reservada: `v0.11.0`
 
 ## Tablero
 
