@@ -232,125 +232,142 @@ const LOG_PLAN = {
   ]
 };
 
-function clamp(n, min, max){
-  return Math.min(max, Math.max(min, n));
-}
-
 function effectiveName(item, mode){
   return mode === 'minimo' && item.minName ? item.minName : item.name;
 }
 
-function buildLogItems(day, mode, status, variant){
-  const groups = day.groups.filter(g => mode === 'completo' || !g.optional);
-  const rows = [];
-
-  groups.forEach(g => {
-    g.items.forEach(item => {
-      rows.push({
-        text: effectiveName(item, mode),
-        done: true,
-        group: g.name
-      });
-    });
-  });
-
-  if(status === 'partial'){
-    if(rows.length < 2) throw new Error('Un parcial necesita al menos dos ejercicios.');
-    const ratio = 0.45 + (variant % 3) * 0.15;
-    const doneCount = Math.max(1, Math.min(rows.length - 1, Math.floor(rows.length * ratio)));
-    rows.forEach((row, idx) => { row.done = idx < doneCount; });
-  }
-
-  const allDone = rows.length > 0 && rows.every(row => row.done);
-  if(status === 'partial' && allDone) throw new Error('El parcial quedó completo.');
-  if(status !== 'partial' && !allDone) throw new Error(`El estado ${status} quedó incompleto.`);
-  if(status === 'full' && mode !== 'completo') throw new Error('full debe usar modo completo.');
-  if(status === 'min' && mode !== 'minimo') throw new Error('min debe usar modo mínimo.');
-
-  return rows;
+function effectiveSteps(item, mode){
+  return mode === 'minimo' && item.minSteps != null ? item.minSteps : item.steps;
 }
 
-function buildDays(){
-  const days = {};
+function buildTemplate(){
+  const template = {};
 
   DAYS.forEach((dayName, dayIdx) => {
     const spec = ROUTINE[dayName];
     let itemNumber = 0;
 
-    const groups = spec.groups.map((group, groupIdx) => ({
-      id: `d${dayIdx + 1}-g${groupIdx + 1}`,
-      name: group.name,
-      optional: Boolean(group.optional),
-      items: group.items.map(item => {
-        const minSteps = item.minSteps == null ? null : item.minSteps;
-        return {
+    template[dayName] = {
+      title: dayName,
+      defaultMode: spec.mode,
+      notes: spec.notes,
+      groups: spec.groups.map((group, groupIdx) => ({
+        id: `d${dayIdx + 1}-g${groupIdx + 1}`,
+        name: group.name,
+        optional: Boolean(group.optional),
+        items: group.items.map(item => ({
           id: `d${dayIdx + 1}-i${++itemNumber}`,
           name: item.name,
           steps: item.steps,
           minName: item.minName ?? null,
-          minSteps,
-          progress: {
-            completo: clamp(item.current?.completo ?? 0, 0, item.steps),
-            minimo: clamp(item.current?.minimo ?? 0, 0, minSteps ?? item.steps)
-          }
-        };
-      })
-    }));
+          minSteps: item.minSteps ?? null
+        }))
+      }))
+    };
+  });
 
+  return template;
+}
+
+function buildSession(templateDay, dayName, row, variant){
+  const groups = templateDay.groups.filter(g => row.mode === 'completo' || !g.optional);
+  const flatItems = groups.flatMap(g => g.items.map(item => ({ group: g, item })));
+  if(flatItems.length < 2) throw new Error('Una sesión necesita al menos dos ejercicios.');
+
+  let doneCount = flatItems.length;
+  if(row.status === 'partial'){
+    const ratio = 0.45 + (variant % 3) * 0.15;
+    doneCount = Math.max(1, Math.min(flatItems.length - 1, Math.floor(flatItems.length * ratio)));
+  }
+
+  let flatIndex = 0;
+  const sessionGroups = groups.map(group => ({
+    id: group.id,
+    name: group.name,
+    optional: group.optional,
+    items: group.items.map(item => {
+      const steps = effectiveSteps(item, row.mode);
+      const done = flatIndex < doneCount ? steps : 0;
+      flatIndex++;
+      return {
+        id: item.id,
+        text: effectiveName(item, row.mode),
+        steps,
+        done
+      };
+    })
+  }));
+
+  const items = sessionGroups.flatMap(g => g.items);
+  const allDone = items.every(item => item.done >= item.steps);
+  const anyDone = items.some(item => item.done > 0);
+
+  if(row.status === 'partial' && (allDone || !anyDone)) throw new Error('El parcial quedó completo o vacío.');
+  if(row.status !== 'partial' && !allDone) throw new Error(`El estado ${row.status} quedó incompleto.`);
+  if(row.status === 'full' && row.mode !== 'completo') throw new Error('full debe usar modo completo.');
+  if(row.status === 'min' && row.mode !== 'minimo') throw new Error('min debe usar modo mínimo.');
+
+  return {
+    date: row.date,
+    day: dayName,
+    mode: row.mode,
+    groups: sessionGroups
+  };
+}
+
+function buildSessions(template){
+  const sessions = {};
+
+  DAYS.forEach(dayName => {
     const plan = LOG_PLAN[dayName];
-    const log = plan.map((row, logIdx) => {
+    plan.forEach((row, logIdx) => {
       const dt = new Date(`${row.date}T12:00:00`);
       if(Number.isNaN(dt.getTime()) || dt.getDay() !== WEEKDAY[dayName]){
         throw new Error(`${row.date} no cae en ${dayName}.`);
       }
       if(row.date >= '2026-10-26') throw new Error(`${row.date} no es una fecha histórica.`);
+      if(sessions[row.date]) throw new Error(`Hay más de una sesión para ${row.date}.`);
 
-      return {
-        date: row.date,
-        mode: row.mode,
-        items: buildLogItems(spec, row.mode, row.status, logIdx),
-        status: row.status
-      };
+      sessions[row.date] = buildSession(template[dayName], dayName, row, logIdx);
     });
-
-    for(let i = 1; i < log.length; i++){
-      if(log[i - 1].date >= log[i].date) throw new Error(`${dayName}: historial desordenado.`);
-    }
-
-    days[dayName] = {
-      title: dayName,
-      mode: spec.mode,
-      notes: spec.notes,
-      groups,
-      log
-    };
   });
 
-  return days;
+  const ordered = {};
+  Object.keys(sessions).sort().forEach(date => { ordered[date] = sessions[date]; });
+  return ordered;
 }
 
 function main(){
-  const days = buildDays();
+  const template = buildTemplate();
+  const sessions = buildSessions(template);
   const payload = {
     app: 'gymrutina',
-    schemaVersion: 2,
+    schemaVersion: 3,
     exportedAt: EXPORTED_AT,
-    days
+    template,
+    sessions
   };
 
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(OUT_FILE, `${JSON.stringify(payload, null, 2)}\n`);
 
-  const summary = Object.values(days).reduce((acc, day) => {
+  const summary = DAYS.reduce((acc, dayName) => {
+    const day = template[dayName];
     acc.groups += day.groups.length;
     acc.items += day.groups.reduce((n, g) => n + g.items.length, 0);
-    acc.log += day.log.length;
-    day.log.forEach(entry => { acc[entry.status]++; });
     return acc;
-  }, { groups: 0, items: 0, log: 0, full: 0, min: 0, partial: 0 });
+  }, { groups: 0, items: 0, sessions: 0, full: 0, min: 0, partial: 0 });
+
+  Object.values(sessions).forEach(session => {
+    summary.sessions++;
+    const items = session.groups.flatMap(g => g.items);
+    const allDone = items.every(item => item.done >= item.steps);
+    if(!allDone) summary.partial++;
+    else summary[session.mode === 'minimo' ? 'min' : 'full']++;
+  });
 
   console.log(`Seed escrito en ${OUT_FILE}`);
-  console.log(`${DAYS.length} días · ${summary.groups} grupos · ${summary.items} ejercicios · ${summary.log} registros`);
+  console.log(`${DAYS.length} días · ${summary.groups} grupos · ${summary.items} ejercicios · ${summary.sessions} sesiones`);
   console.log(`Estados: ${summary.full} full · ${summary.min} min · ${summary.partial} partial`);
 }
 

@@ -1,15 +1,14 @@
 # GymRutina
 
-App web móvil para registrar y seguir una rutina de gimnasio. Tiene siete días
-(Lun–Dom), dos modos de entrenamiento (completo y mínimo), progreso por series,
-historial de días completos y parciales y un temporizador de descanso. El editor pide un solo
-nombre y una sola cantidad de series por ejercicio; el modo mínimo puede usar valores
-propios solo cuando hace falta. Los grupos y ejercicios se pueden reordenar y duplicar,
-y un borrado se deshace desde el aviso flotante. Al cambiar la fecha, el progreso
-anterior se archiva en el historial y los checks se limpian.
+App web móvil para registrar entrenamientos por fecha. La rutina semanal es una
+**plantilla** (Lun–Dom, con modo completo o mínimo) y cada día entrenado genera
+una **sesión independiente**. La app incluye historial semanal con los siete
+días visibles, racha actual y mejor racha, edición de días pasados, respaldo
+JSON y temporizador de descanso.
 
 No usa build ni dependencias en tiempo de ejecución: HTML, CSS y módulos ES
-nativos. Los datos viven en `localStorage`.
+nativos. Los datos viven en `localStorage` bajo la clave histórica
+`gymrutina_state_v1`.
 
 ## Cómo usarla
 
@@ -26,282 +25,271 @@ npx live-server --port=8000
 Después abrí <http://localhost:8000>. También podés apuntar cualquier servidor
 estático, como HTTP.serve, a esta carpeta.
 
-### Uso diario
+## Uso diario
 
-- **Tabs**: cambiá de día.
-- **Modo Completo / Mínimo**: cada ejercicio tiene un nombre y una cantidad de series
-  compartidos. Un ejercicio puede definir valores propios para el modo mínimo y los
-  grupos marcados como opcionales se ocultan en ese modo.
-- **Progreso**: usá `−` / `+` o tocá el nombre del ejercicio para sumar una serie. La
-  barra inferior muestra el avance. Si el día queda completo se registra en el
-  historial; si no, al cambiar la fecha se archiva como parcial.
-- **Reinicio diario**: al abrir la app o volver a ella, si la fecha cambió, se archiva
-  el progreso anterior una sola vez y se limpian los checks de todos los días. No hay
-  reinicio a medianoche mientras la app queda abierta y enfocada.
-- **Menú (FAB)**:
-  - *Editar día*: abre el editor. El banner **Editando** avisa que los cambios se
-    guardan solos; **Listo** cierra la edición.
-  - *Ver historial*: línea de tiempo agrupada por mes, con estados completo, mínimo y
-    parcial; tocá un punto para ver el detalle.
-  - *Exportar rutina*: descarga un JSON con toda la rutina.
-  - *Importar rutina*: reemplaza la rutina actual desde un JSON exportado, con
-    confirmación y copia de seguridad previa.
-  - *Reiniciar día…*: abre una hoja para limpiar solo el modo actual o ambos; el
-    historial no se borra.
-- **Edición**:
-  - **Ejercicio** y **Series** son los únicos campos visibles. El stepper de series
-    permite ajustar de 1 a 100.
-  - Las flechas ↑/↓ reordenan grupos y ejercicios; **Duplicar** crea una copia con
-    ids nuevos y el progreso en cero.
-  - **Eliminar** actúa al instante. El aviso **Deshacer** restaura el grupo o
-    ejercicio en su posición original durante unos segundos.
-  - **Personalizar modo mínimo** es una sección plegable: al activar *Usar nombre y
-    series propios* aparece el override de ese ejercicio.
-  - **Opcional** se activa con un interruptor visible y una ayuda que explica que el
-    grupo se oculta en modo mínimo.
-  - La fila **Agregar ejercicio…** crea el ítem con el nombre escrito y deja el foco
-    listo para el siguiente; **Agregar grupo…** hace lo mismo con los grupos. Enter
-    confirma el alta.
-- **Temporizador**: presets de 30/40/60/90 s, campo **Segundos** con **Aplicar** (hasta
-  3600 s), pausa/reanudar y reset. Al terminar suena, vibra y parpadea; el audio se
-  prepara al tocar Iniciar.
+### Hoy
+
+- La tira semanal muestra los siete días de la semana actual. El día activo se
+  distingue del resto y cada día puede tener un punto de estado.
+- **Solo hoy permite marcar series** desde esta vista. La primera marca crea la
+  sesión de la fecha; antes de eso se muestra la plantilla del día.
+- Los días futuros se ven como **vista previa**: nombre, modo, notas y ejercicios
+  con sus series, sin checks. Se pueden editar como plantilla desde el botón
+  **Editar rutina**.
+- Los días pasados se abren directamente en **Historial**.
+- El temporizador de descanso solo se muestra cuando la pantalla activa es Hoy y
+  la fecha seleccionada es la fecha actual.
+
+### Modos y sesiones
+
+- Una fecha tiene como máximo **una sesión** y un **único modo**: `completo` o
+  `minimo`.
+- El modo mínimo excluye los grupos marcados como opcionales y puede usar nombre
+  o cantidad de series propios por ejercicio.
+- Cambiar de modo después de marcar series pide confirmación y **reinicia la
+  sesión de esa fecha**. Si la sesión estaba completa, el cambio también afecta
+  el historial y la racha.
+- Reiniciar la sesión de hoy borra sus checks. Si queda vacía, deja de figurar
+  como sesión. La plantilla no cambia.
+- La sesión guarda una foto de los ejercicios y series del momento en que se
+  creó. Editar la plantilla después no altera sesiones pasadas.
+
+### Historial y racha
+
+- El historial muestra tarjetas semanales con **los siete días**, incluidos los
+  vacíos, agrupadas por mes. Empieza con ocho semanas y permite cargar más.
+- Al tocar un día se abre su detalle. Un día pasado sin registro se puede
+  **registrar** con la plantilla actual. Un día con sesión se puede **corregir**
+  sin modificar la plantilla.
+- El día de hoy se consulta en Historial, pero sus checks se editan desde Hoy.
+- La **racha actual** cuenta días consecutivos completos (`full`) o mínimos
+  (`min`). Si hoy todavía no está completo, la racha espera y se cuenta desde
+  ayer; un día parcial o vacío en el medio la corta.
+- La **mejor racha** es la mayor seguidilla de días `full`/`min` hasta hoy.
+- El estado se deriva de la sesión: no se guarda un contador de racha aparte.
+
+### Menú FAB
+
+- **Editar rutina**: abre la plantilla del día que se está viendo (Hoy o
+  Historial). En el editor se cambian el nombre del día, el modo por defecto, las
+  notas, los grupos y los ejercicios; se puede reordenar, duplicar y eliminar con
+  opción de deshacer.
+- **Exportar datos**: descarga un JSON v3 con plantilla y sesiones.
+- **Importar datos**: reemplaza plantilla y sesiones, con confirmación y copia
+  previa.
+- **Reiniciar sesión…**: borra solo la sesión de hoy, con confirmación.
 
 ## Datos y migración
 
-- Clave actual: `gymrutina_state_v1` (el nombre se conserva por compatibilidad; la
-  versión real está dentro del archivo), con el formato:
+### Esquema v3
 
-  ```json
-  {
-    "schemaVersion": 2,
-    "days": {
-      "Lun": {
-        "title": "Lun",
-        "mode": "completo",
-        "notes": "",
-        "groups": [
-          {
-            "id": "g1",
-            "name": "Pecho",
-            "optional": false,
-            "items": [
-              {
-                "id": "i1",
-                "name": "Press banca",
-                "steps": 4,
-                "minName": null,
-                "minSteps": null,
-                "progress": { "completo": 0, "minimo": 0 }
-              }
-            ]
-          }
-        ],
-        "log": []
-      }
+```json
+{
+  "schemaVersion": 3,
+  "template": {
+    "Lun": {
+      "title": "Lun",
+      "defaultMode": "completo",
+      "notes": "Pecho y tríceps.",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i1",
+              "name": "Press banca",
+              "steps": 4,
+              "minName": null,
+              "minSteps": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sessions": {
+    "2026-10-26": {
+      "date": "2026-10-26",
+      "day": "Lun",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            { "id": "d1-i1", "text": "Press banca", "steps": 4, "done": 4 }
+          ]
+        }
+      ]
     }
   }
-  ```
+}
+```
 
-- `name` y `steps` son los valores por defecto para ambos modos. `minName` y
-  `minSteps` en `null` significan "usar el mismo valor"; si tienen un valor, el modo
-  mínimo usa ese override.
-- Clave de control diario: `gymrutina_last_active_date` guarda la última fecha local
-  `YYYY-MM-DD`. Al cargar o volver a la app, `features/rollover.js` compara esa fecha
-  con hoy, archiva el progreso anterior como completo/mínimo/parcial y limpia los
-  checks. Se guarda aparte del estado para no cambiar el esquema.
-- El historial de cada día es una lista de entradas `{ date, mode, items, status }`.
-  `status` puede ser `full`, `min` o `partial`; las entradas parciales se crean al
-  cambiar de fecha y no se duplican si ya existe una para esa fecha y modo.
-- Clave anterior: `rutina_builder_v2`. Al cargar, si no existe la clave nueva, se
-  migra automáticamente y **la clave vieja se conserva como respaldo**.
-- Migración v1 → v2: `name = textCompleto`, `steps = stepsCompleto`; el override
-  mínimo solo se completa si `textMinimo` o `stepsMinimo` difieren del completo. El
-  progreso se conserva y se recorta a los límites resultantes.
-- Los datos se normalizan al leer: días faltantes, ids duplicados, pasos inválidos,
-  progreso fuera de rango y entradas de historial con fechas rotas.
-- Si la clave nueva tiene JSON ilegible, se guarda una copia en
-  `gymrutina_state_v1_corrupt_<timestamp>` antes de continuar.
-- El respaldo JSON no incluye `gymrutina_last_active_date`: es una fecha local y se
-  inicializa al abrir en un dispositivo nuevo.
-- Para borrar todo: DevTools → Application → Local Storage → eliminar las claves
-  `gymrutina_state_v1` y `gymrutina_last_active_date`.
+- `template` no guarda progreso ni historial.
+- `sessions` está indexado por fecha ISO local (`YYYY-MM-DD`).
+- Cada item de sesión guarda `text`, `steps` y `done`.
+- El estado de una sesión es derivado: `empty`, `partial`, `full` o `min`; no se
+  persiste un campo de estado.
+- `gymrutina_last_active_date` ya no se usa en el funcionamiento normal. Queda
+  solo para migrar el progreso v2 de la última fecha activa.
 
-## Respaldo y restauración
+### Migración desde v1/v2
 
-- **Exportar rutina** (menú FAB) genera `gymrutina-YYYY-MM-DD.json` con:
+La app lee el formato viejo en `gymrutina_state_v1` o, como respaldo, en la clave
+legada `rutina_builder_v2`. Antes de normalizar:
 
-  ```json
-  { "app": "gymrutina", "schemaVersion": 2, "exportedAt": "...", "days": { "Lun": {} } }
-  ```
+- guarda el JSON crudo en
+  `gymrutina_state_v1_backup_pre_v3_<timestamp>` (o en la clave legada si vino de
+  allí);
+- si el JSON es ilegible, lo conserva en `<clave>_corrupt_<timestamp>`;
+- si la versión es futura, conserva una copia en
+  `<clave>_backup_future_vN_<timestamp>` antes de normalizar.
 
-- **Importar rutina** acepta ese archivo, exportaciones v1 o el formato viejo (mapa
-  de días sin `schemaVersion`). Valida que estén los siete días, normaliza los datos
-  y migra los ítems al esquema v2 antes de mostrar el resumen y reemplazar.
-- Antes de importar guarda el estado actual en
-  `gymrutina_state_v1_backup_pre_import_<timestamp>`. El nombre exacto queda en la
-  consola; se puede restaurar copiando ese valor a `gymrutina_state_v1`.
-- Rechaza JSON roto, archivos incompletos y exportaciones de un esquema más nuevo.
-- Importar reemplaza toda la rutina: no fusiona días ni grupos.
+Los logs v1/v2 se convierten en sesiones por fecha. Si hay más de un registro
+para la misma fecha se conserva el mejor según `full > min > partial` y, a
+igualdad de estado, el que tenga más series hechas. El progreso vigente de la
+última fecha activa se agrega como sesión de ese día si tiene series marcadas.
+La plantilla vieja se migra sin checks ni logs; los overrides de mínimo se
+mantienen.
 
-### Datos de ejemplo
+## Exportar e importar
 
-`seeds/gymrutina-demo.json` es una exportación lista para importar: rutina de 7
-días, 16 grupos, 36 ejercicios y 37 registros de historial entre agosto y octubre
-de 2026, con los estados `full`, `min` y `partial`. Incluye progreso parcial en
-algunos días y no registra el día de hoy, para poder probar el historial y el
-cierre diario al usarla.
+La exportación usa el esquema v3 e incluye `app`, `schemaVersion`, `exportedAt`,
+`template` y `sessions`. La importación:
 
-Importala desde **Importar rutina**; el proceso reemplaza la rutina actual y
-guarda la copia previa de siempre. `npm run seed` regenera el archivo con
-`scripts/build-demo-seed.mjs`.
+- acepta archivos v3, v2 y v1;
+- exige los siete días de plantilla y rechaza esquemas futuros;
+- reemplaza toda la rutina y el historial;
+- guarda una copia del estado actual en
+  `gymrutina_state_v1_backup_pre_import_<timestamp>`;
+- al importar v2, el progreso vigente se interpreta como una sesión de la fecha
+  de importación cuando no hay un log para ese día.
+
+## Semilla de ejemplo
+
+`seeds/gymrutina-demo.json` es una exportación v3 con:
+
+- 7 días, 16 grupos y 36 ejercicios;
+- 37 sesiones entre agosto y octubre de 2026, sin fechas duplicadas ni el día
+  actual;
+- 20 sesiones completas, 7 mínimas y 10 parciales.
+
+`seeds/gymrutina-demo-v2.json` conserva la semilla v2 anterior como fixture de
+compatibilidad. También se puede importar.
+
+```bash
+npm run seed
+```
+
+El generador es `scripts/build-demo-seed.mjs`.
 
 ## Estructura
 
 ```text
-.
-├── index.html            # Estructura de la pantalla
-├── favicon.svg
-├── css/
-│   ├── main.css          # Punto de entrada (@import)
-│   ├── tokens.css        # Variables y temas claro/oscuro
-│   ├── base.css          # Reset y layout
-│   └── components.css    # Tabs, grupos, ítems, timer, FAB, historial
-├── js/
-│   ├── app.js            # Arranque y delegación de eventos
-│   ├── config.js         # Claves de storage, días, límites
-│   ├── icons.js          # SVGs y helper icon()
-│   ├── state/
-│   │   ├── schema.js     # Versión de esquema y estado por defecto
-│   │   ├── normalize.js  # Validación y migración de datos
-│   │   ├── store.js      # Carga, guardado, commit y aviso de errores
-│   │   ├── selectors.js  # Cálculos derivados (progreso, fin de día)
-│   │   └── view.js       # Estado de UI (día activo, edición, historial)
-│   ├── features/
-│   │   ├── actions.js    # Mutaciones del estado
-│   │   ├── backup.js     # Export/import JSON: validación y resumen
-│   │   ├── rollover.js   # Cambio de fecha, archivo de parciales y limpieza
-│   │   └── timer.js      # Cronómetro, audio, vibración, visibilidad
-│   ├── ui/
-│   │   ├── render.js     # Render de tabs y del día
-│   │   ├── groups.js     # Grupos, ítems y notas
-│   │   ├── history.js    # Historial y detalle
-│   │   ├── backup.js     # Descarga e importación desde el menú
-│   │   ├── reset.js      # Hoja de reinicio por modo
-│   │   ├── toast.js      # Avisos flotantes con acción opcional
-│   │   └── menu.js       # FAB, aria-expanded y cierre del menú
-│   └── utils/
-│       ├── dom.js        # esc, escAttr, uid
-│       ├── date.js       # Fechas locales (YYYY-MM-DD)
-│       └── time.js       # Formato MM:SS y deadline del timer
-├── scripts/
-│   ├── test.mjs          # Pruebas de estado, rollover, migración, respaldo, editor y tiempo
-│   ├── build-demo-seed.mjs # Genera la exportación de ejemplo
-│   ├── bump.mjs          # Sube la versión
-│   └── check.mjs         # Verifica coherencia del proyecto
-├── seeds/
-│   ├── gymrutina-demo.json # Exportación con tres meses de historial
-│   └── README.md         # Cómo importar y regenerar los datos de ejemplo
-├── TODO.md               # Descripción, estado, tablero y notas
-├── VERSION               # Fuente de verdad de la versión
-└── package.json          # Versión espejo, scripts y metadatos
+index.html
+css/
+  main.css
+  tokens.css
+  base.css
+  components.css
+js/
+  app.js
+  config.js
+  icons.js
+  state/
+    schema.js       esquema v3 y estado inicial
+    normalize.js    normalización y migración v1/v2 -> v3
+    store.js        carga, respaldo, persistencia y reemplazo
+    selectors.js    sesiones, resumen y rachas
+    view.js         pantalla, fecha y estado efímero de UI
+  features/
+    sessions.js     creación de sesiones, checks, modos y reset
+    actions.js      navegación, plantilla y acciones de sesión
+    backup.js       exportación, importación y resumen
+    timer.js        temporizador de descanso
+  ui/
+    render.js       Hoy, editor, tira semanal y navegación
+    history.js      historial semanal, detalle y edición retroactiva
+    groups.js       editor, sesión y vista previa
+    menu.js         menú FAB
+    reset.js        hoja de reinicio
+    backup.js       descarga y confirmación de importación
+    toast.js        avisos flotantes
+  utils/
+    date.js         fechas ISO locales, semanas y meses
+    dom.js          escape HTML e IDs
+    time.js         formato y cálculo del temporizador
+scripts/
+  test.mjs
+  check.mjs
+  bump.mjs
+  build-demo-seed.mjs
+seeds/
+  gymrutina-demo.json
+  gymrutina-demo-v2.json
+  README.md
+TODO.md
+VERSION
 ```
 
-### Flujo de datos
+## Flujo de datos
 
-```text
-acción del usuario
-  → delegación en app.js (data-action / data-edit / data-form)
-  → features/actions.js muta el estado
-  → store.commit() guarda en localStorage y notifica
-  → ui/render.js vuelve a pintar tabs y día
-```
-
-Los campos de texto usan `store.save()` sin notificar: el input ya muestra lo que se
-escribió y así no se pierde el foco al pasar de un campo a otro. Las acciones
-estructurales (alta, borrado, cambio de modo) usan `commit()` y vuelven a pintar.
-
-El cierre diario sigue este camino:
-
-```text
-arranque, visibilitychange, pageshow o focus
-  → features/rollover.js compara lastActiveDate con hoy
-  → archiva el progreso anterior por día y modo (sin duplicados)
-  → limpia los checks y setLastActiveDate(hoy)
-  → commit() si hubo cambios
-```
-
-No hay frameworks ni reactividad: el estado se guarda y se re-renderiza a mano.
+1. `boot()` registra el aviso de almacenamiento, carga el estado y enlaza la
+   delegación de eventos.
+2. `load()` lee `localStorage`, migra si hace falta, guarda la copia previa y
+   persiste el estado normalizado v3.
+3. El primer check de una fecha crea una sesión con la plantilla y el modo
+   elegido; los cambios posteriores se guardan en `sessions[date]`.
+4. `render()` vuelve a dibujar la pantalla activa. El editor modifica solo
+   `state.template`.
+5. Al volver a la app o cambiar de día, `syncToday()` actualiza la fecha de la
+   vista. No hay archivo de rollover ni progreso persistido por día de semana.
 
 ## Desarrollo
 
 ```bash
-npm test        # 50 pruebas de estado, rollover, migración, respaldo, editor y tiempo
-npm run check   # VERSION ↔ package.json ↔ TODO.md ↔ último commit
-npm run bump -- patch   # sube el patch (también minor / major)
-npm run seed    # regenera seeds/gymrutina-demo.json
-npm run serve   # servidor estático en :8000
+npm test          # 40 pruebas de estado, migración, sesiones, historial y UI
+npm run check     # VERSION <-> package.json <-> TODO.md <-> último commit
+npm run serve     # servidor estático en :8000
+npm run seed      # regenera la semilla v3
 ```
 
-No hace falta instalar nada: los scripts usan Node puro.
+`npm run check` compara la versión con el último commit; después de un cambio
+sin commit puede fallar a propósito hasta hacer el commit de la fase.
 
-### Convenciones
+## Verificación manual sugerida
 
-- Toda mutación del estado pasa por `js/features/actions.js` o, para el cierre diario,
-  por `js/features/rollover.js`. Usá `commit()` cuando la UI deba repintarse y `save()`
-  para campos de texto que ya reflejan el valor. No modificar `localStorage` desde la UI.
-- Los cálculos derivados viven en `state/selectors.js`.
-- Las acciones del DOM se declaran con `data-action` y se manejan en el mapa de
-  `app.js`. Los campos editables usan `data-edit`. No agregar `onclick` inline.
-- Todo texto del usuario se interpola con `esc()` o `escAttr()` (atributos).
-- Los límites y claves están en `js/config.js`.
-- Si cambia la forma de los datos, subí `SCHEMA_VERSION` en `state/schema.js`,
-  agregá la normalización en `state/normalize.js` y un caso en `scripts/test.mjs`.
+1. Servir por HTTP y comprobar que `index.html`, CSS y módulos cargan sin errores
+   en la consola.
+2. Migrar un estado v2 y confirmar la copia cruda en `localStorage`, las 37
+   fechas y los estados completo/mínimo/parcial.
+3. Marcar series hoy hasta completar; verificar que se crea una sola sesión y que
+   cambiar de modo pide confirmación.
+4. Abrir un día futuro, comprobar que no hay checks y editar la plantilla.
+5. En Historial, comprobar las siete columnas, los días vacíos, el detalle, la
+   edición de un día pasado y la racha.
+6. Probar exportación, importación de la semilla v3 y reinicio de hoy.
+7. Revisar en el teléfono el menú FAB, la tira semanal, el temporizador y los
+   avisos flotantes.
 
-### Cómo agregar una feature
+## Límites actuales
 
-1. Anotarla en `TODO.md` bajo `### Siguiente` con su versión `vX.Y.0` reservada.
-2. Agregar la acción en `features/actions.js` (y el selector si hace falta).
-3. Pintar la UI en `ui/` usando `data-action`/`data-edit`.
-4. Enlazar la acción en el mapa de `app.js`.
-5. Agregar pruebas en `scripts/test.mjs`.
-6. `npm test`, `npm run check`, commit `vX.Y.Z` y tag al cerrar la fase.
+- PWA, manifest, service worker y uso offline quedan para `v0.10.0`.
+- Estadísticas ampliadas de cumplimiento quedan para `v0.11.0`.
+- No hay vista de calendario por diseño: la navegación es por tira semanal,
+  tarjetas semanales y selector de fecha.
+- Varias pestañas abiertas pueden pisarse; la última escritura gana.
+- El temporizador vive en la página y no se muestra fuera de la vista Hoy del día
+  actual.
 
-### Checklist manual de UI
+## Convenciones y versionado
 
-La suite automática cubre la lógica; esta lista cubre lo que necesita ojos y oído. Se
-ejecuta en el teléfono o en un navegador con la app servida por HTTP.
-
-- [ ] Claro/oscuro: tabs, tarjetas, banner de edición, toast y hoja de reinicio.
-- [ ] Edición: alta de grupo/ejercicio, override mínimo, opcional, flechas, duplicar,
-      borrar y **Deshacer**.
-- [ ] Uso: `−` / `+` de series, toque en el nombre, cambio de modo y reinicio del modo
-      actual o de ambos.
-- [ ] Historial: agrupación por mes, puntos, detalle y nombres accesibles con lector de
-      pantalla.
-- [ ] Reinicio diario: cambiar la fecha del sistema, volver a la app y comprobar que se
-      archiva el día anterior una sola vez y los checks quedan en cero.
-- [ ] Timer: preset, **Segundos** / **Aplicar**, Iniciar/Pausar/Reanudar/Reset, audio y
-      vibración.
-- [ ] Respaldo: exportar, importar, cancelar y error de archivo.
-- [ ] Móvil: ancho de 320 px, objetivos táctiles de 44 px, teclado y foco visible.
-
-## Versionado
-
-El proyecto sigue Project Flow: cada commit lleva `vX.Y.Z` y lista los archivos
-tocados; `git log` es la bitácora y `git tag` marca cada fase cerrada. La versión
-vigente está en `VERSION`; `package.json` y `TODO.md` son copias derivadas que
-`scripts/bump.mjs` mantiene sincronizadas. `npm run check` detecta incoherencias.
-
-## Límites conocidos y próximos pasos
-
-- El reinicio diario se evalúa al cargar, al volver a la pestaña y al recuperar foco.
-  No hay temporizador de medianoche: si la app queda abierta y enfocada, los checks se
-  reinician en la próxima vuelta.
-- Varias pestañas abiertas no están sincronizadas; cada una detecta el cambio de fecha
-  al volver a estar visible.
-- El historial guarda como máximo una entrada por día, fecha y modo. Los parciales se
-  archivan al cambiar de fecha; el reinicio manual no crea entradas.
-- El audio del temporizador se desbloquea al tocar Iniciar; si el navegador igual lo
-  bloquea, la vibración y el parpadeo funcionan sin sonido.
-- Sin estadísticas semanales ni PWA/offline por ahora. Son candidatas naturales para
-  las próximas fases.
+- Cada fase se documenta en `TODO.md` con una descripción atómica y un tablero.
+- `VERSION` y `package.json` deben coincidir con el último commit.
+- Los commits usan el prefijo `Vx.y.Z:` y el hito se marca con `git tag vX.Y.Z`.
+- La app mantiene la clave `gymrutina_state_v1` por compatibilidad; la versión
+  real del formato está en `schemaVersion`.

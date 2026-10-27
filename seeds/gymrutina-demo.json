@@ -1,11 +1,11 @@
 {
   "app": "gymrutina",
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "exportedAt": "2026-10-26T09:00:00.000Z",
-  "days": {
+  "template": {
     "Lun": {
       "title": "Lun",
-      "mode": "completo",
+      "defaultMode": "completo",
       "notes": "Pecho y tríceps. Calentar 10 minutos.",
       "groups": [
         {
@@ -18,33 +18,21 @@
               "name": "Press banca",
               "steps": 4,
               "minName": "Press banca (ligero)",
-              "minSteps": 2,
-              "progress": {
-                "completo": 2,
-                "minimo": 0
-              }
+              "minSteps": 2
             },
             {
               "id": "d1-i2",
               "name": "Press inclinado",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 1,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d1-i3",
               "name": "Aperturas en polea",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         },
@@ -58,22 +46,14 @@
               "name": "Fondos en paralelas",
               "steps": 3,
               "minName": null,
-              "minSteps": 2,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": 2
             },
             {
               "id": "d1-i5",
               "name": "Extensión de tríceps",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         },
@@ -87,233 +67,15 @@
               "name": "Cinta suave",
               "steps": 1,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
-        }
-      ],
-      "log": [
-        {
-          "date": "2026-08-03",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Press inclinado",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Aperturas en polea",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Fondos en paralelas",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Cinta suave",
-              "done": true,
-              "group": "Cardio"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-08-31",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Press inclinado",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Aperturas en polea",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Fondos en paralelas",
-              "done": false,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": false,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Cinta suave",
-              "done": false,
-              "group": "Cardio"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-09-14",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Press inclinado",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Aperturas en polea",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Fondos en paralelas",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Cinta suave",
-              "done": true,
-              "group": "Cardio"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-28",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Press banca (ligero)",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Press inclinado",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Aperturas en polea",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Fondos en paralelas",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Tríceps"
-            }
-          ],
-          "status": "min"
-        },
-        {
-          "date": "2026-10-12",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Press inclinado",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Aperturas en polea",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Fondos en paralelas",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Cinta suave",
-              "done": true,
-              "group": "Cardio"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-10-19",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Press banca (ligero)",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Press inclinado",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Aperturas en polea",
-              "done": true,
-              "group": "Pecho"
-            },
-            {
-              "text": "Fondos en paralelas",
-              "done": false,
-              "group": "Tríceps"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": false,
-              "group": "Tríceps"
-            }
-          ],
-          "status": "partial"
         }
       ]
     },
     "Mar": {
       "title": "Mar",
-      "mode": "completo",
+      "defaultMode": "completo",
       "notes": "Espalda y bíceps. Cuidar la técnica en dominadas.",
       "groups": [
         {
@@ -326,33 +88,21 @@
               "name": "Dominadas",
               "steps": 4,
               "minName": "Dominadas asistidas",
-              "minSteps": 2,
-              "progress": {
-                "completo": 1,
-                "minimo": 0
-              }
+              "minSteps": 2
             },
             {
               "id": "d2-i2",
               "name": "Remo con barra",
               "steps": 4,
               "minName": null,
-              "minSteps": 3,
-              "progress": {
-                "completo": 2,
-                "minimo": 0
-              }
+              "minSteps": 3
             },
             {
               "id": "d2-i3",
               "name": "Jalón al pecho",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         },
@@ -366,22 +116,14 @@
               "name": "Curl con barra",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 1,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d2-i5",
               "name": "Curl martillo",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         },
@@ -395,201 +137,15 @@
               "name": "Plancha",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
-        }
-      ],
-      "log": [
-        {
-          "date": "2026-08-04",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Dominadas",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Jalón al pecho",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Curl con barra",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Curl martillo",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-01",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Dominadas",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Jalón al pecho",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Curl con barra",
-              "done": false,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Curl martillo",
-              "done": false,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Plancha",
-              "done": false,
-              "group": "Core"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-09-15",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Dominadas",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Jalón al pecho",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Curl con barra",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Curl martillo",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-10-06",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Dominadas asistidas",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Jalón al pecho",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Curl con barra",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Curl martillo",
-              "done": true,
-              "group": "Bíceps"
-            }
-          ],
-          "status": "min"
-        },
-        {
-          "date": "2026-10-20",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Dominadas",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Jalón al pecho",
-              "done": true,
-              "group": "Espalda"
-            },
-            {
-              "text": "Curl con barra",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Curl martillo",
-              "done": true,
-              "group": "Bíceps"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "full"
         }
       ]
     },
     "Mié": {
       "title": "Mié",
-      "mode": "minimo",
+      "defaultMode": "minimo",
       "notes": "Piernas. En modo mínimo, bajar volumen pero mantener sentadilla.",
       "groups": [
         {
@@ -602,44 +158,28 @@
               "name": "Sentadilla",
               "steps": 5,
               "minName": "Sentadilla (series cómodas)",
-              "minSteps": 3,
-              "progress": {
-                "completo": 0,
-                "minimo": 2
-              }
+              "minSteps": 3
             },
             {
               "id": "d3-i2",
               "name": "Prensa",
               "steps": 4,
               "minName": null,
-              "minSteps": 3,
-              "progress": {
-                "completo": 0,
-                "minimo": 1
-              }
+              "minSteps": 3
             },
             {
               "id": "d3-i3",
               "name": "Peso muerto rumano",
               "steps": 4,
               "minName": null,
-              "minSteps": 2,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": 2
             },
             {
               "id": "d3-i4",
               "name": "Extensiones",
               "steps": 3,
               "minName": null,
-              "minSteps": 2,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": 2
             }
           ]
         },
@@ -653,11 +193,7 @@
               "name": "Elevación de gemelos",
               "steps": 3,
               "minName": null,
-              "minSteps": 2,
-              "progress": {
-                "completo": 0,
-                "minimo": 1
-              }
+              "minSteps": 2
             }
           ]
         },
@@ -671,196 +207,15 @@
               "name": "Movilidad de cadera",
               "steps": 2,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
-        }
-      ],
-      "log": [
-        {
-          "date": "2026-08-05",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Prensa",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Peso muerto rumano",
-              "done": false,
-              "group": "Piernas"
-            },
-            {
-              "text": "Extensiones",
-              "done": false,
-              "group": "Piernas"
-            },
-            {
-              "text": "Elevación de gemelos",
-              "done": false,
-              "group": "Gemelos"
-            },
-            {
-              "text": "Movilidad de cadera",
-              "done": false,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-09-02",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Prensa",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Peso muerto rumano",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Extensiones",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Elevación de gemelos",
-              "done": true,
-              "group": "Gemelos"
-            },
-            {
-              "text": "Movilidad de cadera",
-              "done": true,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-16",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Sentadilla (series cómodas)",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Prensa",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Peso muerto rumano",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Extensiones",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Elevación de gemelos",
-              "done": true,
-              "group": "Gemelos"
-            }
-          ],
-          "status": "min"
-        },
-        {
-          "date": "2026-10-07",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Prensa",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Peso muerto rumano",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Extensiones",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Elevación de gemelos",
-              "done": true,
-              "group": "Gemelos"
-            },
-            {
-              "text": "Movilidad de cadera",
-              "done": true,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-10-21",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Sentadilla (series cómodas)",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Prensa",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Peso muerto rumano",
-              "done": true,
-              "group": "Piernas"
-            },
-            {
-              "text": "Extensiones",
-              "done": false,
-              "group": "Piernas"
-            },
-            {
-              "text": "Elevación de gemelos",
-              "done": false,
-              "group": "Gemelos"
-            }
-          ],
-          "status": "partial"
         }
       ]
     },
     "Jue": {
       "title": "Jue",
-      "mode": "completo",
+      "defaultMode": "completo",
       "notes": "Hombro y core. No llegar al fallo en press militar.",
       "groups": [
         {
@@ -873,33 +228,21 @@
               "name": "Press militar",
               "steps": 4,
               "minName": null,
-              "minSteps": 2,
-              "progress": {
-                "completo": 1,
-                "minimo": 0
-              }
+              "minSteps": 2
             },
             {
               "id": "d4-i2",
               "name": "Elevaciones laterales",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d4-i3",
               "name": "Pájaros",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         },
@@ -913,192 +256,22 @@
               "name": "Plancha",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 1,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d4-i5",
               "name": "Abdominales en polea",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
-        }
-      ],
-      "log": [
-        {
-          "date": "2026-08-06",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press militar",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Elevaciones laterales",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Pájaros",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            },
-            {
-              "text": "Abdominales en polea",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-03",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Press militar",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Elevaciones laterales",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Pájaros",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            },
-            {
-              "text": "Abdominales en polea",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "min"
-        },
-        {
-          "date": "2026-09-17",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press militar",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Elevaciones laterales",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Pájaros",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            },
-            {
-              "text": "Abdominales en polea",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-10-08",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Press militar",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Elevaciones laterales",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Pájaros",
-              "done": false,
-              "group": "Hombro"
-            },
-            {
-              "text": "Plancha",
-              "done": false,
-              "group": "Core"
-            },
-            {
-              "text": "Abdominales en polea",
-              "done": false,
-              "group": "Core"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-10-22",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Press militar",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Elevaciones laterales",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Pájaros",
-              "done": true,
-              "group": "Hombro"
-            },
-            {
-              "text": "Plancha",
-              "done": true,
-              "group": "Core"
-            },
-            {
-              "text": "Abdominales en polea",
-              "done": true,
-              "group": "Core"
-            }
-          ],
-          "status": "full"
         }
       ]
     },
     "Vie": {
       "title": "Vie",
-      "mode": "completo",
+      "defaultMode": "completo",
       "notes": "Full body. Priorizar técnica sobre peso.",
       "groups": [
         {
@@ -1111,44 +284,28 @@
               "name": "Peso muerto",
               "steps": 4,
               "minName": null,
-              "minSteps": 2,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": 2
             },
             {
               "id": "d5-i2",
               "name": "Remo con barra",
               "steps": 4,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d5-i3",
               "name": "Press banca",
               "steps": 4,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d5-i4",
               "name": "Sentadilla",
               "steps": 4,
               "minName": null,
-              "minSteps": 3,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": 3
             }
           ]
         },
@@ -1162,254 +319,22 @@
               "name": "Curl alterno",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d5-i6",
               "name": "Extensión de tríceps",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
-        }
-      ],
-      "log": [
-        {
-          "date": "2026-08-07",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Peso muerto",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Press banca",
-              "done": false,
-              "group": "Full body"
-            },
-            {
-              "text": "Sentadilla",
-              "done": false,
-              "group": "Full body"
-            },
-            {
-              "text": "Curl alterno",
-              "done": false,
-              "group": "Brazos"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": false,
-              "group": "Brazos"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-08-21",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Peso muerto",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Curl alterno",
-              "done": true,
-              "group": "Brazos"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Brazos"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-04",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Peso muerto",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Curl alterno",
-              "done": true,
-              "group": "Brazos"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Brazos"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-18",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Peso muerto",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Press banca",
-              "done": false,
-              "group": "Full body"
-            },
-            {
-              "text": "Sentadilla",
-              "done": false,
-              "group": "Full body"
-            },
-            {
-              "text": "Curl alterno",
-              "done": false,
-              "group": "Brazos"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": false,
-              "group": "Brazos"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-10-09",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Peso muerto",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Curl alterno",
-              "done": true,
-              "group": "Brazos"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Brazos"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-10-23",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Peso muerto",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Remo con barra",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Press banca",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Sentadilla",
-              "done": true,
-              "group": "Full body"
-            },
-            {
-              "text": "Curl alterno",
-              "done": true,
-              "group": "Brazos"
-            },
-            {
-              "text": "Extensión de tríceps",
-              "done": true,
-              "group": "Brazos"
-            }
-          ],
-          "status": "min"
         }
       ]
     },
     "Sáb": {
       "title": "Sáb",
-      "mode": "completo",
+      "defaultMode": "completo",
       "notes": "Cardio y movilidad. Si venís cansado, hacé solo movilidad.",
       "groups": [
         {
@@ -1422,22 +347,14 @@
               "name": "Cinta",
               "steps": 1,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d6-i2",
               "name": "Bicicleta",
               "steps": 1,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         },
@@ -1451,157 +368,22 @@
               "name": "Movilidad general",
               "steps": 2,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d6-i4",
               "name": "Estiramientos",
               "steps": 2,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
-        }
-      ],
-      "log": [
-        {
-          "date": "2026-08-08",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Cinta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Bicicleta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Movilidad"
-            },
-            {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-09-05",
-          "mode": "minimo",
-          "items": [
-            {
-              "text": "Cinta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Bicicleta",
-              "done": true,
-              "group": "Cardio"
-            }
-          ],
-          "status": "min"
-        },
-        {
-          "date": "2026-09-19",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Cinta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Bicicleta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Movilidad"
-            },
-            {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "full"
-        },
-        {
-          "date": "2026-10-10",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Cinta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Bicicleta",
-              "done": false,
-              "group": "Cardio"
-            },
-            {
-              "text": "Movilidad general",
-              "done": false,
-              "group": "Movilidad"
-            },
-            {
-              "text": "Estiramientos",
-              "done": false,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "partial"
-        },
-        {
-          "date": "2026-10-24",
-          "mode": "completo",
-          "items": [
-            {
-              "text": "Cinta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Bicicleta",
-              "done": true,
-              "group": "Cardio"
-            },
-            {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Movilidad"
-            },
-            {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Movilidad"
-            }
-          ],
-          "status": "full"
         }
       ]
     },
     "Dom": {
       "title": "Dom",
-      "mode": "completo",
+      "defaultMode": "completo",
       "notes": "Descanso activo: caminata suave y estiramientos.",
       "groups": [
         {
@@ -1614,147 +396,1947 @@
               "name": "Caminata",
               "steps": 1,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d7-i2",
               "name": "Movilidad general",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             },
             {
               "id": "d7-i3",
               "name": "Estiramientos",
               "steps": 3,
               "minName": null,
-              "minSteps": null,
-              "progress": {
-                "completo": 0,
-                "minimo": 0
-              }
+              "minSteps": null
             }
           ]
         }
-      ],
-      "log": [
+      ]
+    }
+  },
+  "sessions": {
+    "2026-08-03": {
+      "date": "2026-08-03",
+      "day": "Lun",
+      "mode": "completo",
+      "groups": [
         {
-          "date": "2026-08-09",
-          "mode": "completo",
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
           "items": [
             {
-              "text": "Caminata",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d1-i1",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
             },
             {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d1-i2",
+              "text": "Press inclinado",
+              "steps": 3,
+              "done": 3
             },
             {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d1-i3",
+              "text": "Aperturas en polea",
+              "steps": 3,
+              "done": 3
             }
-          ],
-          "status": "full"
+          ]
         },
         {
-          "date": "2026-09-06",
-          "mode": "minimo",
+          "id": "d1-g2",
+          "name": "Tríceps",
+          "optional": false,
           "items": [
             {
-              "text": "Caminata",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d1-i4",
+              "text": "Fondos en paralelas",
+              "steps": 3,
+              "done": 3
             },
             {
-              "text": "Movilidad general",
-              "done": false,
-              "group": "Descanso activo"
-            },
-            {
-              "text": "Estiramientos",
-              "done": false,
-              "group": "Descanso activo"
+              "id": "d1-i5",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
             }
-          ],
-          "status": "partial"
+          ]
         },
         {
-          "date": "2026-09-20",
-          "mode": "minimo",
+          "id": "d1-g3",
+          "name": "Cardio",
+          "optional": true,
           "items": [
             {
-              "text": "Caminata",
-              "done": true,
-              "group": "Descanso activo"
-            },
-            {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Descanso activo"
-            },
-            {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d1-i6",
+              "text": "Cinta suave",
+              "steps": 1,
+              "done": 1
             }
-          ],
-          "status": "min"
+          ]
+        }
+      ]
+    },
+    "2026-08-04": {
+      "date": "2026-08-04",
+      "day": "Mar",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d2-g1",
+          "name": "Espalda",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i1",
+              "text": "Dominadas",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i3",
+              "text": "Jalón al pecho",
+              "steps": 3,
+              "done": 3
+            }
+          ]
         },
         {
-          "date": "2026-10-11",
-          "mode": "completo",
+          "id": "d2-g2",
+          "name": "Bíceps",
+          "optional": false,
           "items": [
             {
-              "text": "Caminata",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d2-i4",
+              "text": "Curl con barra",
+              "steps": 3,
+              "done": 3
             },
             {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Descanso activo"
-            },
-            {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d2-i5",
+              "text": "Curl martillo",
+              "steps": 3,
+              "done": 3
             }
-          ],
-          "status": "full"
+          ]
         },
         {
-          "date": "2026-10-25",
-          "mode": "completo",
+          "id": "d2-g3",
+          "name": "Core",
+          "optional": true,
           "items": [
             {
-              "text": "Caminata",
-              "done": true,
-              "group": "Descanso activo"
-            },
-            {
-              "text": "Movilidad general",
-              "done": true,
-              "group": "Descanso activo"
-            },
-            {
-              "text": "Estiramientos",
-              "done": true,
-              "group": "Descanso activo"
+              "id": "d2-i6",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
             }
-          ],
-          "status": "full"
+          ]
+        }
+      ]
+    },
+    "2026-08-05": {
+      "date": "2026-08-05",
+      "day": "Mié",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d3-g1",
+          "name": "Piernas",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i1",
+              "text": "Sentadilla",
+              "steps": 5,
+              "done": 5
+            },
+            {
+              "id": "d3-i2",
+              "text": "Prensa",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d3-i3",
+              "text": "Peso muerto rumano",
+              "steps": 4,
+              "done": 0
+            },
+            {
+              "id": "d3-i4",
+              "text": "Extensiones",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d3-g2",
+          "name": "Gemelos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i5",
+              "text": "Elevación de gemelos",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d3-g3",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d3-i6",
+              "text": "Movilidad de cadera",
+              "steps": 2,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-08-06": {
+      "date": "2026-08-06",
+      "day": "Jue",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d4-g1",
+          "name": "Hombro",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i1",
+              "text": "Press militar",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d4-i2",
+              "text": "Elevaciones laterales",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i3",
+              "text": "Pájaros",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d4-g2",
+          "name": "Core",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i4",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i5",
+              "text": "Abdominales en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-08-07": {
+      "date": "2026-08-07",
+      "day": "Vie",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d5-g1",
+          "name": "Full body",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i1",
+              "text": "Peso muerto",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i3",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 0
+            },
+            {
+              "id": "d5-i4",
+              "text": "Sentadilla",
+              "steps": 4,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d5-g2",
+          "name": "Brazos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i5",
+              "text": "Curl alterno",
+              "steps": 3,
+              "done": 0
+            },
+            {
+              "id": "d5-i6",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-08-08": {
+      "date": "2026-08-08",
+      "day": "Sáb",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d6-g1",
+          "name": "Cardio",
+          "optional": false,
+          "items": [
+            {
+              "id": "d6-i1",
+              "text": "Cinta",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d6-i2",
+              "text": "Bicicleta",
+              "steps": 1,
+              "done": 1
+            }
+          ]
+        },
+        {
+          "id": "d6-g2",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d6-i3",
+              "text": "Movilidad general",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d6-i4",
+              "text": "Estiramientos",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        }
+      ]
+    },
+    "2026-08-09": {
+      "date": "2026-08-09",
+      "day": "Dom",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d7-g1",
+          "name": "Descanso activo",
+          "optional": false,
+          "items": [
+            {
+              "id": "d7-i1",
+              "text": "Caminata",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d7-i2",
+              "text": "Movilidad general",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d7-i3",
+              "text": "Estiramientos",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-08-21": {
+      "date": "2026-08-21",
+      "day": "Vie",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d5-g1",
+          "name": "Full body",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i1",
+              "text": "Peso muerto",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i3",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i4",
+              "text": "Sentadilla",
+              "steps": 4,
+              "done": 4
+            }
+          ]
+        },
+        {
+          "id": "d5-g2",
+          "name": "Brazos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i5",
+              "text": "Curl alterno",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d5-i6",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-08-31": {
+      "date": "2026-08-31",
+      "day": "Lun",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i1",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d1-i2",
+              "text": "Press inclinado",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i3",
+              "text": "Aperturas en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g2",
+          "name": "Tríceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i4",
+              "text": "Fondos en paralelas",
+              "steps": 3,
+              "done": 0
+            },
+            {
+              "id": "d1-i5",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d1-g3",
+          "name": "Cardio",
+          "optional": true,
+          "items": [
+            {
+              "id": "d1-i6",
+              "text": "Cinta suave",
+              "steps": 1,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-01": {
+      "date": "2026-09-01",
+      "day": "Mar",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d2-g1",
+          "name": "Espalda",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i1",
+              "text": "Dominadas",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i3",
+              "text": "Jalón al pecho",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d2-g2",
+          "name": "Bíceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i4",
+              "text": "Curl con barra",
+              "steps": 3,
+              "done": 0
+            },
+            {
+              "id": "d2-i5",
+              "text": "Curl martillo",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d2-g3",
+          "name": "Core",
+          "optional": true,
+          "items": [
+            {
+              "id": "d2-i6",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-02": {
+      "date": "2026-09-02",
+      "day": "Mié",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d3-g1",
+          "name": "Piernas",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i1",
+              "text": "Sentadilla",
+              "steps": 5,
+              "done": 5
+            },
+            {
+              "id": "d3-i2",
+              "text": "Prensa",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d3-i3",
+              "text": "Peso muerto rumano",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d3-i4",
+              "text": "Extensiones",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d3-g2",
+          "name": "Gemelos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i5",
+              "text": "Elevación de gemelos",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d3-g3",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d3-i6",
+              "text": "Movilidad de cadera",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-03": {
+      "date": "2026-09-03",
+      "day": "Jue",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d4-g1",
+          "name": "Hombro",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i1",
+              "text": "Press militar",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d4-i2",
+              "text": "Elevaciones laterales",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i3",
+              "text": "Pájaros",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d4-g2",
+          "name": "Core",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i4",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i5",
+              "text": "Abdominales en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-04": {
+      "date": "2026-09-04",
+      "day": "Vie",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d5-g1",
+          "name": "Full body",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i1",
+              "text": "Peso muerto",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i3",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i4",
+              "text": "Sentadilla",
+              "steps": 4,
+              "done": 4
+            }
+          ]
+        },
+        {
+          "id": "d5-g2",
+          "name": "Brazos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i5",
+              "text": "Curl alterno",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d5-i6",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-05": {
+      "date": "2026-09-05",
+      "day": "Sáb",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d6-g1",
+          "name": "Cardio",
+          "optional": false,
+          "items": [
+            {
+              "id": "d6-i1",
+              "text": "Cinta",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d6-i2",
+              "text": "Bicicleta",
+              "steps": 1,
+              "done": 1
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-06": {
+      "date": "2026-09-06",
+      "day": "Dom",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d7-g1",
+          "name": "Descanso activo",
+          "optional": false,
+          "items": [
+            {
+              "id": "d7-i1",
+              "text": "Caminata",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d7-i2",
+              "text": "Movilidad general",
+              "steps": 3,
+              "done": 0
+            },
+            {
+              "id": "d7-i3",
+              "text": "Estiramientos",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-14": {
+      "date": "2026-09-14",
+      "day": "Lun",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i1",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d1-i2",
+              "text": "Press inclinado",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i3",
+              "text": "Aperturas en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g2",
+          "name": "Tríceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i4",
+              "text": "Fondos en paralelas",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i5",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g3",
+          "name": "Cardio",
+          "optional": true,
+          "items": [
+            {
+              "id": "d1-i6",
+              "text": "Cinta suave",
+              "steps": 1,
+              "done": 1
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-15": {
+      "date": "2026-09-15",
+      "day": "Mar",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d2-g1",
+          "name": "Espalda",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i1",
+              "text": "Dominadas",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i3",
+              "text": "Jalón al pecho",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d2-g2",
+          "name": "Bíceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i4",
+              "text": "Curl con barra",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d2-i5",
+              "text": "Curl martillo",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d2-g3",
+          "name": "Core",
+          "optional": true,
+          "items": [
+            {
+              "id": "d2-i6",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-16": {
+      "date": "2026-09-16",
+      "day": "Mié",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d3-g1",
+          "name": "Piernas",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i1",
+              "text": "Sentadilla (series cómodas)",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d3-i2",
+              "text": "Prensa",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d3-i3",
+              "text": "Peso muerto rumano",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d3-i4",
+              "text": "Extensiones",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        },
+        {
+          "id": "d3-g2",
+          "name": "Gemelos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i5",
+              "text": "Elevación de gemelos",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-17": {
+      "date": "2026-09-17",
+      "day": "Jue",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d4-g1",
+          "name": "Hombro",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i1",
+              "text": "Press militar",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d4-i2",
+              "text": "Elevaciones laterales",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i3",
+              "text": "Pájaros",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d4-g2",
+          "name": "Core",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i4",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i5",
+              "text": "Abdominales en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-18": {
+      "date": "2026-09-18",
+      "day": "Vie",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d5-g1",
+          "name": "Full body",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i1",
+              "text": "Peso muerto",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d5-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i3",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 0
+            },
+            {
+              "id": "d5-i4",
+              "text": "Sentadilla",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d5-g2",
+          "name": "Brazos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i5",
+              "text": "Curl alterno",
+              "steps": 3,
+              "done": 0
+            },
+            {
+              "id": "d5-i6",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-19": {
+      "date": "2026-09-19",
+      "day": "Sáb",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d6-g1",
+          "name": "Cardio",
+          "optional": false,
+          "items": [
+            {
+              "id": "d6-i1",
+              "text": "Cinta",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d6-i2",
+              "text": "Bicicleta",
+              "steps": 1,
+              "done": 1
+            }
+          ]
+        },
+        {
+          "id": "d6-g2",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d6-i3",
+              "text": "Movilidad general",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d6-i4",
+              "text": "Estiramientos",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-20": {
+      "date": "2026-09-20",
+      "day": "Dom",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d7-g1",
+          "name": "Descanso activo",
+          "optional": false,
+          "items": [
+            {
+              "id": "d7-i1",
+              "text": "Caminata",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d7-i2",
+              "text": "Movilidad general",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d7-i3",
+              "text": "Estiramientos",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-09-28": {
+      "date": "2026-09-28",
+      "day": "Lun",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i1",
+              "text": "Press banca (ligero)",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d1-i2",
+              "text": "Press inclinado",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i3",
+              "text": "Aperturas en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g2",
+          "name": "Tríceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i4",
+              "text": "Fondos en paralelas",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d1-i5",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-06": {
+      "date": "2026-10-06",
+      "day": "Mar",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d2-g1",
+          "name": "Espalda",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i1",
+              "text": "Dominadas asistidas",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d2-i2",
+              "text": "Remo con barra",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d2-i3",
+              "text": "Jalón al pecho",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d2-g2",
+          "name": "Bíceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i4",
+              "text": "Curl con barra",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d2-i5",
+              "text": "Curl martillo",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-07": {
+      "date": "2026-10-07",
+      "day": "Mié",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d3-g1",
+          "name": "Piernas",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i1",
+              "text": "Sentadilla",
+              "steps": 5,
+              "done": 5
+            },
+            {
+              "id": "d3-i2",
+              "text": "Prensa",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d3-i3",
+              "text": "Peso muerto rumano",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d3-i4",
+              "text": "Extensiones",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d3-g2",
+          "name": "Gemelos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i5",
+              "text": "Elevación de gemelos",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d3-g3",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d3-i6",
+              "text": "Movilidad de cadera",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-08": {
+      "date": "2026-10-08",
+      "day": "Jue",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d4-g1",
+          "name": "Hombro",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i1",
+              "text": "Press militar",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d4-i2",
+              "text": "Elevaciones laterales",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i3",
+              "text": "Pájaros",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d4-g2",
+          "name": "Core",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i4",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 0
+            },
+            {
+              "id": "d4-i5",
+              "text": "Abdominales en polea",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-09": {
+      "date": "2026-10-09",
+      "day": "Vie",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d5-g1",
+          "name": "Full body",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i1",
+              "text": "Peso muerto",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i3",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i4",
+              "text": "Sentadilla",
+              "steps": 4,
+              "done": 4
+            }
+          ]
+        },
+        {
+          "id": "d5-g2",
+          "name": "Brazos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i5",
+              "text": "Curl alterno",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d5-i6",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-10": {
+      "date": "2026-10-10",
+      "day": "Sáb",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d6-g1",
+          "name": "Cardio",
+          "optional": false,
+          "items": [
+            {
+              "id": "d6-i1",
+              "text": "Cinta",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d6-i2",
+              "text": "Bicicleta",
+              "steps": 1,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d6-g2",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d6-i3",
+              "text": "Movilidad general",
+              "steps": 2,
+              "done": 0
+            },
+            {
+              "id": "d6-i4",
+              "text": "Estiramientos",
+              "steps": 2,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-11": {
+      "date": "2026-10-11",
+      "day": "Dom",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d7-g1",
+          "name": "Descanso activo",
+          "optional": false,
+          "items": [
+            {
+              "id": "d7-i1",
+              "text": "Caminata",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d7-i2",
+              "text": "Movilidad general",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d7-i3",
+              "text": "Estiramientos",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-12": {
+      "date": "2026-10-12",
+      "day": "Lun",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i1",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d1-i2",
+              "text": "Press inclinado",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i3",
+              "text": "Aperturas en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g2",
+          "name": "Tríceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i4",
+              "text": "Fondos en paralelas",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i5",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g3",
+          "name": "Cardio",
+          "optional": true,
+          "items": [
+            {
+              "id": "d1-i6",
+              "text": "Cinta suave",
+              "steps": 1,
+              "done": 1
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-19": {
+      "date": "2026-10-19",
+      "day": "Lun",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d1-g1",
+          "name": "Pecho",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i1",
+              "text": "Press banca (ligero)",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d1-i2",
+              "text": "Press inclinado",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d1-i3",
+              "text": "Aperturas en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d1-g2",
+          "name": "Tríceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d1-i4",
+              "text": "Fondos en paralelas",
+              "steps": 2,
+              "done": 0
+            },
+            {
+              "id": "d1-i5",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-20": {
+      "date": "2026-10-20",
+      "day": "Mar",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d2-g1",
+          "name": "Espalda",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i1",
+              "text": "Dominadas",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d2-i3",
+              "text": "Jalón al pecho",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d2-g2",
+          "name": "Bíceps",
+          "optional": false,
+          "items": [
+            {
+              "id": "d2-i4",
+              "text": "Curl con barra",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d2-i5",
+              "text": "Curl martillo",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d2-g3",
+          "name": "Core",
+          "optional": true,
+          "items": [
+            {
+              "id": "d2-i6",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-21": {
+      "date": "2026-10-21",
+      "day": "Mié",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d3-g1",
+          "name": "Piernas",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i1",
+              "text": "Sentadilla (series cómodas)",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d3-i2",
+              "text": "Prensa",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d3-i3",
+              "text": "Peso muerto rumano",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d3-i4",
+              "text": "Extensiones",
+              "steps": 2,
+              "done": 0
+            }
+          ]
+        },
+        {
+          "id": "d3-g2",
+          "name": "Gemelos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d3-i5",
+              "text": "Elevación de gemelos",
+              "steps": 2,
+              "done": 0
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-22": {
+      "date": "2026-10-22",
+      "day": "Jue",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d4-g1",
+          "name": "Hombro",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i1",
+              "text": "Press militar",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d4-i2",
+              "text": "Elevaciones laterales",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i3",
+              "text": "Pájaros",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d4-g2",
+          "name": "Core",
+          "optional": false,
+          "items": [
+            {
+              "id": "d4-i4",
+              "text": "Plancha",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d4-i5",
+              "text": "Abdominales en polea",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-23": {
+      "date": "2026-10-23",
+      "day": "Vie",
+      "mode": "minimo",
+      "groups": [
+        {
+          "id": "d5-g1",
+          "name": "Full body",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i1",
+              "text": "Peso muerto",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d5-i2",
+              "text": "Remo con barra",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i3",
+              "text": "Press banca",
+              "steps": 4,
+              "done": 4
+            },
+            {
+              "id": "d5-i4",
+              "text": "Sentadilla",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        },
+        {
+          "id": "d5-g2",
+          "name": "Brazos",
+          "optional": false,
+          "items": [
+            {
+              "id": "d5-i5",
+              "text": "Curl alterno",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d5-i6",
+              "text": "Extensión de tríceps",
+              "steps": 3,
+              "done": 3
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-24": {
+      "date": "2026-10-24",
+      "day": "Sáb",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d6-g1",
+          "name": "Cardio",
+          "optional": false,
+          "items": [
+            {
+              "id": "d6-i1",
+              "text": "Cinta",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d6-i2",
+              "text": "Bicicleta",
+              "steps": 1,
+              "done": 1
+            }
+          ]
+        },
+        {
+          "id": "d6-g2",
+          "name": "Movilidad",
+          "optional": true,
+          "items": [
+            {
+              "id": "d6-i3",
+              "text": "Movilidad general",
+              "steps": 2,
+              "done": 2
+            },
+            {
+              "id": "d6-i4",
+              "text": "Estiramientos",
+              "steps": 2,
+              "done": 2
+            }
+          ]
+        }
+      ]
+    },
+    "2026-10-25": {
+      "date": "2026-10-25",
+      "day": "Dom",
+      "mode": "completo",
+      "groups": [
+        {
+          "id": "d7-g1",
+          "name": "Descanso activo",
+          "optional": false,
+          "items": [
+            {
+              "id": "d7-i1",
+              "text": "Caminata",
+              "steps": 1,
+              "done": 1
+            },
+            {
+              "id": "d7-i2",
+              "text": "Movilidad general",
+              "steps": 3,
+              "done": 3
+            },
+            {
+              "id": "d7-i3",
+              "text": "Estiramientos",
+              "steps": 3,
+              "done": 3
+            }
+          ]
         }
       ]
     }

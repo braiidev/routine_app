@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Rutina de gimnasio: seguimiento diario con modos completo/mínimo, historial y temporizador.">
+<meta name="description" content="Rutina de gimnasio: sesiones por fecha, historial semanal, racha y temporizador.">
 <meta name="theme-color" content="#4f46e5">
-<title>Rutina</title>
+<title>GymRutina</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
 <main class="wrap">
-  <h1 id="headerIcon"> Rutina</h1>
-  <div class="meta">Agregá, modificá y seguí tu progresión día a día</div>
+  <h1 id="headerIcon"> GymRutina</h1>
+  <div class="meta">Sesiones por fecha, historial semanal y racha</div>
+  <nav class="primary-nav" id="primaryNav" aria-label="Vistas principales"></nav>
   <div class="tabs" id="tabs"></div>
   <div id="days"></div>
-  <section class="timer-box" aria-label="Temporizador de descanso">
+  <section class="timer-box" id="timerBox" aria-label="Temporizador de descanso">
     <div class="timer-display" id="timerDisplay">00:40</div>
     <div class="presets" id="presets"></div>
     <div class="custom-row">
@@ -32,11 +33,10 @@
 
 <button class="fab" id="fabBtn" aria-label="Menú de acciones" aria-controls="fabMenu" aria-expanded="false"></button>
 <div class="fab-menu" id="fabMenu" role="group" aria-label="Acciones">
-  <button id="editMenuBtn"><span id="editLabel">Editar día</span></button>
-  <button id="histMenuBtn"><span id="histLabel">Ver historial</span></button>
-  <button id="exportMenuBtn">Exportar rutina</button>
-  <button id="importMenuBtn">Importar rutina</button>
-  <button class="danger-opt" id="resetMenuBtn">Reiniciar día…</button>
+  <button id="editMenuBtn"><span id="editLabel">Editar rutina</span></button>
+  <button id="exportMenuBtn">Exportar datos</button>
+  <button id="importMenuBtn">Importar datos</button>
+  <button class="danger-opt" id="resetMenuBtn">Reiniciar sesión…</button>
 </div>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 

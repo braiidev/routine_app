@@ -1,22 +1,28 @@
-import { getLocalISODate } from '../utils/date.js';
 import { uid } from '../utils/dom.js';
 import { commit, getState, save } from '../state/store.js';
 import { view } from '../state/view.js';
-import { consideredGroups, getItemText, getProgress, getSteps, hasMinOverride, isFinished } from '../state/selectors.js';
+import { hasMinOverride } from '../state/selectors.js';
 import { closeMenu } from '../ui/menu.js';
 import { DAYS, DEFAULT_STEPS, MAX_STEPS } from '../config.js';
+import {
+  adjustSessionStep,
+  isDateEditable,
+  resetSession,
+  setSessionStep,
+  switchSessionMode
+} from './sessions.js';
+import {
+  getDayNameFromISODate,
+  getLocalISODate,
+  getWeekStartISO,
+  isISODate,
+  weeksBetween
+} from '../utils/date.js';
 
 const EDITABLE_FIELDS = ['name', 'steps', 'minName', 'minSteps'];
 
 function currentDay(){
-  return getState()[view.activeDay];
-}
-
-function ensureProgress(item){
-  if(!item.progress || typeof item.progress !== 'object'){
-    item.progress = { completo: 0, minimo: 0 };
-  }
-  return item.progress;
+  return getState().template[view.editorDay];
 }
 
 function findGroup(gid){
@@ -30,12 +36,6 @@ function findItem(gid, iid){
 
 function clampSteps(value){
   return Math.min(MAX_STEPS, Math.max(1, parseInt(value, 10) || 1));
-}
-
-function clampProgress(item){
-  const progress = ensureProgress(item);
-  progress.completo = Math.min(getProgress(item, 'completo'), getSteps(item, 'completo'));
-  progress.minimo = Math.min(getProgress(item, 'minimo'), getSteps(item, 'minimo'));
 }
 
 function copyName(value, fallback){
@@ -56,16 +56,107 @@ function cloneItemData(item, suffix){
     name,
     steps: item.steps,
     minName,
-    minSteps: item.minSteps,
-    progress: { completo: 0, minimo: 0 }
+    minSteps: item.minSteps
   };
 }
 
-/* Día */
+function ensureHistoryWeek(date){
+  const currentWeek = getWeekStartISO(view.todayDate);
+  const targetWeek = getWeekStartISO(date);
+  if(targetWeek > currentWeek) return;
+  const distance = weeksBetween(targetWeek, currentWeek);
+  view.historyVisibleWeeks = Math.max(view.historyVisibleWeeks, distance + 1);
+}
 
-export function selectDay(d){
+/* Navegación */
+
+export function goToday(){
+  view.screen = 'today';
+  view.selectedDate = view.todayDate;
+  view.historyEditDate = '';
+  commit();
+  closeMenu();
+}
+
+export function goHistory(){
+  view.screen = 'history';
+  view.historyEditDate = '';
+  if(!view.historySelectedDate) view.historySelectedDate = view.todayDate;
+  ensureHistoryWeek(view.historySelectedDate);
+  commit();
+  closeMenu();
+}
+
+export function selectDate(date){
+  if(!isISODate(date)) return;
+  const today = getLocalISODate();
+  if(date < today){
+    view.screen = 'history';
+    view.historySelectedDate = date;
+    view.historyEditDate = '';
+    ensureHistoryWeek(date);
+  } else {
+    view.screen = 'today';
+    view.selectedDate = date;
+    view.historyEditDate = '';
+  }
+  commit();
+}
+
+export function selectHistoryDate(date){
+  if(!isISODate(date)) return;
+  view.screen = 'history';
+  view.historySelectedDate = date;
+  view.historyEditDate = '';
+  ensureHistoryWeek(date);
+  commit();
+}
+
+export function beginHistoryEdit(date){
+  if(!isISODate(date) || date >= getLocalISODate()) return false;
+  view.screen = 'history';
+  view.historySelectedDate = date;
+  view.historyEditDate = date;
+  ensureHistoryWeek(date);
+  commit();
+  return true;
+}
+
+export function endHistoryEdit(){
+  view.historyEditDate = '';
+  commit();
+}
+
+export function showMoreWeeks(){
+  view.historyVisibleWeeks += 8;
+  commit();
+}
+
+/* Editor de plantilla */
+
+export function startEditing(day = '', date = ''){
+  const contextDate = view.screen === 'history'
+    ? (view.historySelectedDate || view.todayDate)
+    : (view.selectedDate || view.todayDate);
+  const selected = isISODate(date) ? date : contextDate;
+  const dayName = DAYS.includes(day) ? day : getDayNameFromISODate(selected);
+  view.screen = 'editor';
+  view.editorDay = DAYS.includes(dayName) ? dayName : view.editorDay;
+  commit();
+  closeMenu();
+}
+
+export function stopEditing(){
+  if(view.screen !== 'editor') return false;
+  view.screen = 'today';
+  view.selectedDate = view.todayDate;
+  commit();
+  return true;
+}
+
+export function selectEditorDay(d){
   if(!DAYS.includes(d)) return;
-  view.activeDay = d;
+  view.editorDay = d;
   commit();
 }
 
@@ -79,35 +170,13 @@ export function updateNotes(val){
   save();
 }
 
-export function setMode(mode){
+export function setDefaultMode(mode){
   if(mode !== 'completo' && mode !== 'minimo') return;
-  currentDay().mode = mode;
+  currentDay().defaultMode = mode;
   commit();
 }
 
-export function toggleEditMode(){
-  view.editMode = !view.editMode;
-  view.histView = false;
-  commit();
-  closeMenu();
-  return view.editMode;
-}
-
-export function exitEditMode(){
-  if(!view.editMode) return false;
-  view.editMode = false;
-  commit();
-  return true;
-}
-
-export function toggleHistView(){
-  view.histView = !view.histView;
-  view.editMode = false;
-  commit();
-  closeMenu();
-}
-
-/* Grupos */
+/* Grupos de la plantilla */
 
 export function addGroup(name = 'Nuevo grupo'){
   const clean = String(name == null ? '' : name).trim() || 'Nuevo grupo';
@@ -126,12 +195,6 @@ export function updateGroupName(gid, val){
 export function setGroupOptional(gid, optional){
   const g = findGroup(gid);
   if(g) g.optional = Boolean(optional);
-  commit();
-}
-
-export function toggleGroupOptional(gid){
-  const g = findGroup(gid);
-  if(g) g.optional = !g.optional;
   commit();
 }
 
@@ -171,12 +234,12 @@ export function deleteGroup(gid){
 
   const [group] = day.groups.splice(index, 1);
   commit();
-  return { day: view.activeDay, index, group };
+  return { day: view.editorDay, index, group };
 }
 
 export function restoreGroup(snapshot){
   if(!snapshot || !snapshot.group) return false;
-  const day = getState()[snapshot.day];
+  const day = getState().template[snapshot.day];
   if(!day || day.groups.some(g => g.id === snapshot.group.id)) return false;
 
   const index = Math.max(0, Math.min(snapshot.index, day.groups.length));
@@ -185,7 +248,7 @@ export function restoreGroup(snapshot){
   return true;
 }
 
-/* Ítems */
+/* Ejercicios de la plantilla */
 
 export function addItem(gid, name = 'Nuevo ejercicio'){
   const g = findGroup(gid);
@@ -197,8 +260,7 @@ export function addItem(gid, name = 'Nuevo ejercicio'){
     name: clean,
     steps: DEFAULT_STEPS,
     minName: null,
-    minSteps: null,
-    progress: { completo: 0, minimo: 0 }
+    minSteps: null
   };
   g.items.push(item);
   commit();
@@ -212,7 +274,6 @@ export function updateItemField(gid, iid, field, val){
 
   if(field === 'steps' || field === 'minSteps'){
     item[field] = clampSteps(val);
-    clampProgress(item);
   } else if(field === 'minName'){
     const text = String(val);
     item.minName = text.trim() ? text : item.name;
@@ -235,7 +296,6 @@ export function setMinOverride(gid, iid, enabled){
   } else {
     item.minName = null;
     item.minSteps = null;
-    clampProgress(item);
   }
   commit();
 }
@@ -246,12 +306,11 @@ export function adjustItemSteps(gid, iid, field, delta){
   const item = findItem(gid, iid);
   if(!item) return;
 
-  const current = field === 'minSteps' ? getSteps(item, 'minimo') : item.steps;
+  const current = field === 'minSteps' && item.minSteps != null ? item.minSteps : item.steps;
   const next = Math.min(MAX_STEPS, Math.max(1, current + delta));
   if(next === current) return;
 
   item[field] = next;
-  clampProgress(item);
   commit();
 }
 
@@ -284,7 +343,6 @@ export function duplicateItem(gid, iid){
 }
 
 export function deleteItem(gid, iid){
-  const day = currentDay();
   const g = findGroup(gid);
   if(!g) return null;
 
@@ -293,12 +351,12 @@ export function deleteItem(gid, iid){
 
   const [item] = g.items.splice(index, 1);
   commit();
-  return { day: view.activeDay, groupId: gid, index, item };
+  return { day: view.editorDay, groupId: gid, index, item };
 }
 
 export function restoreItem(snapshot){
   if(!snapshot || !snapshot.item) return false;
-  const day = getState()[snapshot.day];
+  const day = getState().template[snapshot.day];
   const g = day && day.groups.find(x => x.id === snapshot.groupId);
   if(!g || g.items.some(it => it.id === snapshot.item.id)) return false;
 
@@ -308,89 +366,38 @@ export function restoreItem(snapshot){
   return true;
 }
 
-/* Progreso */
+/* Sesiones por fecha */
 
-export function setStep(gid, iid, n){
-  if(!Number.isFinite(n)) return;
-  const day = currentDay();
-  const item = findItem(gid, iid);
-  if(!item) return;
-
-  const mode = day.mode;
-  const steps = getSteps(item, mode);
-  const current = getProgress(item, mode);
-  let next = current === n ? n - 1 : n;
-  if(next > steps) next = steps;
-  if(next < 0) next = 0;
-  ensureProgress(item)[mode] = next;
-
-  checkFinished(day, mode);
-  commit();
+export function setSessionMode(date, mode, force = false, allowPast = false){
+  if(!isISODate(date)) return { ok: false, reason: 'invalid' };
+  return switchSessionMode(date, mode, { force, allowPast });
 }
 
-export function adjustStep(gid, iid, delta){
-  if(!Number.isFinite(delta) || delta === 0) return;
-  const day = currentDay();
-  const item = findItem(gid, iid);
-  if(!item) return;
-
-  const mode = day.mode;
-  const steps = getSteps(item, mode);
-  const current = getProgress(item, mode);
-  const next = Math.min(steps, Math.max(0, current + delta));
-  if(next === current) return;
-
-  ensureProgress(item)[mode] = next;
-  if(delta > 0) checkFinished(day, mode);
-  commit();
+export function setStep(date, gid, iid, n, allowPast = false){
+  return setSessionStep(date, gid, iid, n, allowPast);
 }
 
-export function bumpStep(gid, iid){
-  adjustStep(gid, iid, 1);
+export function adjustStep(date, gid, iid, delta, allowPast = false){
+  return adjustSessionStep(date, gid, iid, delta, allowPast);
 }
 
-export function decrementStep(gid, iid){
-  adjustStep(gid, iid, -1);
+export function bumpStep(date, gid, iid, allowPast = false){
+  return adjustSessionStep(date, gid, iid, 1, allowPast);
 }
 
-function checkFinished(day, mode){
-  if(isFinished(getState(), view.activeDay, mode)) logCompletion(mode);
+export function decrementStep(date, gid, iid, allowPast = false){
+  return adjustSessionStep(date, gid, iid, -1, allowPast);
 }
 
-function logCompletion(mode){
-  const day = currentDay();
+export function resetDateSession(date, allowPast = false){
+  return resetSession(date, allowPast);
+}
+
+export function resetToday(){
   const today = getLocalISODate();
-  if(day.log.find(l => l.date === today && l.mode === mode)) return;
-
-  const items = [];
-  consideredGroups(getState(), view.activeDay, mode).forEach(g => {
-    g.items.forEach(it => {
-      items.push({
-        text: getItemText(it, mode),
-        done: getProgress(it, mode) >= getSteps(it, mode),
-        group: g.name
-      });
-    });
-  });
-
-  const allDone = items.every(i => i.done);
-  day.log.push({
-    date: today,
-    mode,
-    items,
-    status: allDone ? (mode === 'completo' ? 'full' : 'min') : 'partial'
-  });
+  return resetSession(today, false);
 }
 
-/* Reinicio del día */
-
-export function resetProgress(scope = 'current'){
-  const day = currentDay();
-  const modes = scope === 'both' ? ['completo', 'minimo'] : [day.mode];
-  day.groups.forEach(g => g.items.forEach(it => {
-    const progress = ensureProgress(it);
-    modes.forEach(mode => { progress[mode] = 0; });
-  }));
-  commit();
-  return { scope, mode: day.mode, day: view.activeDay };
+export function canEditDate(date, allowPast = false){
+  return isDateEditable(date, allowPast);
 }

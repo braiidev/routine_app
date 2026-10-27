@@ -1,23 +1,30 @@
 import { DAYS, DEFAULT_STEPS } from '../config.js';
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
-export function createDefaultDay(name){
+export function createDefaultTemplateDay(name){
   return {
     title: name,
-    mode: 'completo',
+    defaultMode: 'completo',
     notes: '',
-    groups: [],
-    log: []
+    groups: []
   };
 }
 
-export function createDefaultState(){
-  const s = {};
+export function createDefaultTemplate(){
+  const template = {};
   DAYS.forEach(d => {
-    s[d] = createDefaultDay(d);
+    template[d] = createDefaultTemplateDay(d);
   });
-  return s;
+  return template;
+}
+
+export function createDefaultState(){
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    template: createDefaultTemplate(),
+    sessions: {}
+  };
 }
 
 export function createDefaultItem(){
@@ -26,7 +33,6 @@ export function createDefaultItem(){
     name: 'Nuevo ejercicio',
     steps: DEFAULT_STEPS,
     minName: null,
-    minSteps: null,
-    progress: { completo: 0, minimo: 0 }
+    minSteps: null
   };
 }

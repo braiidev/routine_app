@@ -1,4 +1,4 @@
-export const RESET_LABEL = 'Reiniciar día…';
+export const RESET_LABEL = 'Reiniciar sesión…';
 
 function menuElements(){
   return {

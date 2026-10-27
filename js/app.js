@@ -3,12 +3,13 @@ import { view } from './state/view.js';
 import { icon } from './icons.js';
 import { render } from './ui/render.js';
 import { initMenu, closeMenu, RESET_LABEL } from './ui/menu.js';
-import { showHistDetail } from './ui/history.js';
+import { openHistoryDateSheet } from './ui/history.js';
 import { exportRoutine, importRoutineFile } from './ui/backup.js';
 import { openResetSheet } from './ui/reset.js';
 import { showToast } from './ui/toast.js';
 import { initTimer } from './features/timer.js';
-import { rolloverDay } from './features/rollover.js';
+import { formatDateLong } from './utils/date.js';
+import { syncToday } from './state/view.js';
 import * as actions from './features/actions.js';
 
 function showUndo(message, restore){
@@ -22,14 +23,44 @@ function showUndo(message, restore){
   });
 }
 
+function allowPast(ds){
+  return ds.past === '1';
+}
+
 const CLICK_ACTIONS = {
-  'select-day': (ds) => actions.selectDay(ds.day),
-  'set-mode': (ds) => actions.setMode(ds.mode),
-  'exit-edit': () => {
-    if(actions.exitEditMode()) showToast('Cambios guardados', { duration: 1600 });
+  'nav-today': () => actions.goToday(),
+  'nav-history': () => actions.goHistory(),
+  'select-date': (ds) => actions.selectDate(ds.date),
+  'select-editor-day': (ds) => actions.selectEditorDay(ds.day),
+  'start-editor': (ds) => actions.startEditing(ds.day, ds.date),
+  'stop-editor': () => {
+    actions.stopEditing();
+    showToast('Cambios guardados', { duration: 1600 });
   },
-  'toggle-group-optional': (ds) => actions.toggleGroupOptional(ds.group),
-  'add-item': (ds) => actions.addItem(ds.group),
+  'set-default-mode': (ds) => actions.setDefaultMode(ds.mode),
+  'session-mode': (ds) => {
+    if(!ds.date || !ds.mode) return;
+    const past = allowPast(ds);
+    let result = actions.setSessionMode(ds.date, ds.mode, false, past);
+    if(result.needsReset){
+      const ok = window.confirm('Cambiar de modo reinicia la sesión de este día. Si estaba completa, también puede cambiar el historial y la racha.\n\n¿Continuar?');
+      if(!ok) return;
+      result = actions.setSessionMode(ds.date, ds.mode, true, past);
+    }
+    if(!result.ok && result.reason === 'locked'){
+      showToast('Solo podés marcar la sesión de hoy', { duration: 2400 });
+    }
+  },
+  'session-step': (ds) => actions.setStep(ds.date, ds.group, ds.item, Number(ds.step), allowPast(ds)),
+  'session-bump': (ds) => actions.bumpStep(ds.date, ds.group, ds.item, allowPast(ds)),
+  'session-inc': (ds) => actions.adjustStep(ds.date, ds.group, ds.item, 1, allowPast(ds)),
+  'session-dec': (ds) => actions.adjustStep(ds.date, ds.group, ds.item, -1, allowPast(ds)),
+  'history-select-date': (ds) => actions.selectHistoryDate(ds.date),
+  'history-register': (ds) => actions.beginHistoryEdit(ds.date),
+  'history-edit': (ds) => actions.beginHistoryEdit(ds.date),
+  'history-edit-done': () => actions.endHistoryEdit(),
+  'history-more': () => actions.showMoreWeeks(),
+  'history-date-sheet': () => openHistoryDateSheet(),
   'move-group': (ds) => actions.moveGroup(ds.group, Number(ds.delta)),
   'move-item': (ds) => actions.moveItem(ds.group, ds.item, Number(ds.delta)),
   'duplicate-group': (ds) => actions.duplicateGroup(ds.group),
@@ -42,12 +73,7 @@ const CLICK_ACTIONS = {
     const snapshot = actions.deleteItem(ds.group, ds.item);
     if(snapshot) showUndo('Ejercicio eliminado', () => actions.restoreItem(snapshot));
   },
-  'adjust-item-steps': (ds) => actions.adjustItemSteps(ds.group, ds.item, ds.field, Number(ds.delta)),
-  'set-step': (ds) => actions.setStep(ds.group, ds.item, Number(ds.step)),
-  'bump-step': (ds) => actions.bumpStep(ds.group, ds.item),
-  'inc-step': (ds) => actions.adjustStep(ds.group, ds.item, 1),
-  'dec-step': (ds) => actions.adjustStep(ds.group, ds.item, -1),
-  'hist-point': (ds) => showHistDetail(Number(ds.idx))
+  'adjust-item-steps': (ds) => actions.adjustItemSteps(ds.group, ds.item, ds.field, Number(ds.delta))
 };
 
 const CHANGE_ACTIONS = {
@@ -57,28 +83,31 @@ const CHANGE_ACTIONS = {
   'group-optional': (el, ds) => actions.setGroupOptional(ds.group, el.checked),
   'item-field': (el, ds) => {
     const value = actions.updateItemField(ds.group, ds.item, ds.field, el.value);
-    if(ds.field === 'steps' || ds.field === 'minSteps' || ds.field === 'minName') el.value = value;
+    if(value !== undefined && (ds.field === 'steps' || ds.field === 'minSteps' || ds.field === 'minName')) el.value = value;
   },
   'item-min-override': (el, ds) => actions.setMinOverride(ds.group, ds.item, el.checked)
 };
 
 function injectIcons(){
-  document.getElementById('headerIcon').innerHTML = icon('barbell', 20) + ' Rutina';
+  document.getElementById('headerIcon').innerHTML = icon('barbell', 20) + ' GymRutina';
   document.getElementById('fabBtn').innerHTML = icon('menu', 22);
-  document.getElementById('editMenuBtn').innerHTML = icon('edit', 18) + ' <span id="editLabel">Editar día</span>';
-  document.getElementById('histMenuBtn').innerHTML = icon('chart', 18) + ' <span id="histLabel">Ver historial</span>';
-  document.getElementById('exportMenuBtn').innerHTML = icon('download', 18) + ' Exportar rutina';
-  document.getElementById('importMenuBtn').innerHTML = icon('upload', 18) + ' Importar rutina';
+  document.getElementById('editMenuBtn').innerHTML = icon('edit', 18) + ' <span id="editLabel">Editar rutina</span>';
+  document.getElementById('exportMenuBtn').innerHTML = icon('download', 18) + ' Exportar datos';
+  document.getElementById('importMenuBtn').innerHTML = icon('upload', 18) + ' Importar datos';
   document.getElementById('resetMenuBtn').innerHTML = icon('refresh', 18) + ' ' + RESET_LABEL;
 }
 
 function bindMenuActions(){
   document.getElementById('editMenuBtn').onclick = () => {
-    const wasEditing = view.editMode;
-    actions.toggleEditMode();
-    if(wasEditing) showToast('Cambios guardados', { duration: 1600 });
+    closeMenu();
+    if(view.screen === 'editor'){
+      actions.stopEditing();
+      showToast('Cambios guardados', { duration: 1600 });
+      return;
+    }
+    actions.startEditing();
   };
-  document.getElementById('histMenuBtn').onclick = actions.toggleHistView;
+
   document.getElementById('resetMenuBtn').onclick = () => {
     closeMenu();
     openResetSheet();
@@ -153,15 +182,12 @@ function bindDelegation(){
   });
 }
 
-function archivedNotice(result){
-  if(result.archived > 0){
-    showToast('Se archivó el progreso del día anterior en el historial', { duration: 3000 });
-  }
-  return result;
-}
-
 function bindDayChange(){
-  const check = () => archivedNotice(rolloverDay());
+  const check = () => {
+    if(!syncToday()) return;
+    render();
+    showToast(`Nuevo día: ${formatDateLong(view.todayDate)}`, { duration: 2800 });
+  };
   document.addEventListener('visibilitychange', () => {
     if(!document.hidden) check();
   });
@@ -177,7 +203,6 @@ function boot(){
     });
   });
   load();
-  const rollover = rolloverDay();
   onChange(render);
   injectIcons();
   initMenu();
@@ -186,7 +211,6 @@ function boot(){
   bindDayChange();
   initTimer();
   render();
-  archivedNotice(rollover);
 }
 
 boot();

@@ -2,27 +2,27 @@
 
 ## Descripcion
 
-GymRutina es una app web móvil para registrar y seguir rutinas de gimnasio con modos completo/mínimo, historial de finalizaciones y temporizador de descanso. Se construye sobre HTML, CSS y módulos ES nativos, sin build, con los datos en localStorage y respaldo JSON. Consta de tabs por día, grupos de ejercicios, progreso por series, historial diario, cronómetro y editor de rutina. Está terminada cuando se puede usar sin conexión, respaldar y restaurar la rutina, editar los ejercicios sin ambigüedad y consultar el historial completo desde el teléfono.
+GymRutina es una app web móvil para registrar entrenamientos por fecha a partir de una plantilla semanal con modos completo/mínimo, consultar un historial semanal de siete días, corregir días pasados, seguir la racha y usar un temporizador de descanso. Se construye sobre HTML, CSS y módulos ES nativos, sin build, con los datos en localStorage y respaldo JSON. Está terminada cuando se puede registrar el día actual, consultar y corregir cualquier fecha, ver rachas y estadísticas, respaldar y restaurar la rutina y usar la app sin conexión desde el teléfono.
 
 ## Estado
 
-- Version actual: `v0.8.1`
+- Version actual: `v0.9.0`
 - Fase en curso: -
-- Siguiente version reservada: `v0.9.0`
+- Siguiente version reservada: `v0.10.0`
 
 ## Tablero
 
 ### En curso
 
-_Nada en curso: la fase de historial y reinicio diario quedó cerrada._
+_Nada en curso: la fase de sesiones por fecha, historial semanal y racha quedó cerrada._
 
 ### Siguiente
 
-- [ ] **v0.9.0** - Fase 9 - PWA/offline
-  - Manifest, service worker e instalación en pantalla de inicio.
+- [ ] **v0.10.0** - Fase 10 - PWA/offline
+  - Manifest, service worker, instalación en pantalla de inicio y caché de la app.
 
-- [ ] **v0.10.0** - Fase 10 - Estadísticas
-  - Racha, cumplimiento semanal y por grupo.
+- [ ] **v0.11.0** - Fase 11 - Estadísticas
+  - Cumplimiento semanal y por grupo, además de la racha ya existente.
 
 ### Terminado
 
@@ -59,6 +59,9 @@ _Nada en curso: la fase de historial y reinicio diario quedó cerrada._
   - [x] v0.7.2 - Documentación y checklist del reinicio
   - [x] v0.8.1 - Exportación de ejemplo con tres meses de historial
 
+- [x] **v0.9.0** - Fase 9 - Sesiones por fecha, historial semanal y racha
+  - Reemplazar el progreso por día de semana por sesiones inmutables indexadas por fecha ISO local, con una sola sesión y un modo por fecha, checks bloqueados fuera de hoy, vista previa de días futuros, registro y corrección retroactiva, historial semanal de siete días con detalle, racha actual y mejor racha derivadas, migración v1/v2 con copia cruda, prioridad `full > min > partial` y exportación/importación v3. Criterio de aceptación: editar la plantilla no altera sesiones guardadas, el historial muestra días vacíos y agrupación mensual, la semilla v2 migra sin perder sus 37 registros, 40 pruebas pasan y el check queda limpio tras el commit.
+
 ### Descartado
 
 _Nada descartado._
@@ -67,20 +70,21 @@ _Nada descartado._
 
 - El monolito original queda versionado en el primer commit de Git; no hace falta copia `.bak`.
 - El proyecto usa módulos ES nativos: requiere servirse por HTTP (no `file://`).
-- Los datos se guardan en `gymrutina_state_v1` con `{ schemaVersion, days }`. El formato viejo (`rutina_builder_v2`) se migra al cargar y se conserva como respaldo.
-- La clave `gymrutina_last_active_date` guarda la última fecha local para detectar el cambio de día. Se mantiene fuera del esquema y del respaldo JSON.
-- El reinicio diario se evalúa al abrir o recuperar foco; archiva el progreso anterior por día y modo, sin duplicar entradas, y limpia todos los checks una sola vez.
-- Los parciales se archivan con el estado `partial`; un día completo sin entrada previa se archiva como `full` (completo) o `min` (mínimo).
-- El esquema vigente es v2: `name` y `steps` compartidos, con `minName`/`minSteps` opcionales para el modo mínimo. El editor muestra solo ejercicio y series; el mínimo queda en una sección plegable.
-- La mudanza está cerrada; las features nuevas se planifican desde `### Siguiente`.
+- El esquema vigente es v3: `{ schemaVersion: 3, template, sessions }`, guardado en la clave histórica `gymrutina_state_v1`.
+- `template` no guarda progreso ni logs. `sessions` indexa una sesión por fecha ISO local con una foto de ejercicios, series y checks.
+- El estado de una sesión se deriva de sus items: `empty`, `partial`, `full` o `min`; no se persiste un contador de estado ni de racha.
+- La clave `gymrutina_last_active_date` queda solo para migrar el progreso v2 de la última fecha activa. Ya no hay rollover ni archivo `rollover.js`.
+- Antes de migrar se guarda el JSON crudo en `gymrutina_state_v1_backup_pre_v3_<timestamp>` (o en la clave legada si vino de `rutina_builder_v2`); un JSON futuro se conserva en `<clave>_backup_future_vN_<timestamp>`.
 - El respaldo JSON está cerrado; antes de importar se guarda `gymrutina_state_v1_backup_pre_import_<timestamp>`.
-- El borrado de grupos y ejercicios es inmediato y se deshace desde el toast; ya no hay confirmación en dos pasos. Reordenar y duplicar usan `commit()` para repintar.
-- El reinicio del día abre una hoja con dos opciones: modo actual o ambos. Solo limpia checks; el historial no se borra.
+- El borrado de grupos y ejercicios es inmediato y se deshace desde el toast. Reordenar y duplicar usan `commit()` para repintar.
+- El reinicio del día abre una hoja de confirmación. Borra solo la sesión de hoy; la plantilla no cambia y, si la sesión estaba completa, afecta historial y racha.
+- Cambiar el modo de una fecha con checks pide confirmación y reinicia esa sesión, tanto en Hoy como al corregir un día pasado.
+- Los días futuros se ven como plantilla sin checks y se editan desde el botón **Editar rutina**; los pasados se registran y corrigen desde Historial.
 - La fase v0.7.0 se cerró con 43 pruebas y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
-- Decidido para v0.8.0: el reinicio diario ocurre al abrir la app o volver a ella, no a medianoche.
 - La fase v0.8.0 se cerró con rollover de reloj inyectable, historial agrupado por mes, 49 pruebas, check limpio y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
-- v0.8.1 agrega `seeds/gymrutina-demo.json`, una exportación válida con 7 días, 16 grupos, 36 ejercicios y 37 registros entre agosto y octubre de 2026; se regenera con `npm run seed` y las pruebas suben a 50.
-- Candidatas para próximas fases: estadísticas semanales y PWA/offline.
+- v0.8.1 agregó `seeds/gymrutina-demo.json`, una exportación con 7 días, 16 grupos, 36 ejercicios y 37 registros; se regenera con `npm run seed`.
+- v0.9.0 regeneró la semilla en v3 (20 completas, 7 mínimas y 10 parciales), conservó la v2 como fixture de compatibilidad y dejó 40 pruebas. La validación visual en navegador/teléfono sigue pendiente.
+- Candidatas para próximas fases: PWA/offline (v0.10.0) y estadísticas (v0.11.0).
 
 ## Seguimiento
 
