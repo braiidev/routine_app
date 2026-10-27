@@ -29,7 +29,12 @@ export function getSession(state, date){
 
 export function sessionHasProgress(session){
   if(!session || !Array.isArray(session.groups)) return false;
-  return session.groups.some(g => (Array.isArray(g.items) ? g.items : []).some(it => (it.done || 0) > 0));
+  return session.groups.some(g => (Array.isArray(g.items) ? g.items : []).some(it => {
+    const done = it.done || 0;
+    const steps = it.steps || 0;
+    if(steps > 0) return done >= steps || done > 0;
+    return done > 0;
+  }));
 }
 
 export function sessionProgress(session){
@@ -37,16 +42,30 @@ export function sessionProgress(session){
   const items = groups.flatMap(g => Array.isArray(g.items) ? g.items : []);
   const done = items.reduce((n, it) => n + Math.min(it.done || 0, it.steps || 0), 0);
   const total = items.reduce((n, it) => n + (it.steps || 0), 0);
-  const itemsDone = items.filter(it => it.steps > 0 && it.done >= it.steps).length;
+  const itemsDone = items.filter(it => (it.steps || 0) > 0 && (it.done || 0) >= it.steps).length;
   return { done, total, items: items.length, itemsDone };
 }
 
 export function sessionStatus(session){
-  if(!sessionHasProgress(session)) return 'empty';
-  const items = (session.groups || []).flatMap(g => g.items || []);
+  if(!session || !Array.isArray(session.groups)) return 'empty';
+  const items = session.groups.flatMap(g => Array.isArray(g.items) ? g.items : []);
   if(items.length === 0) return 'empty';
-  const allDone = items.every(it => it.steps > 0 && it.done >= it.steps);
+  if(!sessionHasProgress(session)) return 'empty';
+  const allDone = items.every(it => {
+    const steps = it.steps || 0;
+    const done = it.done || 0;
+    return steps > 0 ? done >= steps : done > 0;
+  });
   if(!allDone) return 'partial';
+  return session.mode === 'minimo' ? 'min' : 'full';
+}
+
+export function sessionStatusForMigration(session){
+  if(!session || !Array.isArray(session.groups)) return 'partial';
+  const items = session.groups.flatMap(g => Array.isArray(g.items) ? g.items : []);
+  if(items.length === 0) return 'partial';
+  const done = items.filter(it => (it.done || 0) >= (it.steps || 0)).length;
+  if(done !== items.length) return 'partial';
   return session.mode === 'minimo' ? 'min' : 'full';
 }
 

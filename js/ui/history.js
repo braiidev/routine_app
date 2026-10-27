@@ -20,12 +20,12 @@ import {
   isISODate,
   monthLabel,
   parseLocalISODate,
-  weeksBetween,
   WEEKDAY_SHORT
 } from '../utils/date.js';
 import { esc, escAttr } from '../utils/dom.js';
 import { renderSessionGroups } from './groups.js';
 import { modeForDate, previewSession } from '../features/sessions.js';
+import { ensureHistoryWeek } from '../features/actions.js';
 
 export function statusLabel(status){
   if(status === 'full') return 'Completo';
@@ -41,13 +41,6 @@ export function modeLabel(mode){
 function dayNumber(date){
   const parsed = parseLocalISODate(date);
   return parsed ? parsed.getDate() : '?';
-}
-
-function ensureHistoryWeek(date){
-  const currentWeek = getWeekStartISO(view.todayDate);
-  const targetWeek = getWeekStartISO(date);
-  if(targetWeek > currentWeek) return;
-  view.historyVisibleWeeks = Math.max(view.historyVisibleWeeks, weeksBetween(targetWeek, currentWeek) + 1);
 }
 
 export function renderHistory(){

@@ -147,7 +147,7 @@ export function replaceState(payload){
 export function backupCurrentState(reason = 'manual'){
   const key = `${STORAGE_KEY}_backup_${reason}_${Date.now()}`;
   try {
-    localStorage.setItem(key, JSON.stringify(getPayload()));
+    localStorage.setItem(key, JSON.stringify(getState()));
     return key;
   } catch(e){
     warnStorageError(e);

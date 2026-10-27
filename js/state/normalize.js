@@ -2,6 +2,7 @@ import { DAYS, MAX_STEPS } from '../config.js';
 import { SCHEMA_VERSION } from './schema.js';
 import { uid } from '../utils/dom.js';
 import { getDayNameFromISODate, getLocalISODate, isISODate } from '../utils/date.js';
+import { sessionHasProgress, sessionStatusForMigration } from './selectors.js';
 
 const MODES = ['completo', 'minimo'];
 const STATUSES = ['full', 'min', 'partial'];
@@ -267,18 +268,7 @@ export function normalizeSession(raw, date, dayName){
   };
 }
 
-export function sessionHasProgress(session){
-  if(!session || !Array.isArray(session.groups)) return false;
-  return session.groups.some(g => (Array.isArray(g.items) ? g.items : []).some(it => (it.done || 0) > 0));
-}
-
-function sessionStatus(session){
-  const items = (session.groups || []).flatMap(g => g.items || []);
-  if(items.length === 0) return 'partial';
-  const done = items.filter(it => it.done >= it.steps).length;
-  if(done !== items.length) return 'partial';
-  return session.mode === 'minimo' ? 'min' : 'full';
-}
+export { sessionHasProgress };
 
 function statusRank(status){
   return status === 'full' ? 3 : status === 'min' ? 2 : 1;
@@ -287,7 +277,7 @@ function statusRank(status){
 function sessionScore(session){
   const items = (session.groups || []).flatMap(g => g.items || []);
   const done = items.reduce((n, it) => n + (it.done || 0), 0);
-  return statusRank(sessionStatus(session)) * 100000 + done;
+  return statusRank(sessionStatusForMigration(session)) * 100000 + done;
 }
 
 function keepBetterSession(sessions, session){

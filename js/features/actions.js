@@ -60,7 +60,7 @@ function cloneItemData(item, suffix){
   };
 }
 
-function ensureHistoryWeek(date){
+export function ensureHistoryWeek(date){
   const currentWeek = getWeekStartISO(view.todayDate);
   const targetWeek = getWeekStartISO(date);
   if(targetWeek > currentWeek) return;
@@ -383,10 +383,6 @@ export function adjustStep(date, gid, iid, delta, allowPast = false){
 
 export function bumpStep(date, gid, iid, allowPast = false){
   return adjustSessionStep(date, gid, iid, 1, allowPast);
-}
-
-export function decrementStep(date, gid, iid, allowPast = false){
-  return adjustSessionStep(date, gid, iid, -1, allowPast);
 }
 
 export function resetDateSession(date, allowPast = false){

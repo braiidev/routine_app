@@ -1,4 +1,4 @@
-import { load, onChange, onStorageError } from './state/store.js';
+import { load, onChange, onStorageError, getState, replaceState } from './state/store.js';
 import { view } from './state/view.js';
 import { icon } from './icons.js';
 import { render } from './ui/render.js';
@@ -11,6 +11,7 @@ import { initTimer } from './features/timer.js';
 import { formatDateLong } from './utils/date.js';
 import { syncToday } from './state/view.js';
 import * as actions from './features/actions.js';
+import { STORAGE_KEY } from './config.js';
 
 function showUndo(message, restore){
   showToast(message, {
@@ -204,6 +205,19 @@ function boot(){
   });
   load();
   onChange(render);
+  window.addEventListener('storage', (e) => {
+    if(e.key !== STORAGE_KEY) return;
+    try {
+      if(!e.newValue) return;
+      const raw = JSON.parse(e.newValue);
+      replaceState(raw);
+      syncToday();
+      render();
+      showToast('Datos actualizados desde otra pestaña', { duration: 2000 });
+    } catch(err) {
+      // ignore
+    }
+  });
   injectIcons();
   initMenu();
   bindMenuActions();
