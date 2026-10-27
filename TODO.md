@@ -6,7 +6,7 @@ GymRutina es una app web móvil para registrar entrenamientos por fecha a partir
 
 ## Estado
 
-- Version actual: `v0.12.0`
+- Version actual: `v0.12.1`
 - Fase en curso: -
 - Siguiente version reservada: `v0.13.0`
 
@@ -14,15 +14,11 @@ GymRutina es una app web móvil para registrar entrenamientos por fecha a partir
 
 ### En curso
 
-_Nada en curso: la fase de sesiones por fecha, historial semanal y racha quedó cerrada._
+_Nada en curso._
 
 ### Siguiente
 
-- [ ] **v0.10.0** - Fase 10 - PWA/offline
-  - Manifest, service worker, instalación en pantalla de inicio y caché de la app.
-
-- [ ] **v0.11.0** - Fase 11 - Estadísticas
-  - Cumplimiento semanal y por grupo, además de la racha ya existente.
+_Nada pendiente._
 
 ### Terminado
 
@@ -62,6 +58,12 @@ _Nada en curso: la fase de sesiones por fecha, historial semanal y racha quedó 
 - [x] **v0.9.0** - Fase 9 - Sesiones por fecha, historial semanal y racha
   - Reemplazar el progreso por día de semana por sesiones inmutables indexadas por fecha ISO local, con una sola sesión y un modo por fecha, checks bloqueados fuera de hoy, vista previa de días futuros, registro y corrección retroactiva, historial semanal de siete días con detalle, racha actual y mejor racha derivadas, migración v1/v2 con copia cruda, prioridad `full > min > partial` y exportación/importación v3. Criterio de aceptación: editar la plantilla no altera sesiones guardadas, el historial muestra días vacíos y agrupación mensual, la semilla v2 migra sin perder sus 37 registros, 40 pruebas pasan y el check queda limpio tras el commit.
 
+- [x] **v0.10.0** - Fase 10 - PWA/offline
+  - Manifest, service worker, instalación en pantalla de inicio y caché de la app.
+
+- [x] **v0.11.0** - Fase 11 - Estadísticas
+  - Cumplimiento semanal y por grupo, además de la racha ya existente.
+
 ### Descartado
 
 _Nada descartado._
@@ -84,7 +86,7 @@ _Nada descartado._
 - La fase v0.8.0 se cerró con rollover de reloj inyectable, historial agrupado por mes, 49 pruebas, check limpio y recursos HTTP 200; la pasada visual del checklist queda pendiente en el teléfono.
 - v0.8.1 agregó `seeds/gymrutina-demo.json`, una exportación con 7 días, 16 grupos, 36 ejercicios y 37 registros; se regenera con `npm run seed`.
 - v0.9.0 regeneró la semilla en v3 (20 completas, 7 mínimas y 10 parciales), conservó la v2 como fixture de compatibilidad y dejó 40 pruebas. La validación visual en navegador/teléfono sigue pendiente.
-- Candidatas para próximas fases: PWA/offline (v0.10.0) y estadísticas (v0.11.0).
+- Próxima fase pendiente de definir.
 
 ## Seguimiento
 
