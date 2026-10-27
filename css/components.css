@@ -269,3 +269,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus
 .item-txt:not(button){cursor:default;}
 .day-subtitle{font-size:0.76rem; color:var(--sub); margin-top:2px;}
 .field input[type=date]{width:100%; min-height:44px; border:1px solid var(--border); border-radius:9px; background:var(--bg); color:var(--text); padding:8px 9px; font-size:0.86rem; font-family:inherit;}
+
+/* Estadísticas */
+.stats-card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:10px;}
+.stats-head{display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px;}
+.stats-title{font-size:0.95rem; font-weight:600;}
+.stats-week{font-size:0.7rem; color:var(--sub); text-align:right;}
+.stats-row{display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; color:var(--text);}
+.stats-row strong{font-weight:700;}
+.stats-bar{height:6px; background:var(--border); border-radius:999px; overflow:hidden; margin:8px 0 6px;}
+.stats-bar span{display:block; height:100%; background:var(--accent); border-radius:999px;}
+.stats-sub{font-size:0.72rem; color:var(--sub);}
+.group-stats-list{display:flex; flex-direction:column; gap:10px;}
+.group-stat-row{display:flex; flex-direction:column; gap:4px;}
+.group-stat-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+.group-stat-name{font-size:0.82rem; color:var(--text);}
+.group-stat-val{font-size:0.72rem; color:var(--sub); font-variant-numeric:tabular-nums;}
