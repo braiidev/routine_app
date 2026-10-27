@@ -4,7 +4,9 @@ import { view } from '../state/view.js';
 import {
   getBestStreak,
   getCurrentStreak,
+  getGroupCompliance,
   getSession,
+  getWeekCompliance,
   getWeekSummary,
   sessionProgress,
   sessionStatus
@@ -72,6 +74,45 @@ export function renderHistory(){
       <span class="streak-unit">${bestStreak === 1 ? 'día' : 'días'}</span>
     </div>
   </div>`;
+
+  const weekDates = getWeekDates(currentWeekStart);
+  const weekCompliance = getWeekCompliance(sessions, weekDates);
+  html += `<section class="stats-card">
+    <div class="stats-head">
+      <div>
+        <div class="section-label">Estadísticas</div>
+        <div class="stats-title">Cumplimiento semanal</div>
+      </div>
+      <div class="stats-week">${esc(formatWeekRange(currentWeekStart))}</div>
+    </div>
+    <div class="stats-row">
+      <span>Completados</span>
+      <strong>${weekCompliance.completed} / ${weekCompliance.total}</strong>
+    </div>
+    <div class="stats-bar"><span style="width:${weekCompliance.pct}%"></span></div>
+    <div class="stats-sub">${weekCompliance.pct}% · ${weekCompliance.partial} parciales · ${weekCompliance.empty} sin registro</div>
+  </section>`;
+
+  const groupStats = getGroupCompliance(sessions, weekDates);
+  if(groupStats.length){
+    html += `<section class="stats-card">
+      <div class="stats-head">
+        <div>
+          <div class="section-label">Por grupo</div>
+          <div class="stats-title">Semana actual (series)</div>
+        </div>
+      </div>
+      <div class="group-stats-list">
+        ${groupStats.map(g => `<div class="group-stat-row">
+          <div class="group-stat-head">
+            <span class="group-stat-name">${esc(g.name)}</span>
+            <span class="group-stat-val">${g.seriesDone}/${g.seriesTotal} · ${g.pct}%</span>
+          </div>
+          <div class="stats-bar"><span style="width:${g.pct}%"></span></div>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  }
 
   html += `<div class="hist-legend" aria-label="Estados del historial">
     <span><i class="hist-dot full"></i>Completo</span>

@@ -132,3 +132,95 @@ export function getWeekSummary(sessions, dates){
 
   return { completed, recorded, partial };
 }
+
+export function getWeekCompliance(sessions, dates){
+  const list = Array.isArray(dates) ? dates : [];
+  let completed = 0;
+  let partial = 0;
+  let empty = 0;
+  const total = list.length;
+
+  list.forEach(date => {
+    const session = getSession({ sessions }, date);
+    const status = sessionStatus(session);
+    if(status === 'full' || status === 'min'){
+      completed++;
+      return;
+    }
+    if(status === 'partial'){
+      partial++;
+      return;
+    }
+    empty++;
+  });
+
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  return { completed, partial, empty, total, pct };
+}
+
+export function getGroupCompliance(sessions, dates){
+  const list = Array.isArray(dates) ? dates : [];
+  const map = new Map();
+
+  list.forEach(date => {
+    const session = getSession({ sessions }, date);
+    if(!session || !Array.isArray(session.groups)) return;
+    session.groups.forEach(group => {
+      if(!group) return;
+      const name = group.name || 'Grupo';
+      const key = name;
+      if(!map.has(key)){
+        map.set(key, { name: key, seriesDone: 0, seriesTotal: 0 });
+      }
+      const entry = map.get(key);
+      const items = Array.isArray(group.items) ? group.items : [];
+      items.forEach(item => {
+        const steps = item.steps || 0;
+        if(steps <= 0) return;
+        const done = Math.min(item.done || 0, steps);
+        entry.seriesDone += done;
+        entry.seriesTotal += steps;
+      });
+    });
+  });
+
+  const result = [];
+  for(const entry of map.values()){
+    const pct = entry.seriesTotal > 0 ? Math.round((entry.seriesDone / entry.seriesTotal) * 100) : 0;
+    result.push({ name: entry.name, seriesDone: entry.seriesDone, seriesTotal: entry.seriesTotal, pct });
+  }
+  result.sort((a, b) => {
+    if(b.pct !== a.pct) return b.pct - a.pct;
+    if(b.seriesDone !== a.seriesDone) return b.seriesDone - a.seriesDone;
+    return a.name.localeCompare(b.name);
+  });
+  return result;
+}
+
+export function getTotals(sessions, dates){
+  const list = Array.isArray(dates) ? dates : [];
+  let seriesDone = 0;
+  let seriesTotal = 0;
+  let itemsDone = 0;
+  let itemsTotal = 0;
+  let sessionsCount = 0;
+
+  list.forEach(date => {
+    const session = getSession({ sessions }, date);
+    if(!session || !Array.isArray(session.groups)) return;
+    sessionsCount++;
+    session.groups.forEach(group => {
+      const items = Array.isArray(group.items) ? group.items : [];
+      items.forEach(item => {
+        const steps = item.steps || 0;
+        const done = Math.min(item.done || 0, steps);
+        if(steps > 0) itemsTotal++;
+        if(steps > 0 && done >= steps) itemsDone++;
+        seriesTotal += steps;
+        seriesDone += done;
+      });
+    });
+  });
+
+  return { seriesDone, seriesTotal, itemsDone, itemsTotal, sessionsCount };
+}

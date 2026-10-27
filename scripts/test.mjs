@@ -48,7 +48,7 @@ const {
 const { SCHEMA_VERSION } = await import('../js/state/schema.js');
 const {
   getItemText, getSteps, getSession, sessionStatus, sessionProgress,
-  getCurrentStreak, getBestStreak
+  getCurrentStreak, getBestStreak, getWeekCompliance, getGroupCompliance, getTotals
 } = await import('../js/state/selectors.js');
 const { normalizeItem, normalizePayload } = await import('../js/state/normalize.js');
 const { view } = await import('../js/state/view.js');
@@ -427,6 +427,44 @@ test('un día vacío o parcial corta la racha y se calcula la mejor', () => {
   assert.equal(getCurrentStreak(sessions, '2026-01-03'), 2);
   const withFuture = { ...sessions, [addDaysISO(today, 1)]: sessionFor(addDaysISO(today, 1), { done: 2 }) };
   assert.equal(getBestStreak(withFuture, today), 2);
+});
+
+test('calcula cumplimiento semanal y por grupo con series', () => {
+  const sessions = {
+    '2026-01-01': sessionFor('2026-01-01', { done: 2, steps: 2 }),
+    '2026-01-02': sessionFor('2026-01-02', { done: 1, steps: 2 }),
+    '2026-01-03': { ...sessionFor('2026-01-03', { done: 0, steps: 2 }), groups: [] }
+  };
+  const week = ['2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04'];
+  const compliance = getWeekCompliance(sessions, week);
+  assert.equal(compliance.completed, 1);
+  assert.equal(compliance.partial, 1);
+  assert.equal(compliance.empty, 2);
+  assert.equal(compliance.total, 4);
+  assert.equal(compliance.pct, 25);
+
+  const s2 = {
+    '2026-01-01': {
+      date: '2026-01-01',
+      day: 'Jue',
+      mode: 'completo',
+      groups: [
+        { id: 'g1', name: 'Pecho', items: [{ id: 'i1', text: 'Press', steps: 4, done: 2 }, { id: 'i2', text: 'Cruces', steps: 2, done: 2 }] },
+        { id: 'g2', name: 'Tríceps', items: [{ id: 'i3', text: 'Extensión', steps: 3, done: 1 }] }
+      ]
+    }
+  };
+  const groups = getGroupCompliance(s2, ['2026-01-01']);
+  assert.equal(groups.length, 2);
+  assert.equal(groups[0].name, 'Pecho');
+  assert.equal(groups[0].seriesDone, 4);
+  assert.equal(groups[0].seriesTotal, 6);
+  assert.equal(groups[0].pct, 67);
+
+  const totals = getTotals(s2, ['2026-01-01']);
+  assert.equal(totals.sessionsCount, 1);
+  assert.equal(totals.seriesDone, 5);
+  assert.equal(totals.seriesTotal, 9);
 });
 
 /* 5. Render de editor, sesión e historial */
